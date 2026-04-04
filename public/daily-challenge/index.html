@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Faraday Daily Challenge — Test Your Market Intelligence</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Serif:ital,wght@0,600;0,700;1,400&family=IBM+Plex+Mono:wght@400;500&family=Bricolage+Grotesque:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{--forest:#1C3424;--gold:#C4922A;--warm-white:#F8F5F0;--cream:#EEE6DA;--near-black:#141210;--sage:#8CA68A;}
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{background:var(--near-black);font-family:'Bricolage Grotesque',sans-serif;color:var(--warm-white);min-height:100vh;}
+  .masthead{background:var(--forest);border-bottom:2px solid var(--gold);padding:14px 40px;display:flex;align-items:center;justify-content:space-between;}
+  .brand{display:flex;align-items:center;gap:12px;}
+  .f-mark{width:32px;height:32px;background:rgba(255,255,255,0.1);border:2px solid var(--gold);border-radius:5px;display:flex;align-items:center;justify-content:center;font-family:'IBM Plex Serif',serif;font-weight:700;font-size:17px;color:var(--warm-white);}
+  .wordmark{font-family:'IBM Plex Serif',serif;font-weight:600;font-size:14px;letter-spacing:0.12em;text-transform:uppercase;color:var(--warm-white);}
+  .back-link{font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--sage);letter-spacing:0.1em;text-decoration:none;}
+  .hero{padding:64px 40px 48px;max-width:780px;margin:0 auto;text-align:center;}
+  .eyebrow{font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:0.2em;color:var(--gold);text-transform:uppercase;margin-bottom:16px;}
+  h1{font-family:'IBM Plex Serif',serif;font-weight:700;font-size:clamp(28px,4.5vw,50px);line-height:1.18;margin-bottom:14px;}
+  .sub{font-size:17px;color:#888;line-height:1.6;max-width:520px;margin:0 auto 40px;}
+  .rule{width:60px;height:4px;position:relative;margin:0 auto 32px;}
+  .rule::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:rgba(255,255,255,0.1);}
+  .rule::after{content:'';position:absolute;bottom:0;left:0;right:0;height:2px;background:var(--gold);}
+  .puzzle-preview{background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);border-radius:10px;padding:32px;max-width:560px;margin:0 auto 40px;}
+  .puzzle-title{font-family:'IBM Plex Serif',serif;font-weight:600;font-size:18px;margin-bottom:6px;}
+  .puzzle-meta{font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:0.14em;color:var(--sage);text-transform:uppercase;margin-bottom:24px;}
+  .tile-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:24px;}
+  .tile{background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.12);border-radius:6px;padding:12px 6px;text-align:center;font-family:'Bricolage Grotesque',sans-serif;font-size:11px;font-weight:500;cursor:pointer;transition:background 0.15s,border-color 0.15s;line-height:1.3;}
+  .tile:hover{background:rgba(196,146,42,0.15);border-color:var(--gold);}
+  .tile.selected{background:var(--forest);border-color:var(--gold);color:var(--warm-white);}
+  .play-btn{background:var(--gold);color:var(--near-black);border:none;border-radius:6px;padding:14px 36px;font-family:'IBM Plex Mono',monospace;font-size:12px;letter-spacing:0.1em;text-transform:uppercase;cursor:pointer;display:inline-flex;align-items:center;gap:10px;font-weight:500;}
+  .streak-strip{display:flex;justify-content:center;gap:6px;margin-bottom:32px;}
+  .streak-bar{width:28px;height:36px;border-radius:4px;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);position:relative;overflow:hidden;}
+  .streak-bar.active{background:rgba(196,146,42,0.2);border-color:var(--gold);}
+  .streak-bar.active::after{content:'⚡';position:absolute;bottom:3px;left:50%;transform:translateX(-50%);font-size:14px;}
+  .streak-label{font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:0.12em;text-transform:uppercase;color:var(--sage);text-align:center;margin-bottom:6px;}
+  .cta-strip{background:rgba(28,52,36,0.5);border:1px solid rgba(28,52,36,0.8);border-radius:8px;padding:24px 32px;max-width:560px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;gap:20px;}
+  .cta-strip h3{font-family:'IBM Plex Serif',serif;font-size:16px;margin-bottom:4px;}
+  .cta-strip p{font-size:13px;color:var(--sage);line-height:1.5;}
+  .sub-btn{background:var(--gold);color:var(--near-black);border:none;border-radius:4px;padding:10px 20px;font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:0.08em;text-transform:uppercase;cursor:pointer;white-space:nowrap;}
+</style>
+</head>
+<body>
+<div class="masthead">
+  <div class="brand"><div class="f-mark">F</div><div class="wordmark">Faraday · Daily Challenge</div></div>
+  <a href="/" class="back-link">← Faraday Home</a>
+</div>
+
+<div class="hero">
+  <div class="eyebrow">Free · Daily · Puzzle #1</div>
+  <h1>Think you read<br>the market?</h1>
+  <div class="rule"></div>
+  <p class="sub">Four categories. Sixteen signals. One ranking. The data center market's only daily intelligence puzzle. Every morning. Free forever.</p>
+
+  <!-- Streak display -->
+  <div class="streak-label">Your streak</div>
+  <div class="streak-strip">
+    <div class="streak-bar active"></div>
+    <div class="streak-bar"></div>
+    <div class="streak-bar"></div>
+    <div class="streak-bar"></div>
+    <div class="streak-bar"></div>
+    <div class="streak-bar"></div>
+    <div class="streak-bar"></div>
+  </div>
+
+  <!-- Puzzle preview -->
+  <div class="puzzle-preview">
+    <div class="puzzle-title">Puzzle #1 — The Power Stack</div>
+    <div class="puzzle-meta">Domain: Power Architecture · April 4, 2026</div>
+    <div class="tile-grid">
+      <div class="tile" onclick="this.classList.toggle('selected')">Rack load</div>
+      <div class="tile" onclick="this.classList.toggle('selected')">Rectifier</div>
+      <div class="tile" onclick="this.classList.toggle('selected')">NFPA 70 gap</div>
+      <div class="tile" onclick="this.classList.toggle('selected')">AI Factory</div>
+      <div class="tile" onclick="this.classList.toggle('selected')">PDU output</div>
+      <div class="tile" onclick="this.classList.toggle('selected')">Bus bar</div>
+      <div class="tile" onclick="this.classList.toggle('selected')">Code variance</div>
+      <div class="tile" onclick="this.classList.toggle('selected')">DSX</div>
+      <div class="tile" onclick="this.classList.toggle('selected')">UPS rating</div>
+      <div class="tile" onclick="this.classList.toggle('selected')">Distribution panel</div>
+      <div class="tile" onclick="this.classList.toggle('selected')">Legacy switchgear</div>
+      <div class="tile" onclick="this.classList.toggle('selected')">NVL144</div>
+      <div class="tile" onclick="this.classList.toggle('selected')">Generator capacity</div>
+      <div class="tile" onclick="this.classList.toggle('selected')">Cabinet PSU</div>
+      <div class="tile" onclick="this.classList.toggle('selected')">Utility tariff clause</div>
+      <div class="tile" onclick="this.classList.toggle('selected')">Vera Rubin</div>
+    </div>
+    <button class="play-btn" onclick="alert('Daily Challenge coming soon — subscribe to get notified at launch.')">
+      ⚡ Play Today's Puzzle
+    </button>
+  </div>
+
+  <!-- Subscribe CTA -->
+  <div class="cta-strip">
+    <div>
+      <h3>Get the Faraday 2.0 Intelligent Alert</h3>
+      <p>The Daily Challenge link lands in your Intelligent Alert every morning. Free. No credit card.</p>
+    </div>
+    <button class="sub-btn" onclick="window.location.href='/'">Subscribe free</button>
+  </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Rackl — Chips & Density Intelligence by Faraday</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Serif:ital,wght@0,600;0,700;1,400&family=IBM+Plex+Mono:wght@400;500&family=Bricolage+Grotesque:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{--forest:#1C3424;--gold:#C4922A;--warm-white:#F8F5F0;--near-black:#141210;--sage:#8CA68A;}
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{background:var(--warm-white);font-family:'Bricolage Grotesque',sans-serif;color:var(--near-black);min-height:100vh;}
+  .masthead{background:var(--forest);border-bottom:2px solid var(--gold);padding:14px 40px;display:flex;align-items:center;justify-content:space-between;}
+  .brand{display:flex;align-items:center;gap:12px;}
+  .f-mark{width:32px;height:32px;background:rgba(255,255,255,0.1);border:2px solid var(--gold);border-radius:5px;display:flex;align-items:center;justify-content:center;font-family:'IBM Plex Serif',serif;font-weight:700;font-size:17px;color:var(--warm-white);}
+  .wordmark{font-family:'IBM Plex Serif',serif;font-weight:600;font-size:14px;letter-spacing:0.12em;text-transform:uppercase;color:var(--warm-white);}
+  .back-link{font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--sage);letter-spacing:0.1em;text-decoration:none;}
+  .hero{background:var(--near-black);color:var(--warm-white);padding:60px 40px;}
+  .hero-inner{max-width:780px;margin:0 auto;}
+  .product-tag{font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:0.18em;color:var(--gold);text-transform:uppercase;margin-bottom:16px;}
+  .hero h1{font-family:'IBM Plex Serif',serif;font-weight:700;font-size:clamp(28px,4.5vw,48px);line-height:1.2;margin-bottom:12px;}
+  .hero p{font-size:17px;color:#888;line-height:1.6;max-width:540px;margin-bottom:32px;}
+  .rule{width:60px;height:4px;position:relative;margin-bottom:28px;}
+  .rule::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:rgba(255,255,255,0.1);}
+  .rule::after{content:'';position:absolute;bottom:0;left:0;right:0;height:2px;background:var(--gold);}
+  .content{max-width:780px;margin:0 auto;padding:48px 40px;}
+  .domain-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px;margin-bottom:40px;}
+  .domain-card{background:var(--warm-white);border:1px solid rgba(28,52,36,0.15);border-radius:6px;padding:16px;border-left:3px solid var(--forest);}
+  .dc-label{font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:0.14em;text-transform:uppercase;color:var(--sage);margin-bottom:6px;}
+  .dc-name{font-family:'IBM Plex Serif',serif;font-size:14px;font-weight:600;color:var(--forest);}
+  .signup-form{background:var(--near-black);border-radius:8px;padding:32px;max-width:460px;}
+  .signup-form h3{font-family:'IBM Plex Serif',serif;font-size:18px;color:var(--warm-white);margin-bottom:8px;}
+  .signup-form p{font-size:13px;color:#888;margin-bottom:20px;}
+  .form-row{display:flex;gap:10px;}
+  input[type=email]{flex:1;background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.12);border-radius:4px;padding:12px 14px;color:var(--warm-white);font-family:'IBM Plex Mono',monospace;font-size:13px;}
+  input[type=email]::placeholder{color:rgba(255,255,255,0.25);}
+  input[type=email]:focus{outline:none;border-color:var(--gold);}
+  .submit-btn{background:var(--gold);color:var(--near-black);border:none;border-radius:4px;padding:12px 18px;font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:0.08em;text-transform:uppercase;cursor:pointer;}
+  .form-msg{margin-top:10px;font-family:'IBM Plex Mono',monospace;font-size:11px;color:#888;}
+</style>
+</head>
+<body>
+<div class="masthead">
+  <div class="brand"><div class="f-mark">F</div><div class="wordmark">Faraday · Rackl</div></div>
+  <a href="/" class="back-link">← Faraday Home</a>
+</div>
+<div class="hero">
+  <div class="hero-inner">
+    <div class="product-tag">Domain Intelligence · Chips & Density</div>
+    <h1>The rack is getting heavier.<br>Rackl tells you why.</h1>
+    <div class="rule"></div>
+    <p>GPU generation tracking, NVL cluster deployments, OCP standards shifts, and the density dividend reshaping every data center floor built after 2024.</p>
+  </div>
+</div>
+<div class="content">
+  <div class="domain-grid">
+    <div class="domain-card"><div class="dc-label">Coverage</div><div class="dc-name">NVIDIA GPU Roadmap</div></div>
+    <div class="domain-card"><div class="dc-label">Coverage</div><div class="dc-name">NVL Cluster Deployments</div></div>
+    <div class="domain-card"><div class="dc-label">Coverage</div><div class="dc-name">OCP Standards Watch</div></div>
+    <div class="domain-card"><div class="dc-label">Coverage</div><div class="dc-name">Custom Silicon Signals</div></div>
+    <div class="domain-card"><div class="dc-label">Coverage</div><div class="dc-name">HBM Supply Chain</div></div>
+    <div class="domain-card"><div class="dc-label">Coverage</div><div class="dc-name">Density Dividend Tracker</div></div>
+  </div>
+  <div class="signup-form">
+    <h3>Get the Rackl Intelligence Brief</h3>
+    <p>Free daily chips & density intelligence for infrastructure professionals.</p>
+    <div class="form-row">
+      <input type="email" id="rackl-email" placeholder="your@email.com">
+      <button class="submit-btn" onclick="handleSignup('rackl')">Subscribe</button>
+    </div>
+    <div class="form-msg" id="form-msg"></div>
+  </div>
+</div>
+<script>
+async function handleSignup(ref) {
+  const email = document.getElementById('rackl-email').value.trim();
+  const msg = document.getElementById('form-msg');
+  if (!email || !email.includes('@')) { msg.textContent='Please enter a valid email.'; return; }
+  msg.textContent='Subscribing...';
+  try {
+    const res = await fetch('/api/subscribe', {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({email, ref})
+    });
+    const data = await res.json();
+    if (res.ok) { msg.style.color='#C4922A'; msg.textContent="You're in. Rackl brief arrives tomorrow morning."; }
+    else { msg.textContent = data.error || 'Something went wrong.'; }
+  } catch(e) { msg.textContent='Connection error. Try again.'; }
+}
+</script>
+</body>
+</html>

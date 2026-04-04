@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Faraday Academy Store</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Serif:ital,wght@0,600;0,700;1,400&family=IBM+Plex+Mono:wght@400;500&family=Bricolage+Grotesque:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{--forest:#1C3424;--gold:#C4922A;--warm-white:#F8F5F0;--cream:#EEE6DA;--near-black:#141210;--sage:#8CA68A;}
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{background:var(--warm-white);font-family:'Bricolage Grotesque',sans-serif;color:var(--near-black);min-height:100vh;}
+  .masthead{background:var(--forest);border-bottom:2px solid var(--gold);padding:14px 40px;display:flex;align-items:center;justify-content:space-between;}
+  .brand{display:flex;align-items:center;gap:12px;}
+  .f-mark{width:32px;height:32px;background:rgba(255,255,255,0.1);border:2px solid var(--gold);border-radius:5px;display:flex;align-items:center;justify-content:center;font-family:'IBM Plex Serif',serif;font-weight:700;font-size:17px;color:var(--warm-white);}
+  .wordmark{font-family:'IBM Plex Serif',serif;font-weight:600;font-size:14px;letter-spacing:0.12em;text-transform:uppercase;color:var(--warm-white);}
+  .nav-links{display:flex;gap:20px;align-items:center;}
+  .nav-link{font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--sage);letter-spacing:0.1em;text-decoration:none;}
+  .hero{padding:48px 40px;max-width:820px;margin:0 auto;}
+  .eyebrow{font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:0.18em;color:var(--gold);text-transform:uppercase;margin-bottom:14px;}
+  h1{font-family:'IBM Plex Serif',serif;font-weight:700;font-size:clamp(26px,4vw,40px);line-height:1.2;margin-bottom:10px;}
+  .sub{font-size:16px;color:#666;line-height:1.6;max-width:520px;margin-bottom:40px;}
+  .store-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:20px;max-width:820px;margin:0 auto;padding:0 40px 60px;}
+  .product-card{border:1px solid rgba(28,52,36,0.12);border-radius:8px;overflow:hidden;background:white;}
+  .product-img{height:160px;display:flex;align-items:center;justify-content:center;font-size:48px;}
+  .product-img.green{background:var(--forest);}
+  .product-img.cream{background:var(--cream);}
+  .product-img.dark{background:var(--near-black);}
+  .product-body{padding:18px;}
+  .product-tag{font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:0.14em;text-transform:uppercase;color:var(--sage);margin-bottom:6px;}
+  .product-name{font-family:'IBM Plex Serif',serif;font-size:16px;font-weight:600;margin-bottom:6px;}
+  .product-desc{font-size:12px;color:#888;line-height:1.5;margin-bottom:14px;}
+  .product-footer{display:flex;justify-content:space-between;align-items:center;}
+  .product-price{font-family:'IBM Plex Mono',monospace;font-size:15px;font-weight:500;color:var(--forest);}
+  .add-btn{background:var(--gold);color:var(--near-black);border:none;border-radius:3px;padding:8px 16px;font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:0.08em;text-transform:uppercase;cursor:pointer;}
+  .badge-strip{background:var(--cream);border-radius:8px;padding:24px 28px;max-width:820px;margin:0 auto 40px;display:flex;align-items:center;gap:20px;}
+  .badge-icon{font-size:36px;flex-shrink:0;}
+  .badge-text h3{font-family:'IBM Plex Serif',serif;font-size:16px;margin-bottom:4px;}
+  .badge-text p{font-size:13px;color:#666;line-height:1.5;}
+</style>
+</head>
+<body>
+<div class="masthead">
+  <div class="brand"><div class="f-mark">F</div><div class="wordmark">Faraday Academy Store</div></div>
+  <div class="nav-links">
+    <a href="/academy/" class="nav-link">← Academy</a>
+    <a href="/" class="nav-link">← Home</a>
+  </div>
+</div>
+<div class="hero">
+  <div class="eyebrow">Faraday Academy · Store</div>
+  <h1>Carry the credential.<br>Wear the knowledge.</h1>
+  <p class="sub">Premium merchandise for Faraday Academy graduates and subscribers. Every item carries the Faraday mark — earned, not purchased.</p>
+</div>
+<div style="max-width:820px;margin:0 auto;padding:0 40px 24px;">
+  <div class="badge-strip">
+    <div class="badge-icon">🏅</div>
+    <div class="badge-text">
+      <h3>Faraday Practitioner — Welcome Kit</h3>
+      <p>Automatically shipped to all 301-level certification completers. Includes the Intelligence Fellow pin, branded notebook, and signed certificate of completion.</p>
+    </div>
+  </div>
+</div>
+<div class="store-grid">
+  <div class="product-card">
+    <div class="product-img green">⚡</div>
+    <div class="product-body">
+      <div class="product-tag">Apparel</div>
+      <div class="product-name">Faraday Mark Tee</div>
+      <div class="product-desc">Forest green. Cream F mark. Heavyweight cotton. The badge of the informed.</div>
+      <div class="product-footer">
+        <div class="product-price">$38</div>
+        <button class="add-btn">Add to Cart</button>
+      </div>
+    </div>
+  </div>
+  <div class="product-card">
+    <div class="product-img cream">📓</div>
+    <div class="product-body">
+      <div class="product-tag">Stationery</div>
+      <div class="product-name">Intelligence Notebook</div>
+      <div class="product-desc">A5 hardcover. Forest green. Gold F embossed. 200 pages, dot grid. Faraday's thesis on the inside cover.</div>
+      <div class="product-footer">
+        <div class="product-price">$28</div>
+        <button class="add-btn">Add to Cart</button>
+      </div>
+    </div>
+  </div>
+  <div class="product-card">
+    <div class="product-img dark">🎖️</div>
+    <div class="product-body">
+      <div class="product-tag">Certification</div>
+      <div class="product-name">Practitioner Pin</div>
+      <div class="product-desc">Enamel pin. The Faraday bolt in gold on forest green. Issued to all 301 certification completers.</div>
+      <div class="product-footer">
+        <div class="product-price">Certification only</div>
+        <button class="add-btn" style="background:var(--forest);color:var(--warm-white);">Earn it</button>
+      </div>
+    </div>
+  </div>
+  <div class="product-card">
+    <div class="product-img green">☕</div>
+    <div class="product-body">
+      <div class="product-tag">Drinkware</div>
+      <div class="product-name">Intelligence Mug</div>
+      <div class="product-desc">16oz. Forest green exterior, cream interior. "While others read the news, Faraday reads the market." in Plex Mono.</div>
+      <div class="product-footer">
+        <div class="product-price">$24</div>
+        <button class="add-btn">Add to Cart</button>
+      </div>
+    </div>
+  </div>
+  <div class="product-card">
+    <div class="product-img cream">🎴</div>
+    <div class="product-body">
+      <div class="product-tag">Print</div>
+      <div class="product-name">Nine Domains Print</div>
+      <div class="product-desc">18×24 letterpress. All nine intelligence domains in IBM Plex Serif. Forest on warm white. Limited run.</div>
+      <div class="product-footer">
+        <div class="product-price">$65</div>
+        <button class="add-btn">Add to Cart</button>
+      </div>
+    </div>
+  </div>
+  <div class="product-card">
+    <div class="product-img dark">🧢</div>
+    <div class="product-body">
+      <div class="product-tag">Apparel</div>
+      <div class="product-name">Intelligence Fellow Cap</div>
+      <div class="product-desc">Structured 6-panel. Forest green. Gold F mark. Issued exclusively with the Intelligence Fellow certification.</div>
+      <div class="product-footer">
+        <div class="product-price">Fellow only</div>
+        <button class="add-btn" style="background:var(--forest);color:var(--warm-white);">Earn it</button>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

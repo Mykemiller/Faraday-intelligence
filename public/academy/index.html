@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Faraday Academy — Learn the Data Center Economy</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Serif:ital,wght@0,600;0,700;1,400&family=IBM+Plex+Mono:wght@400;500&family=Bricolage+Grotesque:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{--forest:#1C3424;--gold:#C4922A;--warm-white:#F8F5F0;--cream:#EEE6DA;--near-black:#141210;--sage:#8CA68A;}
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{background:var(--warm-white);font-family:'Bricolage Grotesque',sans-serif;color:var(--near-black);min-height:100vh;}
+  .masthead{background:var(--forest);border-bottom:2px solid var(--gold);padding:14px 40px;display:flex;align-items:center;justify-content:space-between;}
+  .brand{display:flex;align-items:center;gap:12px;}
+  .f-mark{width:32px;height:32px;background:rgba(255,255,255,0.1);border:2px solid var(--gold);border-radius:5px;display:flex;align-items:center;justify-content:center;font-family:'IBM Plex Serif',serif;font-weight:700;font-size:17px;color:var(--warm-white);}
+  .wordmark{font-family:'IBM Plex Serif',serif;font-weight:600;font-size:14px;letter-spacing:0.12em;text-transform:uppercase;color:var(--warm-white);}
+  .back-link{font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--sage);letter-spacing:0.1em;text-decoration:none;}
+  .hero{background:var(--forest);color:var(--warm-white);padding:56px 40px;}
+  .hero-inner{max-width:820px;margin:0 auto;}
+  .product-tag{font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:0.18em;color:var(--gold);text-transform:uppercase;margin-bottom:16px;}
+  .hero h1{font-family:'IBM Plex Serif',serif;font-weight:700;font-size:clamp(26px,4vw,44px);line-height:1.2;margin-bottom:12px;}
+  .hero p{font-size:16px;color:var(--sage);line-height:1.6;max-width:540px;margin-bottom:32px;}
+  .rule{width:60px;height:4px;position:relative;margin-bottom:28px;}
+  .rule::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:rgba(255,255,255,0.15);}
+  .rule::after{content:'';position:absolute;bottom:0;left:0;right:0;height:2px;background:var(--gold);}
+  .content{max-width:820px;margin:0 auto;padding:48px 40px;}
+  .section-label{font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:0.16em;text-transform:uppercase;color:var(--sage);margin-bottom:20px;}
+  .tier-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:14px;margin-bottom:48px;}
+  .tier-card{border:1px solid rgba(28,52,36,0.15);border-radius:8px;padding:22px;background:white;}
+  .tier-card.free{border-top:3px solid var(--gold);}
+  .tier-card.paid{border-top:3px solid var(--forest);}
+  .tier-price{font-family:'IBM Plex Mono',monospace;font-size:22px;font-weight:500;color:var(--forest);margin-bottom:4px;}
+  .tier-name{font-family:'IBM Plex Serif',serif;font-size:16px;font-weight:600;margin-bottom:8px;}
+  .tier-desc{font-size:13px;color:#666;line-height:1.5;margin-bottom:14px;}
+  .tier-cta{display:inline-block;background:var(--gold);color:var(--near-black);padding:9px 18px;border-radius:4px;font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:0.08em;text-transform:uppercase;text-decoration:none;}
+  .tier-cta.outline{background:transparent;border:1px solid var(--forest);color:var(--forest);}
+  .domain-section{background:var(--cream);border-radius:8px;padding:28px;margin-bottom:48px;}
+  .domain-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:10px;margin-top:16px;}
+  .domain-pill{background:white;border:1px solid rgba(28,52,36,0.12);border-radius:5px;padding:10px 14px;font-size:13px;font-weight:500;color:var(--forest);}
+  .domain-pill span{font-family:'IBM Plex Mono',monospace;font-size:9px;color:var(--sage);display:block;margin-bottom:2px;letter-spacing:0.1em;text-transform:uppercase;}
+  .cert-strip{background:var(--forest);color:var(--warm-white);border-radius:8px;padding:28px;display:flex;justify-content:space-between;align-items:center;gap:20px;}
+  .cert-strip h3{font-family:'IBM Plex Serif',serif;font-size:18px;margin-bottom:6px;}
+  .cert-strip p{font-size:13px;color:var(--sage);line-height:1.5;}
+  .cert-btn{background:var(--gold);color:var(--near-black);padding:11px 22px;border-radius:4px;font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:0.08em;text-transform:uppercase;text-decoration:none;white-space:nowrap;}
+</style>
+</head>
+<body>
+<div class="masthead">
+  <div class="brand"><div class="f-mark">F</div><div class="wordmark">Faraday Academy</div></div>
+  <a href="/" class="back-link">← Faraday Home</a>
+</div>
+<div class="hero">
+  <div class="hero-inner">
+    <div class="product-tag">Learning Layer · All Tiers</div>
+    <h1>Turn curiosity into conviction.<br>Learn the data center economy.</h1>
+    <div class="rule"></div>
+    <p>The first structured learning environment built exclusively for the AI data center market. Nine intelligence domains. Four levels. One certification that actually signals what you know now — not what you knew five years ago.</p>
+  </div>
+</div>
+<div class="content">
+  <div class="section-label">Choose your path</div>
+  <div class="tier-grid">
+    <div class="tier-card free">
+      <div class="tier-price">Free</div>
+      <div class="tier-name">101 Foundations</div>
+      <div class="tier-desc">Pick one domain you're curious about. Get the full 101-level course. No credit card. No obligation.</div>
+      <a href="#enroll" class="tier-cta">Start free</a>
+    </div>
+    <div class="tier-card paid">
+      <div class="tier-price">$9/mo</div>
+      <div class="tier-name">All 9 Domains — 101</div>
+      <div class="tier-desc">Unlock the full 101 catalog across all nine intelligence domains. The data center economy in one pass.</div>
+      <a href="#enroll" class="tier-cta outline">Enroll</a>
+    </div>
+    <div class="tier-card paid">
+      <div class="tier-price">$29/mo</div>
+      <div class="tier-name">201 Applications</div>
+      <div class="tier-desc">Signal reading, real-world mechanics, and case studies. Included in Signal tier subscription.</div>
+      <a href="#enroll" class="tier-cta outline">Enroll</a>
+    </div>
+    <div class="tier-card paid">
+      <div class="tier-price">$99/mo</div>
+      <div class="tier-name">301 Practitioner</div>
+      <div class="tier-desc">Advanced analysis, scenario modeling, and certification eligibility. Premier tier access.</div>
+      <a href="#enroll" class="tier-cta outline">Enroll</a>
+    </div>
+  </div>
+  <div class="domain-section">
+    <div class="section-label">Nine intelligence domains</div>
+    <div class="domain-grid">
+      <div class="domain-pill"><span>Domain 01</span>Chips & Density</div>
+      <div class="domain-pill"><span>Domain 02</span>Power Architecture</div>
+      <div class="domain-pill"><span>Domain 03</span>Grid & Regulatory</div>
+      <div class="domain-pill"><span>Domain 04</span>M&A & Capital Markets</div>
+      <div class="domain-pill"><span>Domain 05</span>Hyperscaler Activity</div>
+      <div class="domain-pill"><span>Domain 06</span>New Entrants</div>
+      <div class="domain-pill"><span>Domain 07</span>Cooling & Water Tech</div>
+      <div class="domain-pill"><span>Domain 08</span>People & Signals</div>
+      <div class="domain-pill"><span>Domain 09</span>Orchestration & Control Plane</div>
+    </div>
+  </div>
+  <div class="cert-strip" id="enroll">
+    <div>
+      <h3>Faraday Practitioner Certification</h3>
+      <p>The only credential in the sector that certifies live intelligence reading ability — not historical knowledge. Submit 3 briefs over 90 days based on current signals. Scored by AI. Peer reviewed. Valid 12 months.</p>
+    </div>
+    <a href="/" class="cert-btn">Learn more</a>
+  </div>
+</div>
+</body>
+</html>
