@@ -1,0 +1,31 @@
+{
+  "version": 2,
+  "builds": [
+    {
+      "src": "api/**/*.js",
+      "use": "@vercel/node"
+    },
+    {
+      "src": "public/**",
+      "use": "@vercel/static"
+    }
+  ],
+  "routes": [
+    { "src": "/api/subscribe/?", "dest": "/api/subscribe.js" },
+    { "src": "/wattl", "dest": "/public/wattl/index.html" },
+    { "src": "/wattl/(.*)", "dest": "/public/wattl/$1" },
+    { "src": "/rackl", "dest": "/public/rackl/index.html" },
+    { "src": "/rackl/(.*)", "dest": "/public/rackl/$1" },
+    { "src": "/academy", "dest": "/public/academy/index.html" },
+    { "src": "/academy/(.*)", "dest": "/public/academy/$1" },
+    { "src": "/academy-store", "dest": "/public/academy-store/index.html" },
+    { "src": "/academy-store/(.*)", "dest": "/public/academy-store/$1" },
+    { "src": "/daily-challenge", "dest": "/public/daily-challenge/index.html" },
+    { "src": "/daily-challenge/(.*)", "dest": "/public/daily-challenge/$1" },
+    { "src": "/challenge/rackl", "dest": "/public/challenge/rackl/index.html" },
+    { "src": "/challenge/rackl/(.*)", "dest": "/public/challenge/rackl/$1" },
+    { "src": "/challenge", "dest": "/public/challenge/index.html" },
+    { "src": "/challenge/(.*)", "dest": "/public/challenge/$1" },
+    { "src": "/(.*)", "dest": "/public/$1" }
+  ]
+}

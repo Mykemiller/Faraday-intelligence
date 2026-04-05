@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Rackl — Daily Challenge | Faraday</title>
+  <meta name="description" content="Seven daily knowledge games built from Faraday's AI infrastructure intelligence catalog. Free, fresh, shareable. Test your edge every day."/>
+  <meta property="og:title" content="Rackl — Daily Challenge | Faraday"/>
+  <meta property="og:description" content="Seven daily knowledge games. Group tiles. Decode terms. Rank the stack. Free to play."/>
+  <meta property="og:url" content="https://faraday-intelligence.ai/challenge"/>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Serif:wght@700&family=Bricolage+Grotesque:wght@400;500&family=IBM+Plex+Mono:wght@300;400;500&display=swap"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { background: #0A0E0B; color: #F8F5F0; font-family: 'Bricolage Grotesque', sans-serif; }
+    @keyframes tileUp { from { opacity:0; transform:translateY(16px) } to { opacity:1; transform:translateY(0) } }
+    @keyframes fadeUp { from { opacity:0; transform:translateY(8px) } to { opacity:1; transform:translateY(0) } }
+    ::-webkit-scrollbar { width:4px; }
+    ::-webkit-scrollbar-thumb { background:rgba(138,166,138,0.1); border-radius:2px; }
+    a { text-decoration: none; }
+  </style>
+</head>
+<body>
+  <div id="root"></div>
+  <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <script type="text/babel">
+    const { useState, useEffect } = React;
+
+    const F = {
+      bg:"#0A0E0B", surface:"#0f1510", forest:"#1C3424",
+      gold:"#C4922A", warm:"#F8F5F0", sage:"#8CA68A",
+      border:"rgba(138,166,138,0.1)",
+      serif:"'IBM Plex Serif', serif",
+      mono:"'IBM Plex Mono', monospace",
+      body:"'Bricolage Grotesque', sans-serif",
+    };
+
+    const NEON = {
+      rackl:      { p:"#00FFB2", s:"#FF6B00", t:"#FFE600" },
+      signalDrop: { p:"#00D4FF", s:"#FF00AA", t:"#FFE600" },
+      theStack:   { p:"#FF6B00", s:"#FFE600", t:"#FF0066" },
+      circuit:    { p:"#39FF14", s:"#FF003C", t:"#FFE600" },
+      theBrief:   { p:"#FF00AA", s:"#00D4FF", t:"#FFE600" },
+      darkFiber:  { p:"#BF5FFF", s:"#00FFB2", t:"#FF6B00" },
+      frequency:  { p:"#FFE600", s:"#FF6B00", t:"#00D4FF" },
+    };
+
+    const RacklIcon = () => (
+      <svg viewBox="0 0 56 56" width="52" height="52">
+        <rect x="3" y="3" width="23" height="23" rx="4" fill="#00FFB2"/>
+        <rect x="30" y="3" width="23" height="23" rx="4" fill="#FF6B00"/>
+        <rect x="3" y="30" width="23" height="23" rx="4" fill="#FFE600"/>
+        <rect x="30" y="30" width="23" height="23" rx="4" fill="#0a1a10" stroke="#00FFB2" strokeWidth="1.5" strokeDasharray="3 2"/>
+        <text x="41.5" y="47" textAnchor="middle" fill="#00FFB2" fontSize="15" fontWeight="800" fontFamily="IBM Plex Mono, monospace">?</text>
+      </svg>
+    );
+
+    const SignalDropIcon = () => (
+      <svg viewBox="0 0 56 56" width="52" height="52">
+        {[0,1,2,3,4].map(i=>(
+          <rect key={i} x={3+i*11} y="3" width="9" height="9" rx="2"
+            fill={i===0?"#00D4FF":i===1?"#FF00AA":i===2?"#00D4FF":"#0a1520"}
+            stroke={i===3||i===4?"#1a3040":undefined} strokeWidth={i===3||i===4?1:undefined}/>
+        ))}
+        {[0,1,2,3,4].map(i=>(
+          <rect key={i} x={3+i*11} y="16" width="9" height="9" rx="2"
+            fill={i===1?"#FF00AA":i===2?"#00D4FF":"#0a1520"}
+            stroke={i!==1&&i!==2?"#1a3040":undefined} strokeWidth={i!==1&&i!==2?1:undefined}/>
+        ))}
+        {[0,1,2,3,4].map(i=>(
+          <rect key={i} x={3+i*11} y="29" width="9" height="9" rx="2" fill="#060e0f" stroke="#0a2030" strokeWidth="1"/>
+        ))}
+        <path d="M8 46 Q28 40 48 46" stroke="#00D4FF" strokeWidth="2.5" strokeLinecap="round" fill="none"/>
+        <path d="M16 50 Q28 45 40 50" stroke="#FF00AA" strokeWidth="2" strokeLinecap="round" fill="none" opacity="0.6"/>
+        <circle cx="28" cy="52" r="2" fill="#00D4FF"/>
+      </svg>
+    );
+
+    const StackIcon = () => (
+      <svg viewBox="0 0 56 56" width="52" height="52">
+        <rect x="3" y="4"  width="50" height="11" rx="3" fill="#FF6B00"/>
+        <rect x="3" y="18" width="38" height="11" rx="3" fill="#FFE600"/>
+        <rect x="3" y="32" width="26" height="11" rx="3" fill="#FF0066"/>
+        <rect x="3" y="46" width="16" height="8"  rx="3" fill="#AA0028" opacity="0.7"/>
+        <path d="M43 36 L48 31 L53 36" stroke="#FF6B00" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" fill="none"/>
+        <path d="M43 42 L48 47 L53 42" stroke="#FF6B00" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" fill="none"/>
+      </svg>
+    );
+
+    const CircuitIcon = () => (
+      <svg viewBox="0 0 56 56" width="52" height="52">
+        <path d="M3 32 L12 32 L16 10 L22 52 L28 18 L34 38 L38 32 L53 32"
+          stroke="#39FF14" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" fill="none"/>
+        <rect x="3" y="3" width="18" height="8" rx="2" fill="#39FF14"/>
+        <text x="12" y="9.5" textAnchor="middle" fill="#011A00" fontSize="5.5" fontWeight="800" fontFamily="IBM Plex Mono, monospace">TRUE</text>
+        <rect x="35" y="3" width="18" height="8" rx="2" fill="#FF003C"/>
+        <text x="44" y="9.5" textAnchor="middle" fill="#1A0010" fontSize="5" fontWeight="800" fontFamily="IBM Plex Mono, monospace">FALSE</text>
+        <circle cx="53" cy="32" r="3" fill="#39FF14"/>
+        <circle cx="3"  cy="32" r="3" fill="#39FF14" opacity="0.5"/>
+      </svg>
+    );
+
+    const BriefIcon = () => (
+      <svg viewBox="0 0 56 56" width="52" height="52">
+        <rect x="6" y="3" width="38" height="48" rx="4" fill="#12001a"/>
+        <rect x="6" y="3" width="38" height="4" rx="2" fill="#FF00AA"/>
+        <rect x="12" y="13" width="26" height="4" rx="2" fill="#FF00AA"/>
+        <rect x="12" y="21" width="28" height="2.5" rx="1.2" fill="#00D4FF" opacity="0.7"/>
+        <rect x="12" y="26" width="24" height="2.5" rx="1.2" fill="#00D4FF" opacity="0.5"/>
+        <rect x="12" y="31" width="20" height="2.5" rx="1.2" fill="#00D4FF" opacity="0.4"/>
+        <rect x="12" y="36" width="16" height="2.5" rx="1.2" fill="#00D4FF" opacity="0.3"/>
+        <circle cx="17" cy="45" r="4" fill="#FF00AA"/>
+        <circle cx="28" cy="45" r="4" fill="#00D4FF"/>
+        <circle cx="39" cy="45" r="4" fill="#FFE600"/>
+        <text x="17" y="47.5" textAnchor="middle" fill="#12001a" fontSize="5" fontWeight="800" fontFamily="IBM Plex Mono, monospace">Q1</text>
+        <text x="28" y="47.5" textAnchor="middle" fill="#00111A" fontSize="5" fontWeight="800" fontFamily="IBM Plex Mono, monospace">Q2</text>
+        <text x="39" y="47.5" textAnchor="middle" fill="#1A1500" fontSize="5" fontWeight="800" fontFamily="IBM Plex Mono, monospace">Q3</text>
+      </svg>
+    );
+
+    const DarkFiberIcon = () => (
+      <svg viewBox="0 0 56 56" width="52" height="52">
+        <circle cx="10" cy="12" r="6" fill="#BF5FFF"/>
+        <circle cx="10" cy="28" r="6" fill="#00FFB2"/>
+        <circle cx="10" cy="44" r="6" fill="#FF6B00"/>
+        <circle cx="46" cy="12" r="6" fill="#0D0019" stroke="#00FFB2" strokeWidth="2"/>
+        <circle cx="46" cy="28" r="6" fill="#0D0019" stroke="#FF6B00" strokeWidth="2"/>
+        <circle cx="46" cy="44" r="6" fill="#0D0019" stroke="#BF5FFF" strokeWidth="2"/>
+        <line x1="16" y1="12" x2="40" y2="28" stroke="#BF5FFF" strokeWidth="2" strokeDasharray="4 2" opacity="0.9"/>
+        <line x1="16" y1="28" x2="40" y2="44" stroke="#00FFB2" strokeWidth="2" strokeDasharray="4 2" opacity="0.9"/>
+        <line x1="16" y1="44" x2="40" y2="12" stroke="#FF6B00" strokeWidth="2" strokeDasharray="4 2" opacity="0.7"/>
+        <circle cx="28" cy="20" r="2" fill="#BF5FFF" opacity="0.6"/>
+        <circle cx="28" cy="36" r="2" fill="#00FFB2" opacity="0.6"/>
+      </svg>
+    );
+
+    const FrequencyIcon = () => {
+      const bars=[{x:3,h:16,c:"#332200"},{x:10,h:28,c:"#4a3300"},{x:17,h:44,c:"#FF6B00"},{x:24,h:52,c:"#FFE600"},{x:31,h:48,c:"#FFE600"},{x:38,h:32,c:"#FF6B00"},{x:45,h:18,c:"#4a3300"}];
+      return (
+        <svg viewBox="0 0 56 56" width="52" height="52">
+          {bars.map(({x,h,c},i)=><rect key={i} x={x} y={56-h} width="6" height={h} rx="2" fill={c}/>)}
+          {["A","B","C","D"].map((l,i)=>(
+            <g key={l}>
+              <rect x={3+i*14} y="1" width="11" height="7" rx="2" fill={i===2?"#FFE600":"#1a1200"} stroke={i===2?"none":"#2a2000"} strokeWidth="0.5"/>
+              <text x={8.5+i*14} y="7" textAnchor="middle" fill={i===2?"#1A1500":"#3a2a00"} fontSize="5" fontWeight="800" fontFamily="IBM Plex Mono, monospace">{l}</text>
+            </g>
+          ))}
+          <circle cx="27.5" cy="9" r="4" fill="#FFE600"/>
+          <path d="M25 9 L27 11 L31 7" stroke="#1A1500" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" fill="none"/>
+        </svg>
+      );
+    };
+
+    const ICONS = { rackl:RacklIcon, "signal-drop":SignalDropIcon, "the-stack":StackIcon, circuit:CircuitIcon, "the-brief":BriefIcon, "dark-fiber":DarkFiberIcon, frequency:FrequencyIcon };
+
+    const PUZZLES = [
+      { id:"rackl",       name:"Rackl",       status:"live", eta:null,        hook:"Group the tiles. Find the signal.",     neon:"#00FFB2", href:"/challenge/rackl" },
+      { id:"signal-drop", name:"Signal Drop", status:"soon", eta:"May 2026",  hook:"Decode the term. Letter by letter.",    neon:"#00D4FF" },
+      { id:"the-stack",   name:"The Stack",   status:"soon", eta:"May 2026",  hook:"Rank it right. Beat the clock.",        neon:"#FF6B00" },
+      { id:"circuit",     name:"Circuit",     status:"soon", eta:"June 2026", hook:"True or false. Fast as you can.",       neon:"#39FF14" },
+      { id:"the-brief",   name:"The Brief",   status:"soon", eta:"June 2026", hook:"Read the intel. Answer the questions.", neon:"#FF00AA" },
+      { id:"dark-fiber",  name:"Dark Fiber",  status:"soon", eta:"July 2026", hook:"Match the term. Beat the timer.",       neon:"#BF5FFF" },
+      { id:"frequency",   name:"Frequency",   status:"soon", eta:"July 2026", hook:"5 questions. 30 seconds each.",        neon:"#FFE600" },
+    ];
+
+    const BOARD=[
+      {rank:1,h:"JM_DataOps",   s:147,streak:47},
+      {rank:2,h:"SarahK_Infra", s:134,streak:41},
+      {rank:3,h:"TomR_CapMkts", s:122,streak:39},
+      {rank:4,h:"priya.nair",   s:118,streak:36},
+      {rank:5,h:"DCarroll_PE",  s:110,streak:33},
+    ];
+
+    function getOrCreateId(){try{let id=localStorage.getItem("faraday_pid");if(!id){id="anon_"+Math.random().toString(36).slice(2,10);localStorage.setItem("faraday_pid",id);}return id;}catch{return"anon_demo";}}
+    function loadPlayer(){try{const r=localStorage.getItem("faraday_ps");return r?JSON.parse(r):null;}catch{return null;}}
+    function savePlayer(s){try{localStorage.setItem("faraday_ps",JSON.stringify(s));}catch{}}
+
+    function Countdown(){
+      const[t,setT]=useState({h:0,m:0,s:0});
+      useEffect(()=>{
+        const tick=()=>{const now=new Date();const next=new Date(Date.UTC(now.getUTCFullYear(),now.getUTCMonth(),now.getUTCDate()+1));const d=next-now;setT({h:Math.floor(d/3600000),m:Math.floor((d%3600000)/60000),s:Math.floor((d%60000)/1000)});};
+        tick();const iv=setInterval(tick,1000);return()=>clearInterval(iv);
+      },[]);
+      const p=n=>String(n).padStart(2,"0");
+      return(
+        <div style={{textAlign:"right"}}>
+          <div style={{fontFamily:F.mono,fontSize:"9px",color:"#2a4030",letterSpacing:"0.14em",marginBottom:"3px"}}>NEXT PUZZLE</div>
+          <div style={{fontFamily:F.mono,fontSize:"18px",fontWeight:500,color:F.gold,letterSpacing:"0.05em"}}>
+            {p(t.h)}<span style={{color:"#1a3020",margin:"0 2px"}}>:</span>{p(t.m)}<span style={{color:"#1a3020",margin:"0 2px"}}>:</span>{p(t.s)}
+          </div>
+        </div>
+      );
+    }
+
+    function SignInBanner({onDismiss}){
+      return(
+        <div style={{background:"linear-gradient(135deg,#0d1f14,#0a0e0b)",border:`1px solid ${F.gold}44`,borderRadius:"14px",padding:"20px 24px",display:"flex",alignItems:"center",gap:"20px",marginBottom:"24px",animation:"fadeUp 0.5s ease both"}}>
+          <div style={{fontSize:"26px",flexShrink:0}}>🔐</div>
+          <div style={{flex:1}}>
+            <div style={{fontFamily:F.serif,fontSize:"15px",fontWeight:700,color:F.warm,marginBottom:"4px"}}>Sign in to track your progress</div>
+            <div style={{fontSize:"12px",color:"#3a6040",lineHeight:1.5}}>Scores and streaks are saved locally right now. Sign in to sync across devices, appear on the leaderboard, and challenge your team.</div>
+          </div>
+          <div style={{display:"flex",gap:"8px",flexShrink:0}}>
+            <button onClick={onDismiss} style={{fontFamily:F.mono,fontSize:"11px",letterSpacing:"0.08em",background:"transparent",color:"#2a4030",border:"1px solid #1a3020",borderRadius:"6px",padding:"8px 12px",cursor:"pointer"}}>LATER</button>
+            <a href="/sign-in"><button style={{fontFamily:F.mono,fontSize:"11px",letterSpacing:"0.08em",fontWeight:600,background:F.gold,color:F.forest,border:"none",borderRadius:"6px",padding:"8px 16px",cursor:"pointer"}}>SIGN IN →</button></a>
+          </div>
+        </div>
+      );
+    }
+
+    function PlayerStrip({player,isAnon}){
+      if(!player)return null;
+      return(
+        <div style={{background:F.surface,border:`1px solid ${F.border}`,borderRadius:"14px",padding:"16px 22px",display:"grid",gridTemplateColumns:"1fr auto",gap:"16px",alignItems:"center",marginBottom:"24px",animation:"fadeUp 0.45s ease both",animationDelay:"0.1s"}}>
+          <div style={{display:"flex",gap:"24px",alignItems:"center",flexWrap:"wrap"}}>
+            <div>
+              <div style={{fontFamily:F.serif,fontSize:"15px",fontWeight:700,color:F.warm,letterSpacing:"-0.02em"}}>{player.handle||"Anonymous Player"}</div>
+              {isAnon&&<div style={{fontFamily:F.mono,fontSize:"10px",color:"#1a3020",marginTop:"2px",letterSpacing:"0.08em"}}>LOCAL ONLY · <a href="/sign-in" style={{color:F.gold}}>SIGN IN TO SYNC</a></div>}
+            </div>
+            <div style={{width:"1px",height:"28px",background:F.border,flexShrink:0}}/>
+            {[{l:"STREAK",v:player.streak>0?`🔥 ${player.streak}d`:"–"},{l:"TOTAL PTS",v:player.totalScore>0?player.totalScore.toLocaleString():"–"},{l:"BADGES",v:player.badges.length>0?player.badges.join(" "):"–"}].map(({l,v})=>(
+              <div key={l}>
+                <div style={{fontFamily:F.mono,fontSize:"9px",color:"#2a4030",letterSpacing:"0.14em",marginBottom:"3px"}}>{l}</div>
+                <div style={{fontFamily:F.mono,fontSize:"14px",fontWeight:500,color:v==="–"?"#1a3020":F.warm}}>{v}</div>
+              </div>
+            ))}
+          </div>
+          <Countdown/>
+        </div>
+      );
+    }
+
+    function PuzzleTile({puzzle,playerData}){
+      const[hovered,setHovered]=useState(false);
+      const[notified,setNotified]=useState(false);
+      const live=puzzle.status==="live";
+      const played=playerData?.played;
+      const Icon=ICONS[puzzle.id];
+      const neon=puzzle.neon;
+      return(
+        <div style={{animation:"tileUp 0.45s ease both"}} onMouseEnter={()=>setHovered(true)} onMouseLeave={()=>setHovered(false)}>
+          <div style={{background:played?neon+"08":hovered&&live?neon+"0c":F.surface,border:`1px solid ${hovered&&live?neon+"77":played?neon+"33":F.border}`,borderRadius:"16px",padding:"20px",transition:"all 0.18s ease",transform:hovered&&live?"translateY(-4px)":"none",boxShadow:hovered&&live?`0 16px 40px ${neon}18`:"none",position:"relative",overflow:"hidden",minHeight:"210px",display:"flex",flexDirection:"column"}}>
+            {!live&&(
+              <div style={{position:"absolute",inset:0,borderRadius:"16px",background:"rgba(10,14,11,0.6)",backdropFilter:"blur(2px)",zIndex:2,display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",gap:"10px"}}>
+                <div style={{fontFamily:F.mono,fontSize:"10px",color:neon,letterSpacing:"0.16em",fontWeight:600,textShadow:`0 0 12px ${neon}88`}}>{puzzle.eta?.toUpperCase()}</div>
+                <div style={{width:"24px",height:"1px",background:neon,opacity:0.5}}/>
+                <button onClick={()=>setNotified(true)} style={{fontFamily:F.mono,fontSize:"10px",letterSpacing:"0.1em",background:notified?neon+"18":"transparent",color:notified?neon:"#2a4030",border:`1px solid ${notified?neon+"55":"#1a3020"}`,borderRadius:"20px",padding:"5px 14px",cursor:"pointer",transition:"all 0.2s"}}>{notified?"✓ NOTIFIED":"NOTIFY ME"}</button>
+              </div>
+            )}
+            {played&&(
+              <div style={{position:"absolute",top:"14px",right:"14px",width:"22px",height:"22px",borderRadius:"50%",background:neon+"20",border:`1px solid ${neon}55`,display:"flex",alignItems:"center",justifyContent:"center"}}>
+                <span style={{fontSize:"11px",color:neon}}>✓</span>
+              </div>
+            )}
+            <div style={{marginBottom:"14px",flexShrink:0}}>{Icon&&<Icon/>}</div>
+            <div style={{fontFamily:F.serif,fontSize:"17px",fontWeight:700,color:live?F.warm:"#1a3020",letterSpacing:"-0.02em",marginBottom:"3px"}}>{puzzle.name}</div>
+            <div style={{fontFamily:F.mono,fontSize:"10px",letterSpacing:"0.08em",color:live?neon:"#1a2a1a",textShadow:live&&hovered?`0 0 8px ${neon}66`:"none",marginBottom:"8px",transition:"text-shadow 0.2s"}}>{puzzle.hook}</div>
+            <div style={{flex:1}}/>
+            {live&&(
+              <div style={{marginTop:"12px",paddingTop:"12px",borderTop:`1px solid ${F.border}`}}>
+                {played?(
+                  <div style={{display:"flex",justifyContent:"space-between",alignItems:"center"}}>
+                    <div style={{fontFamily:F.mono,fontSize:"11px",letterSpacing:"0.06em",color:neon,background:neon+"15",border:`1px solid ${neon}33`,padding:"4px 10px",borderRadius:"20px"}}>{playerData.score} pts today</div>
+                    <a href={puzzle.href} style={{fontFamily:F.mono,fontSize:"10px",letterSpacing:"0.08em",color:"#2a4030"}}>REVIEW →</a>
+                  </div>
+                ):(
+                  <a href={puzzle.href}>
+                    <div style={{fontFamily:F.mono,fontSize:"12px",letterSpacing:"0.1em",fontWeight:600,color:F.bg,background:neon,borderRadius:"8px",padding:"10px",textAlign:"center",boxShadow:`0 4px 20px ${neon}44`}}>▶ PLAY NOW</div>
+                  </a>
+                )}
+              </div>
+            )}
+          </div>
+        </div>
+      );
+    }
+
+    function Sidebar({player,isAnon}){
+      return(
+        <div style={{display:"flex",flexDirection:"column",gap:"14px"}}>
+          <div style={{background:F.surface,border:`1px solid ${F.border}`,borderRadius:"14px",padding:"18px"}}>
+            <div style={{fontFamily:F.mono,fontSize:"9px",color:"#2a4030",letterSpacing:"0.14em",marginBottom:"14px"}}>TODAY'S LEADERBOARD</div>
+            <div style={{display:"flex",flexDirection:"column",gap:"8px"}}>
+              {BOARD.map(p=>(
+                <div key={p.rank} style={{display:"grid",gridTemplateColumns:"18px 18px 1fr 40px 34px",gap:"6px",alignItems:"center",padding:"5px 6px",borderRadius:"6px"}}>
+                  <span style={{fontFamily:F.mono,fontSize:"10px",color:p.rank<=3?F.gold:"#1a3020"}}>#{p.rank}</span>
+                  <span style={{fontSize:"12px"}}>{p.rank===1?"🏆":p.rank===2?"🥈":p.rank===3?"🥉":""}</span>
+                  <span style={{fontFamily:F.mono,fontSize:"12px",color:"#4a7060"}}>{p.h}</span>
+                  <span style={{fontFamily:F.mono,fontSize:"11px",color:"#2a5040",textAlign:"right"}}>{p.s}</span>
+                  <span style={{fontFamily:F.mono,fontSize:"10px",color:"#1a3020",textAlign:"right"}}>🔥{p.streak}</span>
+                </div>
+              ))}
+            </div>
+            <div style={{marginTop:"12px",paddingTop:"10px",borderTop:`1px solid ${F.border}`,fontFamily:F.mono,fontSize:"10px",textAlign:"center"}}>
+              {isAnon?<a href="/sign-in" style={{color:F.gold}}>Sign in to appear →</a>:<a href="/challenge/leaderboard" style={{color:F.gold}}>FULL BOARD →</a>}
+            </div>
+          </div>
+          <div style={{background:F.surface,border:`1px solid ${F.border}`,borderRadius:"14px",padding:"18px",textAlign:"center"}}>
+            <div style={{fontSize:"28px",marginBottom:"6px"}}>{(player?.streak||0)>0?"🔥":"⬜"}</div>
+            <div style={{fontFamily:"'IBM Plex Serif',serif",fontSize:"22px",fontWeight:700,color:(player?.streak||0)>0?F.gold:"#1a3020",letterSpacing:"-0.02em",marginBottom:"3px"}}>{player?.streak||0} days</div>
+            <div style={{fontFamily:F.mono,fontSize:"9px",color:"#2a4030",letterSpacing:"0.12em",marginBottom:"14px"}}>CURRENT STREAK</div>
+            <div style={{display:"flex",justifyContent:"space-between",marginBottom:"5px"}}>
+              <span style={{fontFamily:F.mono,fontSize:"9px",color:"#1a3020"}}>NEXT BADGE</span>
+              <span style={{fontFamily:F.mono,fontSize:"9px",color:"#2a4030"}}>⚡ at 7d</span>
+            </div>
+            <div style={{height:"4px",background:"#0a1008",borderRadius:"2px",overflow:"hidden"}}>
+              <div style={{height:"100%",width:`${Math.min(100,((player?.streak||0)/7)*100)}%`,background:F.gold,borderRadius:"2px",boxShadow:`0 0 8px ${F.gold}88`,transition:"width 1.2s ease"}}/>
+            </div>
+          </div>
+          <div style={{background:"rgba(28,52,36,0.2)",border:"1px solid rgba(138,166,138,0.1)",borderRadius:"14px",padding:"16px 18px"}}>
+            <div style={{fontFamily:F.mono,fontSize:"9px",color:"#2a4030",letterSpacing:"0.12em",marginBottom:"8px"}}>🎓 ACADEMY</div>
+            <div style={{fontSize:"12px",color:"#3a6040",lineHeight:1.6,marginBottom:"10px"}}>Struggling on a domain? There's a course for that. 20 minutes.</div>
+            <a href="/academy" style={{display:"block",textAlign:"center",fontFamily:F.mono,fontSize:"10px",letterSpacing:"0.1em",color:"#8CA68A",border:"1px solid rgba(138,166,138,0.2)",borderRadius:"6px",padding:"7px"}}>EXPLORE COURSES →</a>
+          </div>
+        </div>
+      );
+    }
+
+    function App(){
+      const[player,setPlayer]=useState(null);
+      const[isAnon,setIsAnon]=useState(true);
+      const[showBanner,setShowBanner]=useState(false);
+      const[ready,setReady]=useState(false);
+
+      useEffect(()=>{
+        const id=getOrCreateId();
+        let state=loadPlayer();
+        if(!state){
+          state={id,handle:null,streak:14,longestStreak:14,totalScore:8340,badges:["🔥","⚡"],puzzlesPlayed:{rackl:{played:true,score:84}},isLoggedIn:false};
+          savePlayer(state);
+        }
+        setPlayer(state);
+        setIsAnon(!state.isLoggedIn);
+        if(!state.isLoggedIn){const d=localStorage.getItem("faraday_banner_dismissed");if(!d)setTimeout(()=>setShowBanner(true),700);}
+        setReady(true);
+      },[]);
+
+      const dismissBanner=()=>{setShowBanner(false);try{localStorage.setItem("faraday_banner_dismissed","1");}catch{}};
+
+      if(!ready)return<div style={{minHeight:"100vh",background:F.bg,display:"flex",alignItems:"center",justifyContent:"center"}}><span style={{fontFamily:F.mono,fontSize:"11px",color:"#1a3020",letterSpacing:"0.12em"}}>LOADING</span></div>;
+
+      return(
+        <div style={{minHeight:"100vh",background:F.bg,color:F.warm}}>
+          <nav style={{borderBottom:`1px solid ${F.border}`,padding:"0 28px",display:"flex",justifyContent:"space-between",alignItems:"center",height:"54px",background:"rgba(10,14,11,0.97)",backdropFilter:"blur(12px)",position:"sticky",top:0,zIndex:50}}>
+            <div style={{display:"flex",alignItems:"center",gap:"14px"}}>
+              <a href="/" style={{display:"flex",alignItems:"center",gap:"8px"}}>
+                <div style={{width:"26px",height:"26px",borderRadius:"5px",background:"linear-gradient(135deg,#C4922A,#8CA68A)",display:"flex",alignItems:"center",justifyContent:"center",fontFamily:"'IBM Plex Serif',serif",fontSize:"11px",fontWeight:700,color:"#1C3424"}}>F</div>
+                <span style={{fontFamily:"'IBM Plex Serif',serif",fontSize:"13px",fontWeight:700,color:"#2a4030",letterSpacing:"-0.01em"}}>Faraday</span>
+              </a>
+              <span style={{color:"#1a2a1a",fontSize:"15px"}}>/</span>
+              <span style={{fontFamily:F.mono,fontSize:"13px",fontWeight:500,color:F.warm,letterSpacing:"0.04em"}}>Rackl</span>
+            </div>
+            <div style={{display:"flex",alignItems:"center",gap:"14px"}}>
+              <a href="/academy" style={{fontFamily:F.mono,fontSize:"11px",letterSpacing:"0.08em",color:"#2a4030"}}>ACADEMY</a>
+              {isAnon?<a href="/sign-in" style={{fontFamily:F.mono,fontSize:"11px",letterSpacing:"0.08em",color:F.gold,border:`1px solid ${F.gold}44`,padding:"7px 14px",borderRadius:"5px"}}>SIGN IN</a>:<div style={{fontFamily:F.mono,fontSize:"11px",letterSpacing:"0.08em",color:"#8CA68A",background:"rgba(138,166,138,0.1)",border:"1px solid rgba(138,166,138,0.2)",padding:"5px 12px",borderRadius:"20px"}}>● {player?.handle||"anon"}</div>}
+              <a href="/subscribe" style={{fontFamily:F.mono,fontSize:"11px",letterSpacing:"0.08em",fontWeight:600,color:"#1C3424",background:"#C4922A",padding:"7px 14px",borderRadius:"5px"}}>GET THE ALERT</a>
+            </div>
+          </nav>
+          <div style={{padding:"28px 28px 64px",maxWidth:"1100px",margin:"0 auto"}}>
+            <div style={{marginBottom:"20px",animation:"fadeUp 0.4s ease both"}}>
+              <div style={{fontFamily:F.mono,fontSize:"10px",color:"#1a3020",letterSpacing:"0.14em",marginBottom:"5px"}}>DAILY CHALLENGE</div>
+              <h1 style={{fontFamily:"'IBM Plex Serif',serif",fontSize:"clamp(26px,4vw,38px)",fontWeight:700,color:F.warm,letterSpacing:"-0.03em",lineHeight:1.1}}>Rackl</h1>
+            </div>
+            {showBanner&&<SignInBanner onDismiss={dismissBanner}/>}
+            <PlayerStrip player={player} isAnon={isAnon}/>
+            <div style={{display:"grid",gridTemplateColumns:"1fr 262px",gap:"20px",alignItems:"start"}}>
+              <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(200px,1fr))",gap:"14px"}}>
+                {PUZZLES.map((p,i)=><PuzzleTile key={p.id} puzzle={p} playerData={player?.puzzlesPlayed?.[p.id]}/>)}
+              </div>
+              <div style={{animation:"fadeUp 0.5s ease both",animationDelay:"0.3s"}}>
+                <Sidebar player={player} isAnon={isAnon}/>
+              </div>
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    ReactDOM.createRoot(document.getElementById('root')).render(<App/>);
+  </script>
+</body>
+</html>

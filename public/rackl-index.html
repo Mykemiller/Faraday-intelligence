@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Rackl #47 | Faraday Daily Challenge</title>
+  <meta name="description" content="Rackl — Group 16 AI infrastructure terms into 4 hidden groups. Today's puzzle: AI Infrastructure & Power. Free to play daily."/>
+  <meta property="og:title" content="Rackl #47 — Can you group them all?"/>
+  <meta property="og:description" content="16 terms. 4 hidden groups. How deep does your knowledge go? Play Rackl on Faraday."/>
+  <meta property="og:url" content="https://faraday-intelligence.ai/challenge/rackl"/>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Serif:wght@700&family=Bricolage+Grotesque:wght@400;500&family=IBM+Plex+Mono:wght@300;400;500&display=swap"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { background: #0A0E0B; color: #F8F5F0; font-family: 'Bricolage Grotesque', sans-serif; }
+    @keyframes solveIn { from{opacity:0;transform:scale(0.92)} to{opacity:1;transform:scale(1)} }
+    @keyframes shake { 0%,100%{transform:translateX(0)} 15%{transform:translateX(-6px)} 30%{transform:translateX(6px)} 45%{transform:translateX(-5px)} 60%{transform:translateX(5px)} 75%{transform:translateX(-3px)} 90%{transform:translateX(3px)} }
+    @keyframes fadeIn  { from{opacity:0} to{opacity:1} }
+    @keyframes fadeUp  { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:translateY(0)} }
+    @keyframes modalUp { from{opacity:0;transform:translateY(24px) scale(0.96)} to{opacity:1;transform:translateY(0) scale(1)} }
+    @keyframes toastIn { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:translateY(0)} }
+    ::-webkit-scrollbar { width:4px; }
+    ::-webkit-scrollbar-thumb { background:rgba(138,166,138,0.1); border-radius:2px; }
+    a { text-decoration: none; }
+    button { font-family: inherit; }
+  </style>
+</head>
+<body>
+  <div id="root"></div>
+  <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <script type="text/babel">
+    const { useState, useEffect, useCallback } = React;
+
+    const F = {
+      bg:"#0A0E0B", surface:"#0f1510", forest:"#1C3424",
+      gold:"#C4922A", warm:"#F8F5F0", sage:"#8CA68A",
+      border:"rgba(138,166,138,0.1)",
+      serif:"'IBM Plex Serif', serif",
+      mono:"'IBM Plex Mono', monospace",
+    };
+
+    const GROUP_COLORS = [
+      { bg:"#00FFB2", text:"#001A12", label:"STRAIGHTFORWARD" },
+      { bg:"#00D4FF", text:"#00111A", label:"INTERMEDIATE" },
+      { bg:"#FFE600", text:"#1A1500", label:"CHALLENGING" },
+      { bg:"#FF6B00", text:"#1A0A00", label:"EXPERT" },
+    ];
+
+    const PUZZLE = {
+      number: 47,
+      date: "April 6, 2026",
+      theme: "AI Infrastructure & Power",
+      groups: [
+        { color:0, answer:"Power distribution hardware",  terms:["BUSBAR","PDU","RPP","TAP-OFF BOX"] },
+        { color:1, answer:"HBM memory generations",       terms:["HBM2","HBM2E","HBM3","HBM3E"] },
+        { color:2, answer:"GPU cloud providers",          terms:["COREWEAVE","LAMBDA LABS","CRUSOE","VAST.AI"] },
+        { color:3, answer:"Cooling efficiency metrics",   terms:["PUE","WUE","CUE","ERE"] },
+      ],
+    };
+
+    function buildTiles(puzzle){
+      const tiles=[];
+      puzzle.groups.forEach((g,gi)=>g.terms.forEach(term=>tiles.push({term,groupIndex:gi})));
+      let s=puzzle.number;
+      const rand=()=>{s=(s*1664525+1013904223)&0xffffffff;return(s>>>0)/0xffffffff;};
+      for(let i=tiles.length-1;i>0;i--){const j=Math.floor(rand()*(i+1));[tiles[i],tiles[j]]=[tiles[j],tiles[i]];}
+      return tiles;
+    }
+
+    const EMOJIS=["🟩","🟦","🟨","🟥"];
+    function shareText(history,num){
+      return `Rackl #${num}\n${history.map(row=>row.map(gi=>EMOJIS[gi]??"⬛").join("")).join("\n")}\nfaraday-intelligence.ai/challenge/rackl`;
+    }
+
+    function loadGame(n){try{const r=localStorage.getItem(`rackl_${n}`);return r?JSON.parse(r):null;}catch{return null;}}
+    function saveGame(n,s){try{localStorage.setItem(`rackl_${n}`,JSON.stringify(s));}catch{}}
+
+    const ALL_TILES = buildTiles(PUZZLE);
+
+    function SolvedRow({group}){
+      const c=GROUP_COLORS[group.color];
+      return(
+        <div style={{borderRadius:"12px",background:c.bg,padding:"16px 20px",display:"flex",flexDirection:"column",gap:"4px",animation:"solveIn 0.5s cubic-bezier(0.34,1.56,0.64,1) both",boxShadow:`0 6px 28px ${c.bg}44`}}>
+          <div style={{fontFamily:F.mono,fontSize:"10px",fontWeight:700,letterSpacing:"0.14em",color:c.text,opacity:0.7}}>{c.label}</div>
+          <div style={{fontFamily:F.serif,fontSize:"15px",fontWeight:700,color:c.text,letterSpacing:"-0.01em"}}>{group.answer}</div>
+          <div style={{fontFamily:F.mono,fontSize:"11px",color:c.text,opacity:0.65,letterSpacing:"0.06em"}}>{group.terms.join(" · ")}</div>
+        </div>
+      );
+    }
+
+    function Tile({term,selected,onToggle,shake,disabled}){
+      const[pressed,setPressed]=useState(false);
+      return(
+        <button onClick={()=>!disabled&&onToggle(term)} onMouseDown={()=>setPressed(true)} onMouseUp={()=>setPressed(false)} onMouseLeave={()=>setPressed(false)} disabled={disabled}
+          style={{height:"64px",borderRadius:"10px",border:selected?`2px solid ${F.gold}`:`1px solid ${F.border}`,background:selected?`${F.gold}18`:pressed?"rgba(255,255,255,0.05)":F.surface,cursor:disabled?"default":"pointer",fontFamily:F.mono,fontSize:"clamp(10px,1.8vw,13px)",fontWeight:700,color:selected?F.gold:F.warm,letterSpacing:"0.06em",transition:"all 0.12s ease",transform:selected?"translateY(-2px)":"none",boxShadow:selected?`0 4px 16px ${F.gold}33`:"none",animation:shake?"shake 0.5s ease both":undefined,userSelect:"none",padding:"0 8px",textAlign:"center",lineHeight:1.2}}>
+          {term}
+        </button>
+      );
+    }
+
+    function MistakePips({remaining}){
+      return(
+        <div style={{display:"flex",alignItems:"center",gap:"6px"}}>
+          <span style={{fontFamily:F.mono,fontSize:"10px",color:"#2a4030",letterSpacing:"0.1em"}}>MISTAKES REMAINING</span>
+          <div style={{display:"flex",gap:"5px"}}>
+            {[0,1,2,3].map(i=><div key={i} style={{width:"12px",height:"12px",borderRadius:"50%",background:i<remaining?F.warm:"#1a2a1a",transition:"background 0.3s ease",boxShadow:i<remaining?`0 0 8px ${F.warm}66`:"none"}}/>)}
+          </div>
+        </div>
+      );
+    }
+
+    function ResultModal({won,guessHistory,mistakes,onClose}){
+      const[copied,setCopied]=useState(false);
+      const text=shareText(guessHistory,PUZZLE.number);
+      const score=won?Math.max(10,100-(mistakes*20)):10;
+      const copy=()=>{navigator.clipboard.writeText(text).catch(()=>{});setCopied(true);setTimeout(()=>setCopied(false),2000);};
+      return(
+        <div style={{position:"fixed",inset:0,background:"rgba(0,0,0,0.8)",backdropFilter:"blur(8px)",display:"flex",alignItems:"center",justifyContent:"center",zIndex:100,padding:"16px",animation:"fadeIn 0.3s ease both"}}>
+          <div style={{background:"#0d1510",border:`1px solid ${won?F.gold+"44":F.border}`,borderRadius:"20px",padding:"36px",width:"100%",maxWidth:"420px",display:"flex",flexDirection:"column",gap:"20px",animation:"modalUp 0.4s cubic-bezier(0.34,1.56,0.64,1) both"}}>
+            <div style={{textAlign:"center"}}>
+              <div style={{fontSize:"48px",marginBottom:"10px"}}>{won?"🏆":"💡"}</div>
+              <div style={{fontFamily:F.serif,fontSize:"24px",fontWeight:700,color:won?F.gold:F.warm,letterSpacing:"-0.02em",marginBottom:"6px"}}>{won?"Solved!":"Nice try"}</div>
+              <div style={{fontFamily:F.mono,fontSize:"11px",color:"#3a6040",letterSpacing:"0.1em"}}>RACKL #{PUZZLE.number} · {PUZZLE.date}</div>
+            </div>
+            <div style={{background:won?`${F.gold}10`:F.surface,border:`1px solid ${won?F.gold+"33":F.border}`,borderRadius:"12px",padding:"16px",display:"flex",justifyContent:"space-between",alignItems:"center"}}>
+              <div><div style={{fontFamily:F.mono,fontSize:"9px",color:"#2a4030",letterSpacing:"0.14em",marginBottom:"4px"}}>TODAY'S SCORE</div><div style={{fontFamily:F.serif,fontSize:"28px",fontWeight:700,color:won?F.gold:"#3a5040"}}>{score}</div></div>
+              <div style={{textAlign:"right"}}><div style={{fontFamily:F.mono,fontSize:"9px",color:"#2a4030",letterSpacing:"0.14em",marginBottom:"4px"}}>MISTAKES</div><div style={{fontFamily:F.serif,fontSize:"28px",fontWeight:700,color:mistakes===0?"#00FFB2":F.warm}}>{mistakes}</div></div>
+            </div>
+            <div style={{background:F.surface,border:`1px solid ${F.border}`,borderRadius:"12px",padding:"16px",textAlign:"center"}}>
+              <div style={{fontFamily:F.mono,fontSize:"9px",color:"#2a4030",letterSpacing:"0.14em",marginBottom:"10px"}}>YOUR RESULT</div>
+              <div style={{fontFamily:"monospace",fontSize:"22px",lineHeight:"1.6",letterSpacing:"2px"}}>
+                {guessHistory.map((row,i)=><div key={i}>{row.map(gi=>EMOJIS[gi]??"⬛").join("")}</div>)}
+              </div>
+            </div>
+            <div style={{display:"flex",flexDirection:"column",gap:"10px"}}>
+              <button onClick={copy} style={{fontFamily:F.mono,fontSize:"12px",letterSpacing:"0.1em",fontWeight:600,background:copied?"#00FFB222":F.gold,color:copied?"#00FFB2":F.forest,border:copied?"1px solid #00FFB244":"none",borderRadius:"10px",padding:"14px",cursor:"pointer",transition:"all 0.2s"}}>{copied?"✓ COPIED TO CLIPBOARD":"SHARE RESULT"}</button>
+              <div style={{display:"flex",gap:"10px"}}>
+                <a href="/challenge" style={{flex:1}}><button style={{width:"100%",fontFamily:F.mono,fontSize:"11px",letterSpacing:"0.08em",background:"transparent",color:"#3a6040",border:`1px solid ${F.border}`,borderRadius:"10px",padding:"12px",cursor:"pointer"}}>← ALL GAMES</button></a>
+                <a href="/academy" style={{flex:1}}><button style={{width:"100%",fontFamily:F.mono,fontSize:"11px",letterSpacing:"0.08em",background:"transparent",color:F.sage,border:`1px solid ${F.sage}33`,borderRadius:"10px",padding:"12px",cursor:"pointer"}}>🎓 ACADEMY</button></a>
+              </div>
+            </div>
+            {(!won||mistakes>=2)&&(
+              <div style={{background:"rgba(28,52,36,0.3)",border:"1px solid rgba(138,166,138,0.15)",borderRadius:"10px",padding:"14px 16px",display:"flex",gap:"12px",alignItems:"center"}}>
+                <span style={{fontSize:"18px"}}>🎓</span>
+                <div style={{fontSize:"12px",color:"#3a6040",lineHeight:1.5}}>Today's puzzle covers AI infrastructure fundamentals. There's an Academy course that unpacks exactly this. Worth 20 minutes.</div>
+              </div>
+            )}
+          </div>
+        </div>
+      );
+    }
+
+    function HowToPlay({onClose}){
+      return(
+        <div style={{position:"fixed",inset:0,background:"rgba(0,0,0,0.8)",backdropFilter:"blur(8px)",display:"flex",alignItems:"center",justifyContent:"center",zIndex:100,padding:"16px"}} onClick={onClose}>
+          <div style={{background:"#0d1510",border:`1px solid ${F.border}`,borderRadius:"20px",padding:"32px",width:"100%",maxWidth:"400px",animation:"modalUp 0.4s cubic-bezier(0.34,1.56,0.64,1) both"}} onClick={e=>e.stopPropagation()}>
+            <div style={{fontFamily:F.serif,fontSize:"20px",fontWeight:700,color:F.warm,marginBottom:"20px",letterSpacing:"-0.02em"}}>How to play Rackl</div>
+            <div style={{display:"flex",flexDirection:"column",gap:"14px"}}>
+              {[{icon:"⬛",text:"Find four groups of four terms that share a hidden connection."},{icon:"🟩",text:"Select four tiles and tap Submit. Groups are color-coded by difficulty."},{icon:"💡",text:"You have four mistakes before the game ends. Think carefully."},{icon:"🔥",text:"Complete puzzles daily to build your streak and climb the leaderboard."}].map(({icon,text},i)=>(
+                <div key={i} style={{display:"flex",gap:"14px",alignItems:"flex-start"}}>
+                  <span style={{fontSize:"20px",flexShrink:0,marginTop:"1px"}}>{icon}</span>
+                  <span style={{fontSize:"13px",color:"#5a8060",lineHeight:1.6}}>{text}</span>
+                </div>
+              ))}
+            </div>
+            <div style={{marginTop:"20px",paddingTop:"16px",borderTop:`1px solid ${F.border}`}}>
+              <div style={{fontFamily:F.mono,fontSize:"9px",color:"#2a4030",letterSpacing:"0.14em",marginBottom:"10px"}}>DIFFICULTY</div>
+              <div style={{display:"flex",gap:"8px",flexWrap:"wrap"}}>
+                {GROUP_COLORS.map((c,i)=><div key={i} style={{background:c.bg,color:c.text,fontFamily:F.mono,fontSize:"9px",fontWeight:700,letterSpacing:"0.1em",padding:"4px 10px",borderRadius:"20px"}}>{c.label}</div>)}
+              </div>
+            </div>
+            <button onClick={onClose} style={{marginTop:"20px",width:"100%",fontFamily:F.mono,fontSize:"12px",letterSpacing:"0.1em",fontWeight:600,background:F.gold,color:F.forest,border:"none",borderRadius:"10px",padding:"13px",cursor:"pointer"}}>LET'S PLAY</button>
+          </div>
+        </div>
+      );
+    }
+
+    function App(){
+      const[selected,setSelected]=useState([]);
+      const[solvedGroups,setSolvedGroups]=useState([]);
+      const[remaining,setRemaining]=useState(ALL_TILES);
+      const[mistakes,setMistakes]=useState(0);
+      const[gameOver,setGameOver]=useState(false);
+      const[won,setWon]=useState(false);
+      const[guessHistory,setGuessHistory]=useState([]);
+      const[showResult,setShowResult]=useState(false);
+      const[showHelp,setShowHelp]=useState(false);
+      const[toast,setToast]=useState(null);
+      const[shakeTerms,setShakeTerms]=useState([]);
+
+      useEffect(()=>{
+        const saved=loadGame(PUZZLE.number);
+        if(saved){
+          setSolvedGroups(saved.solvedGroups||[]);
+          setRemaining(saved.remaining||ALL_TILES);
+          setMistakes(saved.mistakes||0);
+          setGuessHistory(saved.guessHistory||[]);
+          const isWon=(saved.solvedGroups||[]).length===PUZZLE.groups.length;
+          const isOver=isWon||(saved.mistakes||0)>=4;
+          if(isOver){setWon(isWon);setGameOver(true);setTimeout(()=>setShowResult(true),400);}
+        }
+      },[]);
+
+      const showToast=(msg,dur=1800)=>{setToast(msg);setTimeout(()=>setToast(null),dur);};
+
+      const toggleTile=(term)=>{
+        if(gameOver)return;
+        setSelected(prev=>prev.includes(term)?prev.filter(t=>t!==term):prev.length<4?[...prev,term]:prev);
+      };
+
+      const submitGuess=()=>{
+        if(selected.length!==4||gameOver)return;
+        const groupCounts={};
+        selected.forEach(term=>{const tile=ALL_TILES.find(t=>t.term===term);if(tile)groupCounts[tile.groupIndex]=(groupCounts[tile.groupIndex]||0)+1;});
+        const entries=Object.entries(groupCounts);
+        const guessGroupIndices=selected.map(term=>{const tile=ALL_TILES.find(t=>t.term===term);return tile?.groupIndex??-1;});
+        const newHistory=[...guessHistory,guessGroupIndices];
+        setGuessHistory(newHistory);
+
+        if(entries.length===1){
+          const gi=parseInt(entries[0][0]);
+          const group=PUZZLE.groups[gi];
+          const newSolved=[...solvedGroups,group];
+          const newRemaining=remaining.filter(t=>!selected.includes(t.term));
+          setSolvedGroups(newSolved);setRemaining(newRemaining);setSelected([]);
+          const isWon=newSolved.length===PUZZLE.groups.length;
+          if(isWon){setWon(true);setGameOver(true);showToast(mistakes===0?"Perfect! 🏆":"Solved! 🎉");setTimeout(()=>setShowResult(true),1400);}
+          saveGame(PUZZLE.number,{solvedGroups:newSolved,remaining:newRemaining,mistakes,guessHistory:newHistory});
+          return;
+        }
+        if(entries.length===2&&entries.some(([,c])=>c===3))showToast("One away…");
+        const newMistakes=mistakes+1;
+        setMistakes(newMistakes);
+        setShakeTerms([...selected]);setTimeout(()=>setShakeTerms([]),600);
+        setSelected([]);
+        if(newMistakes>=4){setGameOver(true);showToast("Better luck tomorrow",2000);setTimeout(()=>setShowResult(true),2200);}
+        saveGame(PUZZLE.number,{solvedGroups,remaining,mistakes:newMistakes,guessHistory:newHistory});
+      };
+
+      const shuffle=()=>{if(gameOver)return;setRemaining(prev=>{const copy=[...prev];for(let i=copy.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[copy[i],copy[j]]=[copy[j],copy[i]];}return copy;});};
+
+      return(
+        <div style={{minHeight:"100vh",background:F.bg,color:F.warm}}>
+          <nav style={{borderBottom:`1px solid ${F.border}`,padding:"0 20px",display:"flex",justifyContent:"space-between",alignItems:"center",height:"52px",background:"rgba(10,14,11,0.97)",backdropFilter:"blur(12px)",position:"sticky",top:0,zIndex:50}}>
+            <a href="/challenge" style={{display:"flex",alignItems:"center",gap:"8px"}}>
+              <div style={{width:"24px",height:"24px",borderRadius:"5px",background:"linear-gradient(135deg,#C4922A,#8CA68A)",display:"flex",alignItems:"center",justifyContent:"center",fontFamily:"'IBM Plex Serif',serif",fontSize:"10px",fontWeight:700,color:"#1C3424"}}>F</div>
+              <span style={{fontFamily:F.mono,fontSize:"11px",color:"#2a4030",letterSpacing:"0.08em"}}>← DAILY CHALLENGE</span>
+            </a>
+            <div style={{display:"flex",alignItems:"center",gap:"10px"}}>
+              <svg viewBox="0 0 28 28" width="22" height="22">
+                <rect x="1" y="1" width="11" height="11" rx="2" fill="#00FFB2"/>
+                <rect x="15" y="1" width="11" height="11" rx="2" fill="#FF6B00"/>
+                <rect x="1" y="15" width="11" height="11" rx="2" fill="#FFE600"/>
+                <rect x="15" y="15" width="11" height="11" rx="2" fill="#0a1a10" stroke="#00FFB2" strokeWidth="1" strokeDasharray="2 1"/>
+                <text x="20.5" y="24" textAnchor="middle" fill="#00FFB2" fontSize="8" fontWeight="800" fontFamily="monospace">?</text>
+              </svg>
+              <span style={{fontFamily:"'IBM Plex Serif',serif",fontSize:"16px",fontWeight:700,color:F.warm,letterSpacing:"-0.02em"}}>Rackl</span>
+              <span style={{fontFamily:F.mono,fontSize:"10px",color:"#2a4030"}}>#{PUZZLE.number}</span>
+            </div>
+            <button onClick={()=>setShowHelp(true)} style={{background:"none",border:`1px solid ${F.border}`,borderRadius:"6px",padding:"5px 10px",fontFamily:F.mono,fontSize:"10px",letterSpacing:"0.1em",color:"#3a6040",cursor:"pointer"}}>HOW TO PLAY</button>
+          </nav>
+
+          <div style={{maxWidth:"540px",margin:"0 auto",padding:"24px 16px 64px",display:"flex",flexDirection:"column",gap:"16px",animation:"fadeUp 0.4s ease both"}}>
+            <div style={{textAlign:"center"}}>
+              <div style={{fontFamily:F.mono,fontSize:"10px",color:"#2a4030",letterSpacing:"0.14em",marginBottom:"4px"}}>{PUZZLE.date.toUpperCase()}</div>
+              <div style={{fontFamily:F.mono,fontSize:"11px",color:F.gold,letterSpacing:"0.08em"}}>{PUZZLE.theme}</div>
+            </div>
+            <div style={{textAlign:"center",fontSize:"13px",color:"#3a6040"}}>Create four groups of four</div>
+
+            <div style={{display:"flex",flexDirection:"column",gap:"10px"}}>
+              {solvedGroups.map((g,i)=><SolvedRow key={i} group={g}/>)}
+            </div>
+
+            {remaining.length>0&&(
+              <div style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:"8px"}}>
+                {remaining.map(({term})=>(
+                  <Tile key={term} term={term} selected={selected.includes(term)} onToggle={toggleTile} shake={shakeTerms.includes(term)} disabled={gameOver}/>
+                ))}
+              </div>
+            )}
+
+            <div style={{display:"flex",flexDirection:"column",alignItems:"center",gap:"16px",paddingTop:"8px"}}>
+              <MistakePips remaining={4-mistakes}/>
+              <div style={{display:"flex",gap:"10px"}}>
+                <button onClick={shuffle} disabled={gameOver} style={{fontFamily:F.mono,fontSize:"11px",letterSpacing:"0.1em",background:"transparent",color:gameOver?"#1a3020":"#3a6040",border:`1px solid ${gameOver?"#1a2a1a":F.border}`,borderRadius:"24px",padding:"10px 20px",cursor:gameOver?"default":"pointer",transition:"all 0.15s"}}>SHUFFLE</button>
+                <button onClick={()=>setSelected([])} disabled={selected.length===0||gameOver} style={{fontFamily:F.mono,fontSize:"11px",letterSpacing:"0.1em",background:"transparent",color:selected.length===0||gameOver?"#1a3020":"#3a6040",border:`1px solid ${selected.length===0||gameOver?"#1a2a1a":F.border}`,borderRadius:"24px",padding:"10px 20px",cursor:selected.length===0||gameOver?"default":"pointer",transition:"all 0.15s"}}>DESELECT ALL</button>
+                <button onClick={submitGuess} disabled={selected.length!==4||gameOver} style={{fontFamily:F.mono,fontSize:"11px",letterSpacing:"0.1em",fontWeight:700,background:selected.length===4&&!gameOver?F.gold:"#1a2a1a",color:selected.length===4&&!gameOver?F.forest:"#1a3020",border:"none",borderRadius:"24px",padding:"10px 28px",cursor:selected.length===4&&!gameOver?"pointer":"default",transition:"all 0.15s",boxShadow:selected.length===4&&!gameOver?`0 4px 16px ${F.gold}44`:"none"}}>SUBMIT</button>
+              </div>
+              {gameOver&&!showResult&&<button onClick={()=>setShowResult(true)} style={{fontFamily:F.mono,fontSize:"11px",letterSpacing:"0.1em",background:"transparent",color:F.gold,border:`1px solid ${F.gold}44`,borderRadius:"24px",padding:"10px 24px",cursor:"pointer"}}>SEE RESULTS</button>}
+            </div>
+
+            <div style={{marginTop:"8px",padding:"16px 20px",background:"rgba(28,52,36,0.2)",border:`1px solid ${F.border}`,borderRadius:"12px",textAlign:"center"}}>
+              <div style={{fontFamily:F.mono,fontSize:"9px",color:"#2a4030",letterSpacing:"0.14em",marginBottom:"6px"}}>TOMORROW · RACKL #48</div>
+              <div style={{fontSize:"12px",color:"#3a5040"}}>A new puzzle resets at midnight UTC</div>
+            </div>
+          </div>
+
+          {toast&&<div style={{position:"fixed",top:"72px",left:"50%",transform:"translateX(-50%)",background:"#0d1510",border:`1px solid ${F.border}`,borderRadius:"24px",padding:"10px 22px",fontFamily:F.mono,fontSize:"12px",letterSpacing:"0.08em",color:F.warm,zIndex:200,boxShadow:"0 8px 32px rgba(0,0,0,0.4)",animation:"toastIn 0.3s ease both",whiteSpace:"nowrap"}}>{toast}</div>}
+          {showResult&&<ResultModal won={won} guessHistory={guessHistory} mistakes={mistakes} onClose={()=>setShowResult(false)}/>}
+          {showHelp&&<HowToPlay onClose={()=>setShowHelp(false)}/>}
+        </div>
+      );
+    }
+
+    ReactDOM.createRoot(document.getElementById('root')).render(<App/>);
+  </script>
+</body>
+</html>
