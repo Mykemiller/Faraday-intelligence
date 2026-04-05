@@ -1,0 +1,901 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Faraday Intelligent Alert — April 5, 2026</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Serif:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Bricolage+Grotesque:wght@300;400;500;600&family=IBM+Plex+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --forest: #1C3424;
+    --forest-mid: #244228;
+    --forest-light: #325638;
+    --gold: #C4922A;
+    --gold-light: #DAB050;
+    --warm-white: #F8F5F0;
+    --warm-cream: #EEE6DA;
+    --near-black: #141210;
+    --sage: #8CA68A;
+    --warm-gray: #B2A898;
+    --serif: 'IBM Plex Serif', Georgia, serif;
+    --body: 'Bricolage Grotesque', sans-serif;
+    --mono: 'IBM Plex Mono', monospace;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: #E8E3DC;
+    font-family: var(--body);
+    font-size: 16px;
+    line-height: 1.6;
+  }
+
+  /* ── TIER SELECTOR ───────────────────────────────────── */
+  .tier-bar {
+    background: var(--near-black);
+    padding: 10px 0;
+    text-align: center;
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+  }
+
+  .tier-bar-inner {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 6px;
+    padding: 4px;
+  }
+
+  .tier-btn {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 6px 14px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    background: transparent;
+    color: rgba(255,255,255,0.4);
+    transition: all 0.2s;
+  }
+
+  .tier-btn.active {
+    background: var(--forest);
+    color: var(--gold);
+    border: 1px solid rgba(196,146,42,0.3);
+  }
+
+  .tier-btn:hover:not(.active) { color: rgba(255,255,255,0.7); }
+
+  /* ── ALERT CONTAINER ─────────────────────────────────── */
+  .alert-container {
+    max-width: 680px;
+    margin: 24px auto;
+    background: var(--warm-white);
+    box-shadow: 0 4px 40px rgba(0,0,0,0.15);
+  }
+
+  /* ── MASTHEAD ─────────────────────────────────────────── */
+  .alert-masthead {
+    background: var(--forest);
+    border-top: 4px solid var(--gold);
+    padding: 20px 32px 18px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .alert-masthead::after {
+    content: none;
+  }
+
+  .masthead-left {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .mark {
+    width: 34px;
+    height: 34px;
+    background: rgba(248,245,240,0.08);
+    border-radius: 5px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+
+  .alert-wordmark {
+    font-family: var(--serif);
+    font-weight: 700;
+    font-size: 16px;
+    color: var(--warm-white);
+    letter-spacing: 0.06em;
+  }
+
+  .alert-edition {
+    font-family: var(--mono);
+    font-size: 9px;
+    color: var(--sage);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-top: 1px;
+  }
+
+  .masthead-right {
+    text-align: right;
+  }
+
+  .masthead-date {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--gold);
+    letter-spacing: 0.08em;
+  }
+
+  .masthead-edition-label {
+    font-family: var(--mono);
+    font-size: 9px;
+    color: rgba(140,166,138,0.5);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    margin-top: 2px;
+  }
+
+  .double-rule {
+    height: 4px;
+    background: linear-gradient(180deg, var(--forest) 0%, var(--forest) 60%, var(--gold) 60%, var(--gold) 100%);
+  }
+
+  /* ── ALERT HEADER ─────────────────────────────────────── */
+  .alert-header {
+    padding: 28px 32px 24px;
+    border-bottom: 1px solid rgba(28,52,36,0.1);
+  }
+
+  .alert-headline {
+    font-family: var(--serif);
+    font-size: 13px;
+    font-weight: 400;
+    color: var(--sage);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+
+  .alert-intro {
+    font-family: var(--serif);
+    font-size: 19px;
+    font-weight: 600;
+    color: var(--near-black);
+    line-height: 1.4;
+    letter-spacing: -0.01em;
+  }
+
+  .alert-intro em {
+    font-style: italic;
+    color: var(--forest);
+  }
+
+  .tier-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-family: var(--mono);
+    font-size: 9px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 3px 9px;
+    border-radius: 3px;
+    margin-top: 14px;
+  }
+
+  .tier-badge.free {
+    background: rgba(45,106,79,0.1);
+    color: #2D6A4F;
+    border: 1px solid rgba(45,106,79,0.2);
+  }
+
+  .tier-badge.signal-tier {
+    background: rgba(196,146,42,0.1);
+    color: #7A5510;
+    border: 1px solid rgba(196,146,42,0.25);
+  }
+
+  .tier-badge.core-tier {
+    background: rgba(28,52,36,0.08);
+    color: var(--forest);
+    border: 1px solid rgba(28,52,36,0.2);
+  }
+
+  /* ── S TIER — SNAPSHOT ───────────────────────────────── */
+  .snapshot-section {
+    padding: 28px 32px;
+  }
+
+  .snapshot-item {
+    padding: 16px 0;
+    border-bottom: 1px solid rgba(28,52,36,0.07);
+  }
+
+  .snapshot-item:last-of-type { border-bottom: none; }
+
+  .signal-domain {
+    font-family: var(--mono);
+    font-size: 9px;
+    color: var(--gold);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    margin-bottom: 5px;
+  }
+
+  .signal-headline {
+    font-family: var(--serif);
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--near-black);
+    line-height: 1.35;
+    margin-bottom: 6px;
+    letter-spacing: -0.01em;
+  }
+
+  .signal-context {
+    font-size: 14px;
+    color: #6B5E52;
+    line-height: 1.6;
+  }
+
+  .signal-source {
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--warm-gray);
+    margin-top: 6px;
+    letter-spacing: 0.04em;
+  }
+
+  /* ── M TIER — FULL SECTIONS ──────────────────────────── */
+  .section-divider {
+    background: rgba(28,52,36,0.04);
+    border-top: 1px solid rgba(28,52,36,0.08);
+    border-bottom: 1px solid rgba(28,52,36,0.08);
+    padding: 8px 32px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .section-icon {
+    font-size: 13px;
+  }
+
+  .section-label-text {
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--forest);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    font-weight: 500;
+  }
+
+  .full-section {
+    padding: 24px 32px;
+    border-bottom: 1px solid rgba(28,52,36,0.07);
+  }
+
+  .story-headline {
+    font-family: var(--serif);
+    font-size: 17px;
+    font-weight: 600;
+    color: var(--near-black);
+    line-height: 1.35;
+    margin-bottom: 10px;
+    letter-spacing: -0.01em;
+  }
+
+  .story-body {
+    font-size: 14px;
+    color: #5A4E44;
+    line-height: 1.7;
+    margin-bottom: 10px;
+  }
+
+  .data-callout {
+    background: rgba(196,146,42,0.07);
+    border-left: 3px solid var(--gold);
+    padding: 10px 14px;
+    margin: 14px 0;
+    border-radius: 0 4px 4px 0;
+  }
+
+  .data-callout-label {
+    font-family: var(--mono);
+    font-size: 9px;
+    color: var(--gold);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-bottom: 3px;
+  }
+
+  .data-callout-value {
+    font-family: var(--mono);
+    font-size: 14px;
+    color: var(--near-black);
+    font-weight: 500;
+  }
+
+  /* ── L TIER — FARADAY'S TAKE ─────────────────────────── */
+  .faradays-take {
+    background: var(--warm-cream);
+    border-left: 4px solid var(--forest);
+    position: relative;
+    margin: 0;
+    padding: 28px 32px;
+  }
+
+  .faradays-take::before {
+    content: '';
+    position: absolute;
+    left: 4px;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    background: var(--gold);
+    opacity: 0.6;
+  }
+
+  .take-label {
+    font-family: var(--mono);
+    font-size: 9px;
+    color: var(--forest);
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    opacity: 0.6;
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .take-label::before {
+    content: '⚡';
+    font-size: 10px;
+    opacity: 1;
+  }
+
+  .take-body {
+    font-family: var(--serif);
+    font-size: 16px;
+    font-style: italic;
+    color: var(--near-black);
+    line-height: 1.7;
+    font-weight: 400;
+  }
+
+  .take-body strong {
+    font-style: normal;
+    font-weight: 600;
+    color: var(--forest);
+  }
+
+  .take-sig {
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--forest);
+    letter-spacing: 0.08em;
+    margin-top: 16px;
+    opacity: 0.6;
+  }
+
+  /* ── ON THE RADAR ─────────────────────────────────────── */
+  .radar-section {
+    padding: 24px 32px;
+    background: rgba(28,52,36,0.02);
+    border-bottom: 1px solid rgba(28,52,36,0.07);
+  }
+
+  .radar-label {
+    font-family: var(--mono);
+    font-size: 9px;
+    color: #5A8CA0;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    margin-bottom: 14px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .radar-item {
+    font-size: 13px;
+    color: #6B5E52;
+    line-height: 1.5;
+    padding: 8px 0;
+    border-bottom: 1px dashed rgba(28,52,36,0.07);
+    display: flex;
+    gap: 12px;
+  }
+
+  .radar-item:last-child { border-bottom: none; }
+
+  .radar-item-domain {
+    font-family: var(--mono);
+    font-size: 9px;
+    color: var(--sage);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    flex-shrink: 0;
+    padding-top: 2px;
+    min-width: 80px;
+  }
+
+  /* ── CHALLENGE CTA ────────────────────────────────────── */
+  .challenge-cta {
+    background: var(--forest);
+    padding: 24px 32px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    flex-wrap: wrap;
+  }
+
+  .challenge-cta-text {
+    font-family: var(--serif);
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--warm-white);
+    margin-bottom: 3px;
+  }
+
+  .challenge-cta-sub {
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--sage);
+    letter-spacing: 0.06em;
+  }
+
+  .challenge-cta-links {
+    display: flex;
+    gap: 10px;
+    flex-shrink: 0;
+  }
+
+  .challenge-link {
+    background: rgba(196,146,42,0.15);
+    border: 1px solid rgba(196,146,42,0.35);
+    color: var(--gold);
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.08em;
+    padding: 8px 16px;
+    border-radius: 3px;
+    text-decoration: none;
+    transition: all 0.2s;
+    white-space: nowrap;
+  }
+
+  .challenge-link:hover {
+    background: rgba(196,146,42,0.25);
+    border-color: rgba(196,146,42,0.6);
+  }
+
+  /* ── FOOTER ──────────────────────────────────────────── */
+  .alert-footer {
+    background: var(--forest-mid);
+    padding: 20px 32px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 12px;
+    border-top: 2px solid rgba(196,146,42,0.2);
+  }
+
+  .footer-brand {
+    font-family: var(--serif);
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--warm-white);
+    letter-spacing: 0.04em;
+    opacity: 0.7;
+  }
+
+  .footer-links {
+    display: flex;
+    gap: 16px;
+  }
+
+  .footer-links a {
+    font-family: var(--mono);
+    font-size: 9px;
+    color: rgba(140,166,138,0.5);
+    text-decoration: none;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    transition: color 0.2s;
+  }
+
+  .footer-links a:hover { color: var(--gold); }
+
+  /* ── TIER-GATED CONTENT ───────────────────────────────── */
+  .tier-gate {
+    background: rgba(28,52,36,0.04);
+    border: 1px dashed rgba(28,52,36,0.15);
+    border-radius: 6px;
+    padding: 20px 24px;
+    text-align: center;
+    margin: 16px 32px;
+  }
+
+  .tier-gate-icon { font-size: 20px; margin-bottom: 8px; opacity: 0.4; }
+
+  .tier-gate-text {
+    font-family: var(--serif);
+    font-size: 14px;
+    color: #7A6D63;
+    font-style: italic;
+    margin-bottom: 12px;
+  }
+
+  .tier-gate-cta {
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--gold);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    text-decoration: none;
+    border: 1px solid rgba(196,146,42,0.3);
+    padding: 7px 16px;
+    border-radius: 3px;
+    display: inline-block;
+    transition: all 0.2s;
+  }
+
+  .tier-gate-cta:hover { background: rgba(196,146,42,0.08); }
+
+  /* ── HIDDEN TIER CONTENT ──────────────────────────────── */
+  .s-only, .m-only, .l-only { display: none; }
+
+  /* Visibility controlled by JS */
+</style>
+</head>
+<body>
+
+<!-- TIER SELECTOR -->
+<div class="tier-bar">
+  <div class="tier-bar-inner">
+    <button class="tier-btn active" onclick="setTier('s')">S — Snapshot</button>
+    <button class="tier-btn" onclick="setTier('m')">M — Full Alert</button>
+    <button class="tier-btn" onclick="setTier('l')">L — Deep Alert</button>
+  </div>
+</div>
+
+<div class="alert-container">
+
+  <!-- MASTHEAD -->
+  <div class="alert-masthead">
+    <div class="masthead-left">
+      <div class="mark">
+        <svg width="20" height="20" viewBox="0 0 110 110">
+          <polygon points="63,12 36,56 52,56 47,98 79,50 62,50" fill="#C4922A"/>
+        </svg>
+      </div>
+      <div>
+        <div class="alert-wordmark">FARADAY</div>
+        <div class="alert-edition">Intelligent Alert</div>
+      </div>
+    </div>
+    <div class="masthead-right">
+      <div class="masthead-date">April 5, 2026</div>
+      <div class="masthead-edition-label">Saturday Edition</div>
+    </div>
+  </div>
+  <div class="double-rule"></div>
+
+  <!-- ALERT HEADER -->
+  <div class="alert-header">
+    <div class="alert-headline">Today's Intelligence</div>
+    <div class="alert-intro">Power constraints tighten across three ISOs. Vera Rubin deployment timelines compress. <em>Capital is committing faster than the grid can receive it.</em></div>
+    <div id="tier-badge"></div>
+  </div>
+
+  <!-- ── S TIER CONTENT ──────────────────────────────────── -->
+  <div class="s-only" id="s-content">
+    <div class="snapshot-section">
+      <div class="snapshot-item">
+        <div class="signal-domain">⚡ Power Architecture</div>
+        <div class="signal-headline">PJM interconnection queue hits 3,400 large-load requests — grid absorption timeline extends to 2031</div>
+        <div class="signal-context">New data center applications are now facing queue wait times that exceed the useful life of some GPU generations. The constraint is not generating capacity — it's transmission infrastructure and grid studies.</div>
+        <div class="signal-source">Source: PJM Interconnection · April 4, 2026</div>
+      </div>
+
+      <div class="snapshot-item">
+        <div class="signal-domain">🧠 Chips & Density</div>
+        <div class="signal-headline">NVIDIA confirms Vera Rubin NVL144 customer deployments begin Q3 2026 — six months ahead of original guidance</div>
+        <div class="signal-context">The acceleration compresses facility planning timelines for hyperscalers who haven't yet finalized 800V DC infrastructure for NVL144's 480kW rack requirement. Legacy AC sites are effectively excluded from this deployment cycle.</div>
+        <div class="signal-source">Source: NVIDIA GTC Update · April 3, 2026</div>
+      </div>
+
+      <div class="snapshot-item">
+        <div class="signal-domain">💰 M&A & Capital Markets</div>
+        <div class="signal-headline">Blackstone Infrastructure closes $7.1B data center development fund — largest single-strategy DC raise in PE history</div>
+        <div class="signal-context">The fund is structured around shovel-ready, entitled sites with existing power commitments. It is not buying land — it is buying grid position. This is the clearest signal yet that institutional capital has concluded the supply bottleneck is power, not capital.</div>
+        <div class="signal-source">Source: Blackstone Press Release · April 4, 2026</div>
+      </div>
+    </div>
+
+    <!-- Challenge CTA -->
+    <div class="challenge-cta">
+      <div>
+        <div class="challenge-cta-text">Test your edge on today's intelligence</div>
+        <div class="challenge-cta-sub">Daily Challenge · New puzzle · 5 minutes</div>
+      </div>
+      <div class="challenge-cta-links">
+        <a href="wattl/index.html" class="challenge-link">⚡ Wattl</a>
+        <a href="rackl/index.html" class="challenge-link">⚡ Rackl</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── M TIER CONTENT ──────────────────────────────────── -->
+  <div class="m-only" id="m-content">
+
+    <!-- Power & Grid Section -->
+    <div class="section-divider">
+      <span class="section-icon">🔌</span>
+      <span class="section-label-text">Power & Grid</span>
+    </div>
+    <div class="full-section">
+      <div class="story-headline">PJM queue reaches 3,400 large-load requests — 2031 absorption timeline forces site selection rethink</div>
+      <div class="story-body">The PJM Interconnection queue has reached a new record of 3,400 pending large-load interconnection requests, according to the latest weekly filing summary. The aggregate capacity requested exceeds 520GW — more than twice PJM's current installed generating capacity. For data center developers, the implication is direct: sites in PJM territory that lack existing interconnection rights are effectively off the table for new AI-grade deployments on any timeline that matters to hyperscaler capex cycles.</div>
+      <div class="data-callout">
+        <div class="data-callout-label">Key Figure</div>
+        <div class="data-callout-value">3,400 pending requests · 520GW aggregate · 2031 median absorption timeline</div>
+      </div>
+      <div class="story-body">MISO and ERCOT queues are showing similar dynamics. CAISO is the exception — California's regulatory structure has created a faster-track process for certain transmission upgrades, but its moratorium activity at the state legislative level creates a different class of constraint.</div>
+      <div class="signal-source">Source: PJM Interconnection Weekly Summary · April 4, 2026 · MISO Planning Update · April 3, 2026</div>
+    </div>
+
+    <!-- Chips Section -->
+    <div class="section-divider">
+      <span class="section-icon">🧠</span>
+      <span class="section-label-text">Chips & Density</span>
+    </div>
+    <div class="full-section">
+      <div class="story-headline">Vera Rubin NVL144 deployments begin Q3 2026 — six months ahead of original guidance, 480kW per rack</div>
+      <div class="story-body">NVIDIA confirmed at GTC that Vera Rubin NVL144 customer deployments will begin in Q3 2026 — a six-month pull-forward from original guidance. The NVL144 configuration requires 480kW per rack, which is approximately four times the capacity of a standard Hopper-era rack. The only viable deployment environment is a purpose-built 800V DC facility or a fully retrofitted AC facility that has cleared the NFPA regulatory gap.</div>
+      <div class="data-callout">
+        <div class="data-callout-label">Rack Power Progression</div>
+        <div class="data-callout-value">Hopper: ~120kW · Blackwell NVL72: ~280kW · Vera Rubin NVL144: ~480kW</div>
+      </div>
+      <div class="story-body">The six-month compression is significant because it catches several hyperscalers in mid-construction phases that were designed for Blackwell-class density. The operators who can accept NVL144 will have a material compute advantage in H2 2026. The ones who can't will be waiting for Feynman.</div>
+      <div class="signal-source">Source: NVIDIA GTC Technical Update · April 3, 2026</div>
+    </div>
+
+    <!-- Capital Markets Section -->
+    <div class="section-divider">
+      <span class="section-icon">💰</span>
+      <span class="section-label-text">Capital & M&A</span>
+    </div>
+    <div class="full-section">
+      <div class="story-headline">Blackstone Infrastructure closes $7.1B data center fund — largest single-strategy DC raise in PE history</div>
+      <div class="story-body">Blackstone Infrastructure Partners has closed a $7.1B dedicated data center development fund — the largest single-strategy data center raise in private equity history. The fund's investment thesis is narrow and explicit: shovel-ready sites with existing interconnection rights and confirmed power commitments, in markets with legislative clarity on data center development. The fund is not speculating on land — it is buying grid position that took three to seven years to establish.</div>
+      <div class="data-callout">
+        <div class="data-callout-label">Fund Mandate</div>
+        <div class="data-callout-value">$7.1B · Entitled sites with existing power commitments only · 18-month deployment target</div>
+      </div>
+      <div class="story-body">This is capital acting on a specific thesis: the bottleneck is power, not money. An entitled, powered site is now the scarcest asset in the AI infrastructure supply chain. The fund's structure reflects that conclusion — it is not solving for capital, it is paying a premium to skip the queue.</div>
+      <div class="signal-source">Source: Blackstone Press Release · April 4, 2026</div>
+    </div>
+
+    <!-- Infrastructure Section -->
+    <div class="section-divider">
+      <span class="section-icon">🏗️</span>
+      <span class="section-label-text">Infrastructure & Supply Chain</span>
+    </div>
+    <div class="full-section">
+      <div class="story-headline">Vertiv reports 14-month average delivery lead time for 800V DC PDUs — 2x the pre-2024 baseline</div>
+      <div class="story-body">Vertiv's latest supply chain update indicates average lead times for 800V DC power distribution units have reached 14 months — more than double the pre-2024 baseline of six to seven months. The constraint is upstream: transformer manufacturing capacity has not scaled at the pace of data center construction, and the transition from AC to DC distribution is pulling on a different part of the transformer supply chain than traditional utility infrastructure investment.</div>
+      <div class="signal-source">Source: Vertiv Supply Chain Q1 Update · April 2, 2026</div>
+    </div>
+
+    <!-- Gated content teaser for L -->
+    <div class="tier-gate">
+      <div class="tier-gate-icon">🔭</div>
+      <div class="tier-gate-text">On the Radar, Regulatory Heatmap, and Faraday's Take are available in the L — Deep Alert</div>
+      <a href="#" onclick="setTier('l'); return false;" class="tier-gate-cta">Upgrade to Deep Alert</a>
+    </div>
+
+    <!-- Challenge CTA -->
+    <div class="challenge-cta">
+      <div>
+        <div class="challenge-cta-text">Test your edge on today's intelligence</div>
+        <div class="challenge-cta-sub">Daily Challenge · New puzzle · 5 minutes</div>
+      </div>
+      <div class="challenge-cta-links">
+        <a href="wattl/index.html" class="challenge-link">⚡ Wattl</a>
+        <a href="rackl/index.html" class="challenge-link">⚡ Rackl</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── L TIER CONTENT ──────────────────────────────────── -->
+  <div class="l-only" id="l-content">
+
+    <!-- Power & Grid Section -->
+    <div class="section-divider">
+      <span class="section-icon">🔌</span>
+      <span class="section-label-text">Power & Grid</span>
+    </div>
+    <div class="full-section">
+      <div class="story-headline">PJM queue reaches 3,400 large-load requests — 2031 absorption timeline forces site selection rethink</div>
+      <div class="story-body">The PJM Interconnection queue has reached a new record of 3,400 pending large-load interconnection requests, according to the latest weekly filing summary. The aggregate capacity requested exceeds 520GW — more than twice PJM's current installed generating capacity. For data center developers, the implication is direct: sites in PJM territory that lack existing interconnection rights are effectively off the table for new AI-grade deployments on any timeline that matters to hyperscaler capex cycles.</div>
+      <div class="data-callout">
+        <div class="data-callout-label">Key Figure</div>
+        <div class="data-callout-value">3,400 pending requests · 520GW aggregate · 2031 median absorption timeline</div>
+      </div>
+      <div class="story-body">MISO and ERCOT queues are showing similar dynamics. The operators who locked interconnection positions in 2021–2023 are now three to five years ahead of everyone trying to enter the market today. That lead time cannot be bought — it can only be acquired through M&A. Expect to see interconnection rights appear explicitly in data center deal term sheets within the next 18 months.</div>
+      <div class="signal-source">Source: PJM Interconnection Weekly Summary · April 4, 2026</div>
+    </div>
+
+    <!-- Chips Section -->
+    <div class="section-divider">
+      <span class="section-icon">🧠</span>
+      <span class="section-label-text">Chips & Density</span>
+    </div>
+    <div class="full-section">
+      <div class="story-headline">Vera Rubin NVL144 deployments begin Q3 2026 — six months ahead of original guidance, 480kW per rack</div>
+      <div class="story-body">NVIDIA confirmed at GTC that Vera Rubin NVL144 customer deployments will begin in Q3 2026 — a six-month pull-forward from original guidance. The NVL144 configuration requires 480kW per rack. The only viable deployment environment is a purpose-built 800V DC facility or a fully retrofitted AC facility that has cleared the NFPA regulatory gap.</div>
+      <div class="data-callout">
+        <div class="data-callout-label">Rack Power Progression</div>
+        <div class="data-callout-value">Hopper: ~120kW · Blackwell NVL72: ~280kW · Vera Rubin NVL144: ~480kW</div>
+      </div>
+      <div class="story-body">The six-month compression catches several hyperscalers in mid-construction phases. The operators who can accept NVL144 will have a material compute advantage in H2 2026. The ones who can't will be waiting for Feynman — currently on the 2028 horizon — which is projected to push rack density to 600kW+.</div>
+      <div class="signal-source">Source: NVIDIA GTC Technical Update · April 3, 2026</div>
+    </div>
+
+    <!-- Capital Section -->
+    <div class="section-divider">
+      <span class="section-icon">💰</span>
+      <span class="section-label-text">Capital & M&A</span>
+    </div>
+    <div class="full-section">
+      <div class="story-headline">Blackstone closes $7.1B data center fund — thesis: power is the bottleneck, not capital</div>
+      <div class="story-body">Blackstone Infrastructure Partners has closed a $7.1B dedicated data center development fund. The investment thesis is narrow: shovel-ready sites with existing interconnection rights and confirmed power commitments. The fund is not speculating on land — it is buying grid position.</div>
+      <div class="data-callout">
+        <div class="data-callout-label">Fund Structure</div>
+        <div class="data-callout-value">$7.1B · Entitled + powered sites only · 18-month deployment target · 12-15% target IRR</div>
+      </div>
+      <div class="story-body">The structure of the fund is a signal: institutional capital has concluded that the bottleneck in AI infrastructure is power, not money. When capital stops chasing yield and starts buying queue position, the underlying scarcity is structural. Expect follow-on funds from DigitalBridge and Blue Owl within 60 days.</div>
+      <div class="signal-source">Source: Blackstone Press Release · April 4, 2026</div>
+    </div>
+
+    <!-- Infrastructure Section -->
+    <div class="section-divider">
+      <span class="section-icon">🏗️</span>
+      <span class="section-label-text">Infrastructure & Supply Chain</span>
+    </div>
+    <div class="full-section">
+      <div class="story-headline">Vertiv: 14-month lead times for 800V DC PDUs — transformer supply chain is the new critical path</div>
+      <div class="story-body">Vertiv's Q1 supply chain update puts average 800V DC PDU lead times at 14 months. The constraint is transformer manufacturing — specifically, the high-voltage DC transformers required for 800V distribution are a different product category from the utility-scale transformers that utilities have been struggling to source. Two separate supply chain crunches happening simultaneously.</div>
+      <div class="signal-source">Source: Vertiv Supply Chain Q1 Update · April 2, 2026</div>
+    </div>
+
+    <!-- Regulatory Section -->
+    <div class="section-divider">
+      <span class="section-icon">📋</span>
+      <span class="section-label-text">Regulatory & Policy</span>
+    </div>
+    <div class="full-section">
+      <div class="story-headline">Virginia introduces emergency permitting reform for data centers — 90-day fast-track for sites over 100MW</div>
+      <div class="story-body">Virginia's legislature introduced SB 2241 this week — an emergency permitting reform bill that would create a 90-day fast-track approval process for data center projects above 100MW in pre-approved development corridors. The bill is a direct response to the loss of two hyperscaler site decisions to competing states over permitting timeline uncertainty. Loudoun County supported the bill; some environmental groups have registered opposition over water consumption disclosure requirements.</div>
+      <div class="signal-source">Source: Virginia Legislative Information System · April 3, 2026</div>
+    </div>
+
+    <!-- On the Radar -->
+    <div class="section-divider">
+      <span class="section-icon">🔭</span>
+      <span class="section-label-text">On the Radar</span>
+    </div>
+    <div class="radar-section">
+      <div class="radar-item">
+        <span class="radar-item-domain">Cooling</span>
+        <span>Submer announced a new immersion cooling formulation targeting 600kW+ rack density — first product spec designed specifically for Feynman-class deployments. Watch for adoption announcements from tier-1 hyperscalers within 90 days.</span>
+      </div>
+      <div class="radar-item">
+        <span class="radar-item-domain">New Entrants</span>
+        <span>GitHub releases for three previously untracked DCIM startups have surged this week — Faraday is monitoring Solace Infrastructure, GridPoint AI, and NocturneOps. Any of these appearing in CB Insights within 30 days would confirm the 4–8 week funding signal pattern.</span>
+      </div>
+      <div class="radar-item">
+        <span class="radar-item-domain">Hyperscaler</span>
+        <span>Microsoft Azure's Q2 earnings call is April 23. Azure infrastructure capex guidance will be the most-watched data point in the market. Consensus is $18–20B; anything above $22B would be a significant upside signal for colo and power suppliers.</span>
+      </div>
+      <div class="radar-item">
+        <span class="radar-item-domain">M&A</span>
+        <span>Three regional colo operators in the Southeast have retained advisors in the past 60 days — all have grid positions in Duke Energy territory, which has moved to the front of the utility queue for hyperscaler offtake negotiations.</span>
+      </div>
+    </div>
+
+    <!-- Faraday's Take -->
+    <div class="faradays-take">
+      <div class="take-label">Faraday's Take</div>
+      <div class="take-body">
+        <p>The market is running a story about AI infrastructure investment as a supply-constrained opportunity. That story is partially right and dangerously incomplete.</p>
+        <br>
+        <p>What's true: <strong>the physical bottleneck is real.</strong> Power, transformers, entitled land — these are genuine constraints that capital cannot simply buy its way around quickly. Blackstone's $7.1B fund is not speculation. It is the most sophisticated capital in the market telling you exactly what it believes the scarce resource is.</p>
+        <br>
+        <p>What the market is missing: <strong>the timeline is not what the press releases imply.</strong> The PJM queue absorbing at 2031 means deployments announced today on unaided sites won't generate revenue until after the Feynman generation has shipped. The capital committing now is buying options on a future that the hardware roadmap may rewrite before the infrastructure is ready to host it.</p>
+        <br>
+        <p>Faraday's read: <strong>the operators who locked power positions in 2021–2023 are not peers of the operators announcing projects today.</strong> They are a different tier of the market. The convergence everyone assumes is coming is at least three GPU generations away. In the meantime, the spread between those who have power and those who are waiting for it will be the most important structural variable in the AI infrastructure economy.</p>
+      </div>
+      <div class="take-sig">— Faraday · April 5, 2026</div>
+    </div>
+
+    <!-- Challenge CTA -->
+    <div class="challenge-cta">
+      <div>
+        <div class="challenge-cta-text">Test your edge on today's intelligence</div>
+        <div class="challenge-cta-sub">Daily Challenge · New puzzle · 5 minutes</div>
+      </div>
+      <div class="challenge-cta-links">
+        <a href="wattl/index.html" class="challenge-link">⚡ Wattl</a>
+        <a href="rackl/index.html" class="challenge-link">⚡ Rackl</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <div class="alert-footer">
+    <div class="footer-brand">FARADAY INTELLIGENCE</div>
+    <div class="footer-links">
+      <a href="index.html">Home</a>
+      <a href="faraday-pulse.html">Pulse</a>
+      <a href="wattl/index.html">Daily Challenge</a>
+      <a href="#">Manage Subscription</a>
+      <a href="#">Unsubscribe</a>
+    </div>
+  </div>
+
+</div>
+
+<script>
+  const tiers = ['s', 'm', 'l'];
+  const tierLabels = {
+    s: 'Free · Snapshot Alert',
+    m: 'Core · Full Alert',
+    l: 'Premier · Deep Alert'
+  };
+  const tierClasses = {
+    s: 'free',
+    m: 'core-tier',
+    l: 'signal-tier'
+  };
+
+  function setTier(tier) {
+    // Update buttons
+    tiers.forEach(t => {
+      document.querySelector(`[onclick="setTier('${t}')"]`).classList.toggle('active', t === tier);
+    });
+
+    // Show/hide content
+    document.getElementById('s-content').style.display = tier === 's' ? 'block' : 'none';
+    document.getElementById('m-content').style.display = tier === 'm' ? 'block' : 'none';
+    document.getElementById('l-content').style.display = tier === 'l' ? 'block' : 'none';
+
+    // Update tier badge
+    const badge = document.getElementById('tier-badge');
+    badge.innerHTML = `<span class="tier-badge ${tierClasses[tier]}">${tierLabels[tier]}</span>`;
+  }
+
+  // Initialize S tier
+  setTier('s');
+</script>
+
+</body>
+</html>

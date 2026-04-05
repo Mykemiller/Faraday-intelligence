@@ -1,0 +1,789 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Faraday Pulse — Week of April 5, 2026</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Serif:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Bricolage+Grotesque:wght@300;400;500;600&family=IBM+Plex+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --forest: #1C3424;
+    --forest-mid: #244228;
+    --forest-light: #325638;
+    --gold: #C4922A;
+    --gold-light: #DAB050;
+    --warm-white: #F8F5F0;
+    --warm-cream: #EEE6DA;
+    --near-black: #141210;
+    --sage: #8CA68A;
+    --warm-gray: #B2A898;
+    --hot: #C94040;
+    --warm: #C4922A;
+    --cool: #5A8CA0;
+    --serif: 'IBM Plex Serif', Georgia, serif;
+    --body: 'Bricolage Grotesque', sans-serif;
+    --mono: 'IBM Plex Mono', monospace;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: #E0D8CE;
+    font-family: var(--body);
+    font-size: 16px;
+    line-height: 1.6;
+  }
+
+  .pulse-container {
+    max-width: 680px;
+    margin: 28px auto;
+    background: var(--warm-white);
+    box-shadow: 0 4px 40px rgba(0,0,0,0.12);
+  }
+
+  /* ── MASTHEAD ─────────────────────────────────────────── */
+  .pulse-masthead {
+    background: var(--forest);
+    border-top: 4px solid var(--gold);
+    padding: 22px 36px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+
+  .masthead-brand {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .brand-mark {
+    width: 36px;
+    height: 36px;
+    background: rgba(248,245,240,0.08);
+    border-radius: 5px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+
+  .brand-lockup {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .brand-faraday {
+    font-family: var(--serif);
+    font-weight: 700;
+    font-size: 14px;
+    color: var(--warm-white);
+    letter-spacing: 0.06em;
+    opacity: 0.7;
+  }
+
+  .brand-pulse {
+    font-family: var(--serif);
+    font-weight: 700;
+    font-size: 22px;
+    color: var(--gold);
+    letter-spacing: 0.02em;
+    line-height: 1;
+  }
+
+  .masthead-meta {
+    text-align: right;
+  }
+
+  .meta-week {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--gold);
+    letter-spacing: 0.08em;
+  }
+
+  .meta-edition {
+    font-family: var(--mono);
+    font-size: 9px;
+    color: rgba(140,166,138,0.5);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    margin-top: 2px;
+  }
+
+  .double-rule-masthead {
+    height: 4px;
+    background: linear-gradient(180deg, var(--forest) 0%, var(--forest) 60%, var(--gold) 60%, var(--gold) 100%);
+  }
+
+  /* ── PULSE INTRO ──────────────────────────────────────── */
+  .pulse-intro {
+    padding: 32px 36px 24px;
+    border-bottom: 1px solid rgba(28,52,36,0.1);
+  }
+
+  .pulse-greeting {
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--sage);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    margin-bottom: 10px;
+  }
+
+  .pulse-lede {
+    font-family: var(--serif);
+    font-size: 20px;
+    font-weight: 600;
+    color: var(--near-black);
+    line-height: 1.4;
+    letter-spacing: -0.01em;
+    margin-bottom: 14px;
+  }
+
+  .pulse-lede em {
+    font-style: italic;
+    color: var(--forest);
+  }
+
+  .pulse-body-intro {
+    font-size: 15px;
+    color: #6B5E52;
+    line-height: 1.7;
+    font-weight: 300;
+  }
+
+  /* ── TEMPERATURE GAUGE ────────────────────────────────── */
+  .temp-section {
+    padding: 28px 36px;
+    border-bottom: 1px solid rgba(28,52,36,0.08);
+  }
+
+  .section-heading {
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--gold);
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .section-heading::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: rgba(196,146,42,0.2);
+  }
+
+  .domain-temps {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .domain-temp-row {
+    display: grid;
+    grid-template-columns: 160px 1fr auto;
+    align-items: center;
+    gap: 14px;
+  }
+
+  .domain-name {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--near-black);
+    letter-spacing: 0.04em;
+    white-space: nowrap;
+  }
+
+  .temp-bar-track {
+    height: 6px;
+    background: rgba(28,52,36,0.08);
+    border-radius: 3px;
+    overflow: hidden;
+    position: relative;
+  }
+
+  .temp-bar-fill {
+    height: 100%;
+    border-radius: 3px;
+    transition: width 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+
+  .temp-bar-fill.hot { background: var(--hot); }
+  .temp-bar-fill.warm { background: var(--warm); }
+  .temp-bar-fill.neutral { background: var(--sage); }
+  .temp-bar-fill.cool { background: var(--cool); }
+
+  .temp-label {
+    font-family: var(--mono);
+    font-size: 9px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 2px 7px;
+    border-radius: 3px;
+    white-space: nowrap;
+  }
+
+  .temp-label.hot { color: var(--hot); background: rgba(201,64,64,0.08); border: 1px solid rgba(201,64,64,0.2); }
+  .temp-label.warm { color: #7A5510; background: rgba(196,146,42,0.1); border: 1px solid rgba(196,146,42,0.25); }
+  .temp-label.neutral { color: #5A7A5A; background: rgba(140,166,138,0.1); border: 1px solid rgba(140,166,138,0.2); }
+  .temp-label.cool { color: var(--cool); background: rgba(90,140,160,0.08); border: 1px solid rgba(90,140,160,0.2); }
+
+  /* ── THIS WEEK IN THE MARKET ──────────────────────────── */
+  .market-section {
+    padding: 28px 36px;
+    border-bottom: 1px solid rgba(28,52,36,0.08);
+  }
+
+  .market-item {
+    padding: 16px 0;
+    border-bottom: 1px solid rgba(28,52,36,0.06);
+  }
+
+  .market-item:last-child { border-bottom: none; padding-bottom: 0; }
+
+  .market-item-domain {
+    font-family: var(--mono);
+    font-size: 9px;
+    color: var(--gold);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    margin-bottom: 5px;
+  }
+
+  .market-item-headline {
+    font-family: var(--serif);
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--near-black);
+    line-height: 1.35;
+    margin-bottom: 7px;
+    letter-spacing: -0.01em;
+  }
+
+  .market-item-body {
+    font-size: 14px;
+    color: #6B5E52;
+    line-height: 1.65;
+    font-weight: 300;
+  }
+
+  .market-item-source {
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--warm-gray);
+    margin-top: 6px;
+    letter-spacing: 0.04em;
+  }
+
+  /* ── WHAT FARADAY IS WATCHING ─────────────────────────── */
+  .watching-section {
+    background: var(--warm-cream);
+    padding: 28px 36px;
+    border-top: 3px solid var(--forest);
+    border-bottom: 1px solid rgba(196,146,42,0.3);
+    position: relative;
+  }
+
+  .watching-section::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 3px;
+    bottom: 0;
+    width: 0;
+    border-left: none;
+  }
+
+  .watching-label {
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--forest);
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    opacity: 0.6;
+    margin-bottom: 18px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .watching-label::before {
+    content: '👁';
+    font-size: 12px;
+    opacity: 1;
+  }
+
+  .watching-items {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+
+  .watching-item {
+    display: flex;
+    gap: 14px;
+    align-items: flex-start;
+  }
+
+  .watching-num {
+    font-family: var(--serif);
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--forest);
+    opacity: 0.15;
+    line-height: 1;
+    flex-shrink: 0;
+    margin-top: -4px;
+  }
+
+  .watching-content {}
+
+  .watching-headline {
+    font-family: var(--serif);
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--near-black);
+    margin-bottom: 4px;
+    line-height: 1.35;
+  }
+
+  .watching-body {
+    font-size: 13px;
+    color: #6B5E52;
+    line-height: 1.6;
+    font-style: italic;
+    font-family: var(--serif);
+  }
+
+  /* ── FARADAY SIGNAL INDEX PREVIEW ─────────────────────── */
+  .signal-index {
+    padding: 24px 36px;
+    border-bottom: 1px solid rgba(28,52,36,0.08);
+  }
+
+  .index-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 12px;
+    margin-top: 4px;
+  }
+
+  .index-item {
+    background: white;
+    border: 1px solid rgba(28,52,36,0.08);
+    border-radius: 6px;
+    padding: 14px;
+    text-align: center;
+  }
+
+  .index-rank {
+    font-family: var(--mono);
+    font-size: 9px;
+    color: var(--warm-gray);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-bottom: 4px;
+  }
+
+  .index-domain-name {
+    font-family: var(--serif);
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--near-black);
+    margin-bottom: 6px;
+    line-height: 1.2;
+  }
+
+  .index-score {
+    font-family: var(--mono);
+    font-size: 18px;
+    font-weight: 500;
+    color: var(--gold);
+  }
+
+  .index-score.hot { color: var(--hot); }
+  .index-score.cool { color: var(--cool); }
+
+  .index-delta {
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--sage);
+    margin-top: 2px;
+  }
+
+  /* ── CHALLENGE CTA ────────────────────────────────────── */
+  .pulse-cta {
+    background: var(--forest);
+    padding: 26px 36px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    flex-wrap: wrap;
+  }
+
+  .pulse-cta-left {}
+
+  .pulse-cta-heading {
+    font-family: var(--serif);
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--warm-white);
+    margin-bottom: 3px;
+  }
+
+  .pulse-cta-sub {
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--sage);
+    letter-spacing: 0.06em;
+  }
+
+  .pulse-cta-links {
+    display: flex;
+    gap: 10px;
+  }
+
+  .cta-link {
+    background: rgba(196,146,42,0.12);
+    border: 1px solid rgba(196,146,42,0.3);
+    color: var(--gold);
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.08em;
+    padding: 8px 16px;
+    border-radius: 3px;
+    text-decoration: none;
+    transition: all 0.2s;
+    white-space: nowrap;
+  }
+
+  .cta-link:hover { background: rgba(196,146,42,0.22); border-color: rgba(196,146,42,0.6); }
+
+  /* ── SUBSCRIBER NOTE ──────────────────────────────────── */
+  .subscriber-note {
+    padding: 24px 36px;
+    background: rgba(28,52,36,0.03);
+    border-bottom: 1px solid rgba(28,52,36,0.07);
+  }
+
+  .note-heading {
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--forest);
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    opacity: 0.5;
+    margin-bottom: 10px;
+  }
+
+  .note-body {
+    font-size: 13px;
+    color: #7A6D63;
+    line-height: 1.65;
+    font-weight: 300;
+  }
+
+  .note-body a {
+    color: var(--forest);
+    text-decoration: none;
+    border-bottom: 1px solid rgba(28,52,36,0.3);
+    transition: border-color 0.2s;
+  }
+
+  .note-body a:hover { border-color: var(--gold); }
+
+  /* ── FOOTER ──────────────────────────────────────────── */
+  .pulse-footer {
+    background: var(--forest-mid);
+    padding: 20px 36px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 12px;
+    border-top: 2px solid rgba(196,146,42,0.2);
+  }
+
+  .footer-brand-text {
+    font-family: var(--serif);
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--warm-white);
+    opacity: 0.7;
+    letter-spacing: 0.04em;
+  }
+
+  .footer-nav {
+    display: flex;
+    gap: 16px;
+  }
+
+  .footer-nav a {
+    font-family: var(--mono);
+    font-size: 9px;
+    color: rgba(140,166,138,0.5);
+    text-decoration: none;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    transition: color 0.2s;
+  }
+
+  .footer-nav a:hover { color: var(--gold); }
+
+  /* ── ANIMATIONS ──────────────────────────────────────── */
+  .temp-bar-fill {
+    width: 0;
+    animation: fillBar 1s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+    animation-delay: 0.3s;
+  }
+
+  @keyframes fillBar {
+    to { width: var(--fill-width); }
+  }
+
+  @media (max-width: 480px) {
+    .pulse-container { margin: 0; }
+    .pulse-masthead, .pulse-intro, .temp-section, .market-section,
+    .watching-section, .signal-index, .pulse-cta, .subscriber-note, .pulse-footer {
+      padding-left: 20px;
+      padding-right: 20px;
+    }
+    .domain-temp-row { grid-template-columns: 120px 1fr auto; }
+    .index-grid { grid-template-columns: 1fr 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<div class="pulse-container">
+
+  <!-- MASTHEAD -->
+  <div class="pulse-masthead">
+    <div class="masthead-brand">
+      <div class="brand-mark">
+        <svg width="22" height="22" viewBox="0 0 110 110">
+          <polyline points="10,55 25,55 35,28 45,82 55,18 65,72 75,42 85,55 100,55"
+            fill="none" stroke="#F8F5F0" stroke-width="5" stroke-linecap="round"
+            stroke-linejoin="round" opacity="0.6"/>
+          <polygon points="63,12 36,56 52,56 47,98 79,50 62,50" fill="#C4922A"
+            transform="scale(0.32) translate(105,-22)"/>
+        </svg>
+      </div>
+      <div class="brand-lockup">
+        <div class="brand-faraday">FARADAY</div>
+        <div class="brand-pulse">PULSE</div>
+      </div>
+    </div>
+    <div class="masthead-meta">
+      <div class="meta-week">Week of April 5, 2026</div>
+      <div class="meta-edition">Issue No. 12 · Free Weekly</div>
+    </div>
+  </div>
+  <div class="double-rule-masthead"></div>
+
+  <!-- PULSE INTRO -->
+  <div class="pulse-intro">
+    <div class="pulse-greeting">Market Temperature · Weekly Read</div>
+    <div class="pulse-lede">Power is the bottleneck. Capital knows it. <em>The grid doesn't care.</em></div>
+    <div class="pulse-body-intro">Another week, another record in the interconnection queue. This week Faraday is watching the compression between what capital wants to build and what the grid can absorb — and the gap is widening faster than most market participants have priced in.</div>
+  </div>
+
+  <!-- TEMPERATURE GAUGE -->
+  <div class="temp-section">
+    <div class="section-heading">Market Temperature by Domain</div>
+    <div class="domain-temps">
+
+      <div class="domain-temp-row">
+        <div class="domain-name">Power Architecture</div>
+        <div class="temp-bar-track"><div class="temp-bar-fill hot" style="--fill-width:92%"></div></div>
+        <span class="temp-label hot">Running Hot</span>
+      </div>
+
+      <div class="domain-temp-row">
+        <div class="domain-name">Chips & Density</div>
+        <div class="temp-bar-track"><div class="temp-bar-fill hot" style="--fill-width:88%"></div></div>
+        <span class="temp-label hot">Running Hot</span>
+      </div>
+
+      <div class="domain-temp-row">
+        <div class="domain-name">M&A & Capital Mkts</div>
+        <div class="temp-bar-track"><div class="temp-bar-fill warm" style="--fill-width:78%"></div></div>
+        <span class="temp-label warm">Active</span>
+      </div>
+
+      <div class="domain-temp-row">
+        <div class="domain-name">Hyperscaler Activity</div>
+        <div class="temp-bar-track"><div class="temp-bar-fill warm" style="--fill-width:74%"></div></div>
+        <span class="temp-label warm">Active</span>
+      </div>
+
+      <div class="domain-temp-row">
+        <div class="domain-name">Grid & Regulatory</div>
+        <div class="temp-bar-track"><div class="temp-bar-fill warm" style="--fill-width:70%"></div></div>
+        <span class="temp-label warm">Active</span>
+      </div>
+
+      <div class="domain-temp-row">
+        <div class="domain-name">Cooling & Water</div>
+        <div class="temp-bar-track"><div class="temp-bar-fill neutral" style="--fill-width:58%"></div></div>
+        <span class="temp-label neutral">Steady</span>
+      </div>
+
+      <div class="domain-temp-row">
+        <div class="domain-name">New Entrants</div>
+        <div class="temp-bar-track"><div class="temp-bar-fill neutral" style="--fill-width:52%"></div></div>
+        <span class="temp-label neutral">Steady</span>
+      </div>
+
+      <div class="domain-temp-row">
+        <div class="domain-name">Colocation & Edge</div>
+        <div class="temp-bar-track"><div class="temp-bar-fill cool" style="--fill-width:38%"></div></div>
+        <span class="temp-label cool">Cooling</span>
+      </div>
+
+      <div class="domain-temp-row">
+        <div class="domain-name">Orchestration</div>
+        <div class="temp-bar-track"><div class="temp-bar-fill neutral" style="--fill-width:44%"></div></div>
+        <span class="temp-label neutral">Steady</span>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- THIS WEEK IN THE MARKET -->
+  <div class="market-section">
+    <div class="section-heading">This Week in the Market</div>
+
+    <div class="market-item">
+      <div class="market-item-domain">⚡ Power Architecture</div>
+      <div class="market-item-headline">PJM queue hits 3,400 requests — 2031 absorption timeline is now the planning reality</div>
+      <div class="market-item-body">The queue number is less important than what it implies for planning horizons. Any site without existing interconnection rights is now effectively excluded from the next two GPU generations' deployment windows. This is the week that number became undeniable.</div>
+      <div class="market-item-source">PJM Interconnection · April 4, 2026</div>
+    </div>
+
+    <div class="market-item">
+      <div class="market-item-domain">🧠 Chips & Density</div>
+      <div class="market-item-headline">Vera Rubin NVL144 pulls forward six months — 480kW per rack, Q3 2026</div>
+      <div class="market-item-body">The six-month compression is the story within the story. It means facilities that were designed for Blackwell-class density are already behind — before they've been built. The hardware roadmap is now moving faster than the construction cycle.</div>
+      <div class="market-item-source">NVIDIA GTC Update · April 3, 2026</div>
+    </div>
+
+    <div class="market-item">
+      <div class="market-item-domain">💰 M&A & Capital Markets</div>
+      <div class="market-item-headline">Blackstone closes $7.1B — PE capital has concluded the bottleneck is power, not money</div>
+      <div class="market-item-body">The fund thesis says it plainly: buy grid position, not land. When the most sophisticated infrastructure capital in the market is paying a premium to skip the queue rather than buy cheap land and wait, you have a clear signal about where the scarcity is. It is not capital.</div>
+      <div class="market-item-source">Blackstone Press Release · April 4, 2026</div>
+    </div>
+
+    <div class="market-item">
+      <div class="market-item-domain">🏗️ Infrastructure</div>
+      <div class="market-item-headline">Vertiv: 800V DC PDU lead times now 14 months — the supply chain constraint nobody is covering</div>
+      <div class="market-item-body">Everyone is writing about land and power. The quieter constraint is equipment. Fourteen-month lead times mean a facility breaking ground today cannot be fully equipped for 800V DC operation until mid-2027 — which aligns uncomfortably with the Vera Rubin deployment wave.</div>
+      <div class="market-item-source">Vertiv Supply Chain Q1 · April 2, 2026</div>
+    </div>
+
+  </div>
+
+  <!-- WHAT FARADAY IS WATCHING -->
+  <div class="watching-section">
+    <div class="watching-label">What Faraday Is Watching This Week</div>
+    <div class="watching-items">
+
+      <div class="watching-item">
+        <div class="watching-num">01</div>
+        <div class="watching-content">
+          <div class="watching-headline">Microsoft Azure Q2 Earnings — April 23</div>
+          <div class="watching-body">Consensus is $18–20B in capex guidance. Anything above $22B would reset the market's understanding of the commitment timeline. Faraday is watching for language around power procurement and whether Microsoft references the PJM queue constraint explicitly.</div>
+        </div>
+      </div>
+
+      <div class="watching-item">
+        <div class="watching-num">02</div>
+        <div class="watching-content">
+          <div class="watching-headline">Three DCIM GitHub repositories that appeared this week</div>
+          <div class="watching-body">Solace Infrastructure, GridPoint AI, and NocturneOps all pushed significant code this week. Based on the 4–8 week pattern Faraday tracks between GitHub activity and funding announcements, at least one of these should appear in CB Insights by early May.</div>
+        </div>
+      </div>
+
+      <div class="watching-item">
+        <div class="watching-num">03</div>
+        <div class="watching-content">
+          <div class="watching-headline">Virginia SB 2241 — Committee vote expected next week</div>
+          <div class="watching-body">The 90-day fast-track permitting bill goes to committee. If it passes, it will be the most significant state-level data center policy action since the Loudoun County moratorium conversation in 2022. Faraday is tracking four other state legislatures watching Virginia's move before deciding their own approach.</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- SIGNAL INDEX PREVIEW -->
+  <div class="signal-index">
+    <div class="section-heading">Signal Index — Top Domains This Week</div>
+    <div class="index-grid">
+      <div class="index-item">
+        <div class="index-rank">#1</div>
+        <div class="index-domain-name">Power Architecture</div>
+        <div class="index-score hot">94</div>
+        <div class="index-delta">↑ 8 from last week</div>
+      </div>
+      <div class="index-item">
+        <div class="index-rank">#2</div>
+        <div class="index-domain-name">Chips & Density</div>
+        <div class="index-score hot">91</div>
+        <div class="index-delta">↑ 12 from last week</div>
+      </div>
+      <div class="index-item">
+        <div class="index-rank">#3</div>
+        <div class="index-domain-name">M&A & Capital</div>
+        <div class="index-score">76</div>
+        <div class="index-delta">↑ 5 from last week</div>
+      </div>
+    </div>
+    <div style="margin-top:14px; font-family:var(--mono); font-size:10px; color:var(--warm-gray); letter-spacing:0.06em;">
+      Full 9-domain Signal Index available in the Core tier. <a href="index.html#waitlist" style="color:var(--gold); text-decoration:none;">Join the waitlist →</a>
+    </div>
+  </div>
+
+  <!-- CHALLENGE CTA -->
+  <div class="pulse-cta">
+    <div class="pulse-cta-left">
+      <div class="pulse-cta-heading">Test your edge on this week's intelligence</div>
+      <div class="pulse-cta-sub">Daily Challenge · New puzzle every day · Free access</div>
+    </div>
+    <div class="pulse-cta-links">
+      <a href="wattl/index.html" class="cta-link">⚡ Play Wattl</a>
+      <a href="rackl/index.html" class="cta-link">⚡ Play Rackl</a>
+    </div>
+  </div>
+
+  <!-- SUBSCRIBER NOTE -->
+  <div class="subscriber-note">
+    <div class="note-heading">From Faraday</div>
+    <div class="note-body">Pulse is Faraday's free weekly read — market temperature, three stories, three things Faraday is watching. If you want the full daily Intelligence Alert with Faraday's Take and full domain coverage, <a href="index.html#waitlist">join the waitlist for Core and Premier access</a>. The product is in build. The gate is product maturity and waitlist size. Both are getting closer every week.</div>
+  </div>
+
+  <!-- FOOTER -->
+  <div class="pulse-footer">
+    <div class="footer-brand-text">FARADAY INTELLIGENCE · PULSE</div>
+    <nav class="footer-nav">
+      <a href="index.html">Home</a>
+      <a href="faraday-alert.html">Intelligent Alert</a>
+      <a href="wattl/index.html">Daily Challenge</a>
+      <a href="#">Manage</a>
+      <a href="#">Unsubscribe</a>
+    </nav>
+  </div>
+
+</div>
+
+</body>
+</html>
