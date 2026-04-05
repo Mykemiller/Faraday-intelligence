@@ -1,15 +1,31 @@
 {
-  "rewrites": [
-    { "source": "/(.*)", "destination": "/index.html" }
-  ],
-  "headers": [
+  "version": 2,
+  "builds": [
     {
-      "source": "/(.*)",
-      "headers": [
-        { "key": "X-Frame-Options", "value": "DENY" },
-        { "key": "X-Content-Type-Options", "value": "nosniff" },
-        { "key": "Cache-Control", "value": "public, max-age=3600" }
-      ]
+      "src": "api/**/*.js",
+      "use": "@vercel/node"
+    },
+    {
+      "src": "public/**",
+      "use": "@vercel/static"
     }
-  ]
+  ],
+  "routes": [
+    { "src": "/api/(.*)", "dest": "/api/$1" },
+    { "src": "/wattl", "dest": "/public/wattl/index.html" },
+    { "src": "/wattl/(.*)", "dest": "/public/wattl/$1" },
+    { "src": "/rackl", "dest": "/public/rackl/index.html" },
+    { "src": "/rackl/(.*)", "dest": "/public/rackl/$1" },
+    { "src": "/academy", "dest": "/public/academy/index.html" },
+    { "src": "/academy/(.*)", "dest": "/public/academy/$1" },
+    { "src": "/academy-store", "dest": "/public/academy-store/index.html" },
+    { "src": "/academy-store/(.*)", "dest": "/public/academy-store/$1" },
+    { "src": "/daily-challenge", "dest": "/public/daily-challenge/index.html" },
+    { "src": "/daily-challenge/(.*)", "dest": "/public/daily-challenge/$1" },
+    { "src": "/(.*)", "dest": "/public/$1" }
+  ],
+  "env": {
+    "BEEHIIV_API_KEY": "@beehiiv_api_key",
+    "BEEHIIV_PUB_ID": "@beehiiv_pub_id"
+  }
 }
