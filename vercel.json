@@ -23,9 +23,5 @@
     { "src": "/daily-challenge", "dest": "/public/daily-challenge/index.html" },
     { "src": "/daily-challenge/(.*)", "dest": "/public/daily-challenge/$1" },
     { "src": "/(.*)", "dest": "/public/$1" }
-  ],
-  "env": {
-    "BEEHIIV_API_KEY": "@beehiiv_api_key",
-    "BEEHIIV_PUB_ID": "@beehiiv_pub_id"
-  }
+  ]
 }
