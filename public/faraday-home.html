@@ -148,23 +148,12 @@
   }
 
   .hero-eyebrow {
-    font-family: var(--mono);
-    font-size: 11px;
+    font-family: var(--serif);
+    font-size: clamp(20px, 2.8vw, 32px);
     color: var(--gold);
-    letter-spacing: 0.16em;
-    text-transform: uppercase;
+    letter-spacing: -0.01em;
+    font-weight: 700;
     margin-bottom: 24px;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-  }
-
-  .hero-eyebrow::before {
-    content: '';
-    display: inline-block;
-    width: 28px;
-    height: 1px;
-    background: var(--gold);
   }
 
   .hero-headline {
@@ -1021,6 +1010,31 @@
     letter-spacing: 0.06em;
   }
 
+  /* ── ASK FARADAY ─────────────────────────────────────── */
+  .ask-section { background: var(--forest); padding: 0 40px 56px; }
+  .ask-inner { max-width: 720px; margin: 0 auto; }
+  .ask-label { font-family: var(--mono); font-size: 10px; color: var(--gold); letter-spacing: 0.14em; text-transform: uppercase; margin-bottom: 12px; opacity: 0.8; }
+  .ask-input-row { display: flex; border: 1px solid rgba(196,146,42,0.35); border-radius: 6px; overflow: hidden; background: rgba(255,255,255,0.04); transition: border-color 0.2s; }
+  .ask-input-row:focus-within { border-color: rgba(196,146,42,0.7); }
+  .ask-input { flex: 1; background: transparent; border: none; color: var(--warm-white); font-family: var(--body); font-size: 15px; padding: 15px 20px; outline: none; min-width: 0; }
+  .ask-input::placeholder { color: rgba(140,166,138,0.45); font-style: italic; }
+  .ask-btn { background: var(--gold); color: var(--forest); font-family: var(--mono); font-size: 11px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; padding: 0 24px; border: none; cursor: pointer; flex-shrink: 0; transition: background 0.2s; white-space: nowrap; }
+  .ask-btn:hover { background: var(--gold-light); }
+  .ask-btn:disabled { opacity: 0.6; cursor: default; }
+  .ask-suggestions { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 12px; }
+  .ask-suggestion { font-family: var(--mono); font-size: 10px; color: rgba(140,166,138,0.55); letter-spacing: 0.04em; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.07); padding: 5px 12px; border-radius: 20px; cursor: pointer; transition: all 0.15s; white-space: nowrap; }
+  .ask-suggestion:hover { color: var(--gold); border-color: rgba(196,146,42,0.3); background: rgba(196,146,42,0.06); }
+  .ask-response { margin-top: 20px; background: rgba(255,255,255,0.03); border: 1px solid rgba(196,146,42,0.2); border-radius: 6px; padding: 20px 24px; display: none; animation: fadeUp 0.4s ease both; }
+  .ask-response.visible { display: block; }
+  .ask-response-label { font-family: var(--mono); font-size: 9px; color: var(--gold); letter-spacing: 0.14em; text-transform: uppercase; margin-bottom: 10px; opacity: 0.8; }
+  .ask-response-text { font-size: 14px; color: rgba(248,245,240,0.82); line-height: 1.8; font-weight: 300; }
+  .ask-response-cta { margin-top: 16px; padding-top: 14px; border-top: 1px solid rgba(255,255,255,0.06); font-family: var(--mono); font-size: 10px; color: var(--sage); letter-spacing: 0.06em; }
+  .ask-response-cta a { color: var(--gold); text-decoration: none; }
+  .ask-dots span { display: inline-block; width: 5px; height: 5px; background: var(--gold); border-radius: 50%; animation: dotPulse 1.4s ease-in-out infinite; margin: 0 2px; }
+  .ask-dots span:nth-child(2) { animation-delay: 0.2s; }
+  .ask-dots span:nth-child(3) { animation-delay: 0.4s; }
+  @keyframes dotPulse { 0%,80%,100% { transform:scale(0.6); opacity:0.4; } 40% { transform:scale(1); opacity:1; } }
+
   /* ── BOLT SVG ICONS ──────────────────────────────────── */
   .bolt-hero { fill: var(--gold); }
   .bolt-sub { fill: var(--gold); }
@@ -1069,9 +1083,10 @@
   </div>
   <div class="masthead-meta">Intelligence Service · Beta</div>
   <nav class="masthead-nav">
-    <a href="#free">Free Access</a>
+    <a href="#starter">Get Started</a>
     <a href="#paid">Paid Tiers</a>
     <a href="#academy">Academy</a>
+    <a href="/challenge">Rackl</a>
     <a href="faraday-pulse.html">Pulse</a>
   </nav>
   <a href="#waitlist" class="masthead-cta">Join Waitlist</a>
@@ -1080,205 +1095,238 @@
 <!-- HERO -->
 <section class="hero">
   <div class="hero-inner">
-    <div class="hero-eyebrow">Intelligence Service · AI Data Center Economy</div>
+    <div class="hero-eyebrow">Faraday. Your unfair advantage.</div>
     <h1 class="hero-headline">The data center market<br>doesn't wait.<br><em>Neither does Faraday.</em></h1>
     <p class="hero-sub">The first intelligence service purpose-built for professionals who operate in and around the AI data center economy. Always on. Always ahead. The colleague you've always needed.</p>
     <div class="hero-actions">
-      <a href="#free" class="btn-primary">Start Free — No Card Required</a>
+      <a href="#starter" class="btn-primary">Start getting your unfair advantage today</a>
       <a href="#waitlist" class="btn-ghost">Join the Waitlist</a>
     </div>
     <div class="hero-rule"></div>
   </div>
 </section>
 
-<!-- DAILY CHALLENGE BANNER -->
-<div class="challenge-banner">
-  <div class="challenge-banner-inner">
-    <div>
-      <div class="challenge-label">⚡ Live Now — Rackl Daily Challenge</div>
-      <div class="challenge-title">Test your edge on today's intelligence puzzle</div>
-      <div class="challenge-desc">7 knowledge games · AI infrastructure domains · New puzzles every day · Free to play</div>
+<!-- ASK FARADAY -->
+<section class="ask-section">
+  <div class="ask-inner">
+    <div class="ask-label">✦ Ask Faraday — Data Center Intelligence</div>
+    <div class="ask-input-row">
+      <input class="ask-input" id="ask-input" type="text" maxlength="200"
+        placeholder="What's driving GPU cloud pricing in 2026? Who are the largest colocation operators by MW?"/>
+      <button class="ask-btn" id="ask-btn" onclick="askFaraday()">ASK →</button>
     </div>
-    <div class="challenge-links">
-      <a href="/challenge/rackl" class="challenge-link">
-        <span class="dot"></span> Play Today's Rackl
-      </a>
-      <a href="/challenge" class="challenge-link">
-        <span class="dot"></span> All Games →
-      </a>
-    </div>
-  </div>
-</div>
-
-<!-- FREE TIER -->
-<section class="section" id="free">
-  <div class="section-inner">
-    <div class="section-label">Free Tier — Always On</div>
-    <h2 class="section-heading">Real intelligence. Every morning.<br>No card required.</h2>
-    <p class="section-sub">The free tier is not a sample. It is a complete, daily-use product that builds the habit. Three products, zero friction, genuine value — every day.</p>
-
-    <div class="product-grid">
-
-      <!-- Intelligent Alert -->
-      <a href="faraday-alert.html" class="product-card">
-        <div class="product-card-icon">
-          <svg width="28" height="28" viewBox="0 0 110 110">
-            <circle cx="55" cy="55" r="38" fill="none" stroke="#C4922A" stroke-width="1" opacity="0.2"/>
-            <circle cx="55" cy="55" r="26" fill="none" stroke="#C4922A" stroke-width="1" opacity="0.3"/>
-            <polygon points="63,12 36,56 52,56 47,98 79,50 62,50" fill="#C4922A"/>
-          </svg>
-        </div>
-        <div class="free-badge">Free · Live MVP</div>
-        <div class="product-card-name">Intelligent Alert</div>
-        <div class="product-card-desc">Daily signal summary — the top 3 market developments across all nine intelligence domains, delivered every morning. Sharp. Opinionated. Faraday-voiced.</div>
-        <div class="product-card-cta">Open Alert MVP</div>
-      </a>
-
-      <!-- Daily Challenge — Wattl -->
-      <a href="/challenge" class="product-card">
-        <div class="product-card-icon">
-          <svg width="28" height="28" viewBox="0 0 110 110">
-            <rect x="14" y="72" width="14" height="26" rx="2" fill="#F8F5F0" opacity="0.3"/>
-            <rect x="34" y="58" width="14" height="40" rx="2" fill="#F8F5F0" opacity="0.5"/>
-            <rect x="54" y="44" width="14" height="54" rx="2" fill="#F8F5F0" opacity="0.6"/>
-            <rect x="74" y="30" width="14" height="68" rx="2" fill="#C4922A"/>
-            <polygon points="81,8 70,27 76,27 73,42 86,21 79,21" fill="#C4922A" transform="scale(0.35) translate(160,-10)"/>
-          </svg>
-        </div>
-        <div class="free-badge">Free · Live</div>
-        <div class="product-card-name">Daily Challenge — Rackl</div>
-        <div class="product-card-desc">Connections-style intelligence puzzle built from live data center signals. Test your domain knowledge. Track your streak. The front door to every Faraday relationship.</div>
-        <div class="product-card-cta">Play Today's Puzzle</div>
-      </a>
-
-      <!-- Daily Challenge — Rackl -->
-      <a href="/challenge" class="product-card">
-        <div class="product-card-icon">
-          <svg width="28" height="28" viewBox="0 0 56 56">
-            <rect x="3" y="3" width="23" height="23" rx="4" fill="#00FFB2"/>
-            <rect x="30" y="3" width="23" height="23" rx="4" fill="#FF6B00"/>
-            <rect x="3" y="30" width="23" height="23" rx="4" fill="#FFE600"/>
-            <rect x="30" y="30" width="23" height="23" rx="4" fill="#0a1a10" stroke="#00FFB2" stroke-width="1.5" stroke-dasharray="3 2"/>
-            <text x="41.5" y="47" text-anchor="middle" fill="#00FFB2" font-size="12" font-weight="800" font-family="monospace">?</text>
-          </svg>
-        </div>
-        <div class="free-badge">Free · Live</div>
-        <div class="product-card-name">Rackl — Daily Challenge</div>
-        <div class="product-card-desc">Seven daily knowledge games built from Faraday's intelligence catalog. Group tiles, decode terms, rank the stack, and more. Free, fresh, and shareable — with team leaderboards and streaks.</div>
-        <div class="product-card-cta">Play Today's Puzzle</div>
-      </a>
-
-      <!-- Pulse -->
-      <a href="faraday-pulse.html" class="product-card">
-        <div class="product-card-icon">
-          <svg width="28" height="28" viewBox="0 0 110 110">
-            <polyline points="10,55 25,55 35,28 45,82 55,18 65,72 75,42 85,55 100,55" fill="none" stroke="#F8F5F0" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" opacity="0.6"/>
-            <polygon points="63,12 36,56 52,56 47,98 79,50 62,50" fill="#C4922A" transform="scale(0.35) translate(120,-30)"/>
-          </svg>
-        </div>
-        <div class="free-badge">Free · Live MVP</div>
-        <div class="product-card-name">Pulse</div>
-        <div class="product-card-desc">Weekly market temperature read. Where the sector is running hot, where it's cooling, and what Faraday is watching. Community identity for the Faraday subscriber base.</div>
-        <div class="product-card-cta">Read This Week's Pulse</div>
-      </a>
-
+    <div class="ask-response" id="ask-response">
+      <div class="ask-response-label" id="ask-response-label">✦ Faraday</div>
+      <div class="ask-response-text" id="ask-response-text"></div>
+      <div class="ask-response-cta" id="ask-response-cta" style="display:none">
+        Want deeper intelligence across multiple domains, every day? <a href="#starter">Start getting your unfair advantage.</a>
+      </div>
     </div>
   </div>
 </section>
 
-<div class="double-rule"><div class="double-rule-forest"></div><div class="double-rule-gold"></div></div>
+<!-- DAILY CHALLENGE — PUZZLE REGISTRY -->
+<div class="challenge-banner" style="padding: 28px 40px;">
+  <div class="challenge-banner-inner" style="flex-direction: column; gap: 20px; align-items: flex-start;">
+    <div style="display:flex; justify-content:space-between; align-items:center; width:100%;">
+      <div>
+        <div class="challenge-label">⚡ Daily Challenge</div>
+        <div class="challenge-title">Test your edge today</div>
+      </div>
+      <a href="/challenge" class="challenge-link" style="flex-shrink:0;">
+        <span class="dot"></span> Your Dashboard →
+      </a>
+    </div>
+    <div style="display:grid; grid-template-columns:repeat(auto-fill, minmax(180px,1fr)); gap:10px; width:100%;">
 
-<!-- PAID TIERS — COMING SOON -->
+      <!-- Rackl — LIVE -->
+      <a href="/challenge/rackl" style="text-decoration:none;">
+        <div style="background:rgba(0,255,178,0.08); border:1px solid rgba(0,255,178,0.3); border-radius:8px; padding:12px 14px; transition:all 0.15s;" onmouseover="this.style.background='rgba(0,255,178,0.14)'" onmouseout="this.style.background='rgba(0,255,178,0.08)'">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+            <span style="font-family:var(--serif); font-size:14px; font-weight:700; color:var(--warm-white);">Rackl</span>
+            <span style="font-family:var(--mono); font-size:9px; color:#00FFB2; background:rgba(0,255,178,0.12); border:1px solid rgba(0,255,178,0.3); padding:2px 7px; border-radius:10px;">● LIVE</span>
+          </div>
+          <div style="font-family:var(--mono); font-size:10px; color:#00FFB2; letter-spacing:0.04em;">Group the tiles</div>
+        </div>
+      </a>
+
+      <!-- Signal Drop -->
+      <a href="https://www.notion.so/33989a0c168081109abccef861ccbcaf" target="_blank" style="text-decoration:none;">
+        <div style="background:rgba(0,212,255,0.05); border:1px solid rgba(0,212,255,0.15); border-radius:8px; padding:12px 14px; transition:all 0.15s;" onmouseover="this.style.background='rgba(0,212,255,0.1)'" onmouseout="this.style.background='rgba(0,212,255,0.05)'">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+            <span style="font-family:var(--serif); font-size:14px; font-weight:700; color:rgba(248,245,240,0.6);">Signal Drop</span>
+            <span style="font-family:var(--mono); font-size:9px; color:rgba(140,166,138,0.5); background:rgba(140,166,138,0.05); border:1px solid rgba(140,166,138,0.15); padding:2px 7px; border-radius:10px;">SOON</span>
+          </div>
+          <div style="font-family:var(--mono); font-size:10px; color:rgba(0,212,255,0.5); letter-spacing:0.04em;">Decode the term</div>
+        </div>
+      </a>
+
+      <!-- The Stack -->
+      <a href="https://www.notion.so/33989a0c1680810fab1feca313e8e0a3" target="_blank" style="text-decoration:none;">
+        <div style="background:rgba(255,107,0,0.05); border:1px solid rgba(255,107,0,0.15); border-radius:8px; padding:12px 14px; transition:all 0.15s;" onmouseover="this.style.background='rgba(255,107,0,0.1)'" onmouseout="this.style.background='rgba(255,107,0,0.05)'">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+            <span style="font-family:var(--serif); font-size:14px; font-weight:700; color:rgba(248,245,240,0.6);">The Stack</span>
+            <span style="font-family:var(--mono); font-size:9px; color:rgba(140,166,138,0.5); background:rgba(140,166,138,0.05); border:1px solid rgba(140,166,138,0.15); padding:2px 7px; border-radius:10px;">SOON</span>
+          </div>
+          <div style="font-family:var(--mono); font-size:10px; color:rgba(255,107,0,0.5); letter-spacing:0.04em;">Rank it right</div>
+        </div>
+      </a>
+
+      <!-- Circuit -->
+      <a href="https://www.notion.so/33989a0c1680816b8f9fcdf111eeff06" target="_blank" style="text-decoration:none;">
+        <div style="background:rgba(57,255,20,0.05); border:1px solid rgba(57,255,20,0.15); border-radius:8px; padding:12px 14px; transition:all 0.15s;" onmouseover="this.style.background='rgba(57,255,20,0.1)'" onmouseout="this.style.background='rgba(57,255,20,0.05)'">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+            <span style="font-family:var(--serif); font-size:14px; font-weight:700; color:rgba(248,245,240,0.6);">Circuit</span>
+            <span style="font-family:var(--mono); font-size:9px; color:rgba(140,166,138,0.5); background:rgba(140,166,138,0.05); border:1px solid rgba(140,166,138,0.15); padding:2px 7px; border-radius:10px;">SOON</span>
+          </div>
+          <div style="font-family:var(--mono); font-size:10px; color:rgba(57,255,20,0.5); letter-spacing:0.04em;">True or false</div>
+        </div>
+      </a>
+
+      <!-- The Brief -->
+      <a href="https://www.notion.so/33989a0c1680816ba2f7e5c02c88ad2b" target="_blank" style="text-decoration:none;">
+        <div style="background:rgba(255,0,170,0.05); border:1px solid rgba(255,0,170,0.15); border-radius:8px; padding:12px 14px; transition:all 0.15s;" onmouseover="this.style.background='rgba(255,0,170,0.1)'" onmouseout="this.style.background='rgba(255,0,170,0.05)'">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+            <span style="font-family:var(--serif); font-size:14px; font-weight:700; color:rgba(248,245,240,0.6);">The Brief</span>
+            <span style="font-family:var(--mono); font-size:9px; color:rgba(140,166,138,0.5); background:rgba(140,166,138,0.05); border:1px solid rgba(140,166,138,0.15); padding:2px 7px; border-radius:10px;">SOON</span>
+          </div>
+          <div style="font-family:var(--mono); font-size:10px; color:rgba(255,0,170,0.5); letter-spacing:0.04em;">Read the intel</div>
+        </div>
+      </a>
+
+      <!-- Dark Fiber -->
+      <a href="https://www.notion.so/33989a0c168081c1b55de2f23f1bd430" target="_blank" style="text-decoration:none;">
+        <div style="background:rgba(191,95,255,0.05); border:1px solid rgba(191,95,255,0.15); border-radius:8px; padding:12px 14px; transition:all 0.15s;" onmouseover="this.style.background='rgba(191,95,255,0.1)'" onmouseout="this.style.background='rgba(191,95,255,0.05)'">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+            <span style="font-family:var(--serif); font-size:14px; font-weight:700; color:rgba(248,245,240,0.6);">Dark Fiber</span>
+            <span style="font-family:var(--mono); font-size:9px; color:rgba(140,166,138,0.5); background:rgba(140,166,138,0.05); border:1px solid rgba(140,166,138,0.15); padding:2px 7px; border-radius:10px;">SOON</span>
+          </div>
+          <div style="font-family:var(--mono); font-size:10px; color:rgba(191,95,255,0.5); letter-spacing:0.04em;">Match the term</div>
+        </div>
+      </a>
+
+      <!-- Frequency -->
+      <a href="https://www.notion.so/33989a0c168081d8be74c5e1b7bb02da" target="_blank" style="text-decoration:none;">
+        <div style="background:rgba(255,230,0,0.05); border:1px solid rgba(255,230,0,0.15); border-radius:8px; padding:12px 14px; transition:all 0.15s;" onmouseover="this.style.background='rgba(255,230,0,0.1)'" onmouseout="this.style.background='rgba(255,230,0,0.05)'">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+            <span style="font-family:var(--serif); font-size:14px; font-weight:700; color:rgba(248,245,240,0.6);">Frequency</span>
+            <span style="font-family:var(--mono); font-size:9px; color:rgba(140,166,138,0.5); background:rgba(140,166,138,0.05); border:1px solid rgba(140,166,138,0.15); padding:2px 7px; border-radius:10px;">SOON</span>
+          </div>
+          <div style="font-family:var(--mono); font-size:10px; color:rgba(255,230,0,0.5); letter-spacing:0.04em;">5 questions</div>
+        </div>
+      </a>
+
+    </div>
+  </div>
+</div>
+
+<!-- PAID TIERS — immediately after challenge teaser -->
 <section class="tiers-section" id="paid">
   <div class="tiers-inner">
-    <div class="tiers-eyebrow">Paid Tiers — Stealth</div>
-    <h2 class="tiers-heading">Something worth waiting for is coming.</h2>
-    <p class="tiers-sub">Paid access opens when two conditions are true: the product is ready and the market has signaled demand. Early waitlist subscribers aren't waiting — they're being selected for access.</p>
+    <div class="tiers-eyebrow">Intelligence Tiers</div>
+    <h2 class="tiers-heading">The right level of edge<br>for where you are.</h2>
+    <p class="tiers-sub">From your first daily signal to a full intelligence advantage — Faraday scales with your ambition. Four tiers. Every domain. Always on.</p>
 
-    <div class="tier-cards">
+    <div class="tier-cards" style="grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));">
 
-      <!-- Signal Tier -->
-      <div class="tier-card">
-        <span class="tier-card-stealth">Coming Soon</span>
-        <div class="tier-card-icon">
+      <!-- Starter -->
+      <div class="tier-card" style="background:var(--warm-cream); border-color:rgba(28,52,36,0.18);">
+        <div class="tier-card-icon" style="background:var(--forest); border-color:rgba(196,146,42,0.2);">
+          <svg width="28" height="28" viewBox="0 0 110 110">
+            <polygon points="63,12 36,56 52,56 47,98 79,50 62,50" fill="#C4922A"/>
+          </svg>
+        </div>
+        <div class="tier-card-name" style="color:var(--forest);">Starter</div>
+        <div class="tier-card-price" style="color:var(--forest); opacity:0.55;">Your unfair advantage starts here</div>
+        <div class="tier-card-tagline" style="color:#4a5e4a;">The daily habit. Real intelligence, every morning.</div>
+        <ul class="tier-card-features">
+          <li style="color:var(--forest); opacity:0.8;">Ask me anything</li>
+          <li style="color:var(--forest); opacity:0.8;">Play the Daily Challenge</li>
+          <li style="color:var(--forest); opacity:0.8;">Intelligent Alert</li>
+          <li style="color:var(--forest); opacity:0.8;">Faraday Pulse</li>
+          <li style="color:var(--forest); opacity:0.8;">Intro to Faraday Academy</li>
+        </ul>
+        <a href="#starter" class="waitlist-btn" style="background:var(--forest); color:var(--warm-white); border-color:var(--forest);">Start getting your unfair advantage →</a>
+      </div>
+
+      <!-- Signal -->
+      <div class="tier-card" style="background:var(--warm-cream); border-color:rgba(28,52,36,0.18);">
+        <span class="tier-card-stealth">Stealth · Waitlist</span>
+        <div class="tier-card-icon" style="background:var(--forest); border-color:rgba(196,146,42,0.2);">
           <svg width="28" height="28" viewBox="0 0 110 110">
             <line x1="18" y1="28" x2="92" y2="28" stroke="#F8F5F0" stroke-width="7" stroke-linecap="round" opacity="0.9"/>
             <line x1="18" y1="46" x2="84" y2="46" stroke="#F8F5F0" stroke-width="5" stroke-linecap="round" opacity="0.65"/>
             <line x1="18" y1="62" x2="72" y2="62" stroke="#F8F5F0" stroke-width="4" stroke-linecap="round" opacity="0.45"/>
             <line x1="18" y1="76" x2="60" y2="76" stroke="#F8F5F0" stroke-width="3" stroke-linecap="round" opacity="0.3"/>
-            <line x1="18" y1="88" x2="48" y2="88" stroke="#F8F5F0" stroke-width="2" stroke-linecap="round" opacity="0.2"/>
             <polygon points="63,12 36,56 52,56 47,98 79,50 62,50" fill="#C4922A" transform="scale(0.35) translate(-10,-20)"/>
           </svg>
         </div>
-        <div class="tier-card-name">Signal</div>
-        <div class="tier-card-price">~$5 / month</div>
-        <div class="tier-card-tagline">Your first signal advantage. One product. One price.</div>
+        <div class="tier-card-name" style="color:var(--forest);">Signal</div>
+        <div class="tier-card-price" style="color:var(--forest); opacity:0.55;">Pricing at launch</div>
+        <div class="tier-card-tagline" style="color:#4a5e4a;">Your first signal advantage. Curated intelligence across multiple Intelligence Domains.</div>
         <ul class="tier-card-features">
-          <li>Curated Intelligence Feed (limited)</li>
-          <li>In-app upgrade prompts</li>
-          <li>Everything in Free</li>
+          <li style="color:var(--forest); opacity:0.8;">Everything in Free</li>
+          <li style="color:var(--forest); opacity:0.8;">Intelligence Feed — 3 domains</li>
+          <li style="color:var(--forest); opacity:0.8;">Domain Briefings — 3 domains</li>
+          <li style="color:var(--forest); opacity:0.8;">Signal Alerts</li>
+          <li style="color:var(--forest); opacity:0.8;">Academy 101 + 201</li>
         </ul>
         <a href="#waitlist" class="waitlist-btn">Join Waitlist</a>
       </div>
 
-      <!-- Core Tier -->
-      <div class="tier-card featured">
-        <span class="tier-card-stealth">Coming Soon</span>
-        <div class="tier-card-icon">
+      <!-- Premier -->
+      <div class="tier-card" style="background:var(--warm-cream); border-color:rgba(196,146,42,0.35);">
+        <span class="tier-card-stealth">Stealth · Waitlist</span>
+        <div class="tier-card-icon" style="background:var(--forest); border-color:rgba(196,146,42,0.3);">
           <svg width="28" height="28" viewBox="0 0 110 110">
-            <rect x="22" y="18" width="66" height="74" rx="4" fill="none" stroke="#F8F5F0" stroke-width="3" opacity="0.6"/>
-            <line x1="34" y1="36" x2="76" y2="36" stroke="#F8F5F0" stroke-width="2.5" stroke-linecap="round" opacity="0.5"/>
-            <line x1="34" y1="50" x2="76" y2="50" stroke="#F8F5F0" stroke-width="2.5" stroke-linecap="round" opacity="0.5"/>
-            <line x1="34" y1="64" x2="60" y2="64" stroke="#F8F5F0" stroke-width="2.5" stroke-linecap="round" opacity="0.5"/>
-            <polygon points="63,12 36,56 52,56 47,98 79,50 62,50" fill="#C4922A" transform="scale(0.35) translate(-30,10)"/>
-          </svg>
-        </div>
-        <div class="tier-card-name">Core</div>
-        <div class="tier-card-price">Join Waitlist</div>
-        <div class="tier-card-tagline">The "become dangerous" bundle. Full intelligence access, every domain, every day.</div>
-        <ul class="tier-card-features">
-          <li>Full Intelligence Feed</li>
-          <li>Daily Briefings</li>
-          <li>Real-time Alerts</li>
-          <li>Scenario Modeling</li>
-          <li>Academy 101–201</li>
-        </ul>
-        <a href="#waitlist" class="waitlist-btn">Join Waitlist</a>
-      </div>
-
-      <!-- Premier Tier -->
-      <div class="tier-card">
-        <span class="tier-card-stealth">Coming Soon</span>
-        <div class="tier-card-icon">
-          <svg width="28" height="28" viewBox="0 0 110 110">
-            <circle cx="55" cy="55" r="36" fill="none" stroke="#F8F5F0" stroke-width="2.5" opacity="0.4"/>
-            <line x1="55" y1="19" x2="55" y2="30" stroke="#F8F5F0" stroke-width="3" stroke-linecap="round" opacity="0.7"/>
-            <line x1="55" y1="80" x2="55" y2="91" stroke="#F8F5F0" stroke-width="2" stroke-linecap="round" opacity="0.4"/>
-            <line x1="19" y1="55" x2="30" y2="55" stroke="#F8F5F0" stroke-width="2" stroke-linecap="round" opacity="0.4"/>
-            <line x1="80" y1="55" x2="91" y2="55" stroke="#F8F5F0" stroke-width="2" stroke-linecap="round" opacity="0.4"/>
-            <text x="55" y="22" text-anchor="middle" font-family="IBM Plex Mono" font-size="10" fill="#C4922A" font-weight="500">N</text>
+            <circle cx="55" cy="55" r="36" fill="none" stroke="#C4922A" stroke-width="2.5" opacity="0.6"/>
             <polygon points="63,12 36,56 52,56 47,98 79,50 62,50" fill="#C4922A" transform="rotate(25,55,55) scale(0.4) translate(28,-10)"/>
           </svg>
         </div>
-        <div class="tier-card-name">Premier</div>
-        <div class="tier-card-price">Join Waitlist</div>
-        <div class="tier-card-tagline">The "unfair advantage" bundle. Faraday works with you — not just for you.</div>
+        <div class="tier-card-name" style="color:var(--forest);">Premier</div>
+        <div class="tier-card-price" style="color:var(--gold);">Pricing at launch</div>
+        <div class="tier-card-tagline" style="color:#4a5e4a;">The unfair advantage. Faraday works with you, not just for you.</div>
         <ul class="tier-card-features">
-          <li>Everything in Core</li>
-          <li>Live Agent</li>
-          <li>Thought Forge</li>
-          <li>Advisor</li>
-          <li>Custom Briefs</li>
-          <li>Academy 301 + Certification</li>
+          <li style="color:var(--forest); opacity:0.8;">Everything in Signal</li>
+          <li style="color:var(--forest); opacity:0.8;">Intelligence Feed — All Intelligence Domains</li>
+          <li style="color:var(--forest); opacity:0.8;">Unlimited Live Agent</li>
+          <li style="color:var(--forest); opacity:0.8;">Thought Forge</li>
+          <li style="color:var(--forest); opacity:0.8;">Custom Briefs</li>
+          <li style="color:var(--forest); opacity:0.8;">Academy — All Intelligence Domains</li>
         </ul>
-        <a href="#waitlist" class="waitlist-btn">Join Waitlist</a>
+        <a href="#waitlist" class="waitlist-btn" style="background:var(--gold); color:var(--forest); border-color:var(--gold);">Join Waitlist</a>
+      </div>
+
+      <!-- Academy -->
+      <div class="tier-card" style="background:var(--warm-cream); border-color:rgba(28,52,36,0.18);">
+        <span class="tier-card-stealth">Separate Product</span>
+        <div class="tier-card-icon" style="background:var(--forest); border-color:rgba(196,146,42,0.2);">
+          <svg width="28" height="28" viewBox="0 0 110 110">
+            <rect x="22" y="14" width="66" height="82" rx="4" fill="none" stroke="#F8F5F0" stroke-width="3" opacity="0.5"/>
+            <line x1="34" y1="34" x2="76" y2="34" stroke="#C4922A" stroke-width="3" stroke-linecap="round"/>
+            <line x1="34" y1="48" x2="76" y2="48" stroke="#F8F5F0" stroke-width="2" stroke-linecap="round" opacity="0.5"/>
+            <line x1="34" y1="60" x2="76" y2="60" stroke="#F8F5F0" stroke-width="2" stroke-linecap="round" opacity="0.5"/>
+            <line x1="34" y1="72" x2="60" y2="72" stroke="#F8F5F0" stroke-width="2" stroke-linecap="round" opacity="0.35"/>
+            <polygon points="63,12 36,56 52,56 47,98 79,50 62,50" fill="#C4922A" transform="scale(0.28) translate(-5,220)"/>
+          </svg>
+        </div>
+        <div class="tier-card-name" style="color:var(--forest);">Academy</div>
+        <div class="tier-card-price" style="color:var(--forest); opacity:0.55;">Pricing at launch</div>
+        <div class="tier-card-tagline" style="color:#4a5e4a;">Earn your credential. The only cert that proves present-market engagement.</div>
+        <ul class="tier-card-features">
+          <li style="color:var(--forest); opacity:0.8;">All Intelligence Domains</li>
+          <li style="color:var(--forest); opacity:0.8;">101 · 201 · 301 · 401 levels</li>
+          <li style="color:var(--forest); opacity:0.8;">Domain certifications</li>
+          <li style="color:var(--forest); opacity:0.8;">Daily Challenge integration</li>
+          <li style="color:var(--forest); opacity:0.8;">Team &amp; institutional licensing</li>
+        </ul>
+        <a href="/academy" class="waitlist-btn" style="background:var(--forest); color:var(--warm-white); border-color:var(--forest);">Explore Academy →</a>
       </div>
 
     </div>
 
-    <!-- Pricing gap note -->
-    <div style="text-align:center; font-family:var(--mono); font-size:11px; color:rgba(140,166,138,0.5); letter-spacing:0.06em; max-width:460px; margin:0 auto;">
-      Paid tiers open when the product is ready and the waitlist signals demand.<br>Both gates must clear. Neither alone is sufficient.
+    <div style="text-align:center; font-family:var(--mono); font-size:11px; color:rgba(140,166,138,0.45); letter-spacing:0.06em; max-width:460px; margin:0 auto;">
+      Paid tiers open when the product is ready and the waitlist signals demand. Both gates must clear.
     </div>
   </div>
 </section>
@@ -1296,49 +1344,78 @@
   </div>
 </section>
 
-<!-- ACADEMY -->
-<section class="academy-section" id="academy">
-  <div class="academy-inner">
-    <div>
-      <div class="academy-label">Faraday Academy</div>
-      <h2 class="academy-heading">Show your edge.<br>Earn your credential.</h2>
-      <p class="academy-body">Faraday Academy certifies the ability to read a live, changing market — not historical knowledge. The only credential in the data center sector that proves present engagement, not past study.</p>
-      <a href="https://www.notion.so/60604645ba68400ba47349285cc726a5" class="academy-cta">Explore Academy →</a>
-    </div>
-    <div class="academy-levels">
-      <div class="academy-level">
-        <span class="level-badge">101</span>
-        <div>
-          <div class="level-name">Foundations</div>
-          <div class="level-price">Free — one domain</div>
+<div class="double-rule"><div class="double-rule-forest"></div><div class="double-rule-gold"></div></div>
+
+<!-- STARTER OPTIONS — below tier cards -->
+<section class="section" id="starter">
+  <div class="section-inner">
+    <div class="section-label">Starter — Always On</div>
+    <h2 class="section-heading">Real Intelligence. Every Morning.</h2>
+    <p class="section-sub">Three options. Zero friction. Every day.</p>
+
+    <div class="product-grid">
+
+      <!-- Intelligent Alert -->
+      <a href="faraday-alert.html" class="product-card">
+        <div class="product-card-icon">
+          <svg width="28" height="28" viewBox="0 0 110 110">
+            <circle cx="55" cy="55" r="38" fill="none" stroke="#C4922A" stroke-width="1" opacity="0.2"/>
+            <circle cx="55" cy="55" r="26" fill="none" stroke="#C4922A" stroke-width="1" opacity="0.3"/>
+            <polygon points="63,12 36,56 52,56 47,98 79,50 62,50" fill="#C4922A"/>
+          </svg>
         </div>
-      </div>
-      <div class="academy-level">
-        <span class="level-badge">201</span>
-        <div>
-          <div class="level-name">Applications</div>
-          <div class="level-price">$49–99 per course</div>
+        <div class="product-card-name">Intelligent Alert</div>
+        <div class="product-card-desc">Daily signal summary across multiple intelligence domains, delivered every morning. Sharp. Opinionated. Faraday-voiced.</div>
+        <div class="product-card-cta">Open Alert</div>
+      </a>
+
+      <!-- Rackl Daily Challenge -->
+      <a href="/challenge" class="product-card">
+        <div class="product-card-icon">
+          <svg width="28" height="28" viewBox="0 0 56 56">
+            <rect x="3" y="3" width="23" height="23" rx="4" fill="#00FFB2"/>
+            <rect x="30" y="3" width="23" height="23" rx="4" fill="#FF6B00"/>
+            <rect x="3" y="30" width="23" height="23" rx="4" fill="#FFE600"/>
+            <rect x="30" y="30" width="23" height="23" rx="4" fill="#0a1a10" stroke="#00FFB2" stroke-width="1.5" stroke-dasharray="3 2"/>
+            <text x="41.5" y="47" text-anchor="middle" fill="#00FFB2" font-size="12" font-weight="800" font-family="monospace">?</text>
+          </svg>
         </div>
-      </div>
-      <div class="academy-level">
-        <span class="level-badge">301</span>
-        <div>
-          <div class="level-name">Practitioner + Certification</div>
-          <div class="level-price">$299–499 per domain track</div>
+        <div class="product-card-name">Daily Challenge</div>
+        <div class="product-card-desc">Test your edge every day. Knowledge games built from Faraday's intelligence catalog. Shareable, with team leaderboards and streaks.</div>
+        <div class="product-card-cta">Play Today</div>
+      </a>
+
+      <!-- Pulse -->
+      <a href="faraday-pulse.html" class="product-card">
+        <div class="product-card-icon">
+          <svg width="28" height="28" viewBox="0 0 110 110">
+            <polyline points="10,55 25,55 35,28 45,82 55,18 65,72 75,42 85,55 100,55" fill="none" stroke="#F8F5F0" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" opacity="0.6"/>
+            <polygon points="63,12 36,56 52,56 47,98 79,50 62,50" fill="#C4922A" transform="scale(0.35) translate(120,-30)"/>
+          </svg>
         </div>
-      </div>
-      <div class="academy-level">
-        <span class="level-badge gold">401</span>
-        <div>
-          <div class="level-name">Mastery + Institutional</div>
-          <div class="level-price">Custom · Team licensing</div>
+        <div class="product-card-name">Pulse</div>
+        <div class="product-card-desc">Weekly market temperature. Where the sector is running hot, where it's cooling, and what Faraday is watching.</div>
+        <div class="product-card-cta">Read Pulse</div>
+      </a>
+
+      <!-- Ask Faraday Anything -->
+      <a href="#ask-input" class="product-card" onclick="setTimeout(()=>document.getElementById('ask-input').focus(),100)">
+        <div class="product-card-icon">
+          <svg width="28" height="28" viewBox="0 0 110 110">
+            <circle cx="55" cy="55" r="36" fill="none" stroke="#C4922A" stroke-width="2" opacity="0.4"/>
+            <circle cx="55" cy="55" r="22" fill="none" stroke="#C4922A" stroke-width="1.5" opacity="0.25"/>
+            <text x="55" y="50" text-anchor="middle" font-family="IBM Plex Serif, serif" font-size="30" font-weight="700" fill="#C4922A">?</text>
+            <path d="M55 65 L55 72" stroke="#C4922A" stroke-width="3" stroke-linecap="round" opacity="0.6"/>
+          </svg>
         </div>
-      </div>
+        <div class="product-card-name">Ask Faraday Anything</div>
+        <div class="product-card-desc">One question a day on any data center topic. Get a direct, Faraday-voiced answer — the same intelligence your peers are paying thousands for, available to you every morning.</div>
+        <div class="product-card-cta">Ask today's question</div>
+      </a>
+
     </div>
   </div>
 </section>
-
-<!-- ABOUT -->
 <section class="about-section">
   <div class="about-inner">
     <div>
@@ -1347,7 +1424,7 @@
     <div class="about-body">
       <p>Faraday is a new category — an <strong>intelligence service</strong>. Not a SaaS tool. Not a consulting firm. The first service purpose-built for professionals who work in and around the AI data center economy.</p>
       <p>Every day, the market generates a torrent of signals: interconnection filings, regulatory proceedings, earnings calls, executive moves, capital deployments. Faraday has processed all of it, understands what it means, and delivers a clear read — without a 40-page deck or a six-figure retainer.</p>
-      <p>Faraday tracks nine Intelligence Domains — Power Architecture, Grid & Regulatory, Chips & Density, Cooling & Water Technology, M&A & Capital Markets, Hyperscaler Activity, New Entrants, Colocation & Edge, and Orchestration & Control Plane — and synthesizes them into a single, always-on stream.</p>
+      <p>Faraday tracks multiple Intelligence Domains — Power Architecture, Grid & Regulatory, Chips & Density, Cooling & Water Technology, M&A & Capital Markets, Hyperscaler Activity, New Entrants, Colocation & Edge, and Orchestration & Control Plane — and synthesizes them into a single, always-on stream.</p>
       <p style="font-family:var(--mono); font-size:12px; color:var(--warm-gray); letter-spacing:0.04em; margin-top:8px;"><em>Beyond a tool. Beyond a firm. The colleague you've always needed.</em></p>
     </div>
   </div>
@@ -1356,19 +1433,10 @@
 <!-- FOOTER -->
 <footer class="footer">
   <div>
-    <div class="footer-brand">F<span>ARADAY</span> INTELLIGENCE</div>
-    <div class="footer-tagline">Always on. Always ahead. Always Faraday.</div>
+    <div class="footer-brand">F<span>ARADAY</span></div>
+    <div class="footer-tagline">Always on. Always ahead. Your unfair advantage.</div>
   </div>
-  <div class="footer-links">
-    <a href="#free">Free Access</a>
-    <a href="#paid">Paid Tiers</a>
-    <a href="#academy">Academy</a>
-    <a href="faraday-alert.html">Intelligent Alert</a>
-    <a href="faraday-pulse.html">Pulse</a>
-    <a href="/challenge">Rackl</a>
-    <a href="/challenge/rackl">Play Today</a>
-  </div>
-  <div class="footer-copy">© 2026 Faraday Intelligence · Beta</div>
+  <div class="footer-copy">© 2026 Faraday Intelligence</div>
 </footer>
 
 <script>
@@ -1380,6 +1448,57 @@ function handleWaitlist(e) {
   msg.textContent = `✓ ${email} added to the waitlist. We'll be in touch when access opens.`;
   document.getElementById('waitlist-email').value = '';
 }
+
+function setQ(el) {
+  document.getElementById('ask-input').value = el.textContent;
+  document.getElementById('ask-input').focus();
+}
+
+async function askFaraday() {
+  const input = document.getElementById('ask-input');
+  const btn = document.getElementById('ask-btn');
+  const response = document.getElementById('ask-response');
+  const label = document.getElementById('ask-response-label');
+  const text = document.getElementById('ask-response-text');
+  const cta = document.getElementById('ask-response-cta');
+  const q = input.value.trim();
+  if (!q) return;
+
+  btn.disabled = true;
+  btn.textContent = '...';
+  response.className = 'ask-response visible';
+  label.textContent = '✦ Faraday';
+  text.innerHTML = '<span class="ask-dots"><span></span><span></span><span></span></span>';
+  cta.style.display = 'none';
+
+  try {
+    const res = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 1000,
+        system: `You are Faraday — an AI intelligence service specializing in the AI data center economy. Your voice: authoritative, warm, dry precision. You track nine Intelligence Domains: Power Architecture, Grid & Regulatory, Chips & Density, Cooling & Water Technology, M&A & Capital Markets, Hyperscaler Activity, New Entrants, Colocation & Edge, and Orchestration & Control Plane.
+
+Answer the question clearly and substantively in 3-5 sentences. Use precise industry terminology. Be direct and confident — you are not a search engine, you are an intelligence service. Do not use markdown formatting, bullet points, or headers. Write in flowing prose. End with one forward-looking insight or implication.`,
+        messages: [{ role: 'user', content: q }]
+      })
+    });
+    const data = await res.json();
+    const answer = data.content?.find(b => b.type === 'text')?.text || 'Unable to retrieve a response. Please try again.';
+    text.textContent = answer;
+    cta.style.display = 'block';
+  } catch (err) {
+    text.textContent = 'Something went wrong. Please try again.';
+  }
+
+  btn.disabled = false;
+  btn.textContent = 'ASK →';
+}
+
+document.getElementById('ask-input').addEventListener('keydown', function(e) {
+  if (e.key === 'Enter') askFaraday();
+});
 </script>
 
 </body>
