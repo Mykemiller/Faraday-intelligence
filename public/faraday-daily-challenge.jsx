@@ -1,0 +1,1320 @@
+import { useState, useEffect, useRef, useCallback } from "react";
+
+// ── Brand tokens ──────────────────────────────────────────────────────────────
+const C = {
+  forest:  "#1C3424",
+  gold:    "#C4922A",
+  cream:   "#EEE6DA",
+  white:   "#F8F5F0",
+  sage:    "#8CA68A",
+  black:   "#141210",
+  bg:      "#0D110E",
+  surface: "rgba(255,255,255,0.03)",
+  border:  "rgba(255,255,255,0.07)",
+  green:   "#4ADE80",
+  amber:   "#F59E0B",
+  red:     "#F87171",
+  text:    "#E8E4DE",
+  muted:   "#6B6560",
+  dim:     "#2A2520",
+};
+const mono  = { fontFamily:"'IBM Plex Mono',monospace" };
+const serif = { fontFamily:"'IBM Plex Serif',serif" };
+const sans  = { fontFamily:"'Bricolage Grotesque',sans-serif" };
+
+// ── Scoring constants ────────────────────────────────────────────────────────
+const BASE_SCORE = 100;
+const STREAK_MULTIPLIERS = [
+  { days:1,  mult:1.0,  badge:null              },
+  { days:7,  mult:1.25, badge:"⚡ Week Warrior"  },
+  { days:14, mult:1.5,  badge:"🏆 Fortnight"    },
+  { days:30, mult:2.0,  badge:"🌐 Signal Constant" },
+];
+const SPEED_BONUS_THRESHOLD = 0.5; // complete in <50% of time → +10pts
+const PERFECT_BONUS = 15;
+const MW_PER_PUZZLE = 5;
+const MW_STREAK_BONUS = 25; // at 7-day streak
+
+function getStreakMultiplier(streak) {
+  for (let i = STREAK_MULTIPLIERS.length - 1; i >= 0; i--) {
+    if (streak >= STREAK_MULTIPLIERS[i].days) return STREAK_MULTIPLIERS[i];
+  }
+  return STREAK_MULTIPLIERS[0];
+}
+
+function calcScore({ basePoints, maxPoints, timeElapsed, timeLimit, perfect, streak }) {
+  const accuracy = maxPoints > 0 ? (basePoints / maxPoints) : 1;
+  let score = Math.round(accuracy * BASE_SCORE);
+  if (perfect) score += PERFECT_BONUS;
+  if (timeLimit && timeElapsed < timeLimit * SPEED_BONUS_THRESHOLD) score += 10;
+  const { mult } = getStreakMultiplier(streak);
+  return Math.min(Math.round(score * mult), 150);
+}
+
+// ── Mock puzzle data (would be fetched from Airtable in production) ──────────
+const PUZZLE_DATA = {
+  Rackl: {
+    name: "The Power Stack",
+    domain: "Power Architecture",
+    groups: [
+      { label:"800V DC Transition",   color:"#1C3424", textColor:"#EEE6DA", items:["Bus bar", "DC-DC converter", "Power shelf", "OCP ORW"] },
+      { label:"Grid Access",          color:"#C4922A", textColor:"#141210", items:["Interconnect queue", "FERC Order", "Large-load study", "ISO/RTO"] },
+      { label:"BTM Generation",       color:"#2A5A3A", textColor:"#EEE6DA", items:["SMR offtake", "Gas peaker", "Solar+storage", "BYOG contract"] },
+      { label:"Cooling Architecture", color:"#5A4010", textColor:"#EEE6DA", items:["CDU", "Cold plate", "WUE", "Rear-door HX"] },
+    ],
+  },
+  "Signal Drop": {
+    name: "BUSBAR",
+    domain: "Power Architecture",
+    word: "BUSBAR",
+    clue: "A rigid conductor distributing electrical power within a switchgear panel or power distribution unit",
+    hint1: "Found in every data center switchroom",
+    hint2: "Copper or aluminum, never flexible",
+  },
+  "The Stack": {
+    name: "Rank GPU Generations: Hopper → Blackwell → Vera Rubin → Feynman",
+    domain: "Chips & Density",
+    items: ["H100 (Hopper)", "B200 (Blackwell)", "GB300 (Vera Rubin NVL72)", "Feynman (2028)"],
+    correctOrder: [0, 1, 2, 3],
+    metric: "TDP per chip (watts) — lowest to highest",
+    values: ["700W", "1000W", "1200W", "~1500W est."],
+  },
+  Circuit: {
+    name: "Power Architecture True/False Sprint #1",
+    domain: "Power Architecture",
+    timeLimit: 60,
+    questions: [
+      { q:"The 800V DC transition eliminates the need for per-rack UPS units.", a:true,  explanation:"800V DC-native racks eliminate per-rack AC/DC conversion and UPS stages, moving protection upstream." },
+      { q:"NFPA 70 currently has complete code coverage for 800V DC data center distribution.", a:false, explanation:"NFPA 70 has significant gaps for 800V DC. The code framework is still catching up to the transition." },
+      { q:"Behind-the-meter generation bypasses the ISO/RTO interconnection queue.", a:true,  explanation:"BTM generation connects directly to the facility, not to the grid — avoiding queue requirements entirely." },
+      { q:"PJM's interconnection queue average wait time is currently under 2 years.", a:false, explanation:"PJM average queue wait exceeds 5 years as of 2026, driven by unprecedented large-load applications." },
+      { q:"A CDU (Coolant Distribution Unit) is required for direct-to-chip liquid cooling.", a:true,  explanation:"The CDU is the central heat exchanger that manages facility-side coolant distribution to server-side cold plates." },
+      { q:"WUE measures watts used per watt of IT load.", a:false, explanation:"WUE (Water Usage Effectiveness) measures liters of water per kWh of IT load — it's a water metric, not power." },
+    ],
+  },
+  "The Brief": {
+    name: "The 800V DC Transition",
+    domain: "Power Architecture",
+    readTime: 90,
+    brief: `The AI data center industry is undergoing its most significant power architecture change in a generation: the shift from 415V AC to 800V DC distribution at the rack level.
+
+Legacy data centers distribute power as alternating current (AC) at 415V (or 480V in the US), which requires multiple conversion stages — transformer to switchgear to UPS to PDU — before reaching the server. Each conversion wastes energy and adds failure points.
+
+800V DC distribution eliminates three of those conversions. Power enters the facility as AC, converts once to 800V DC, and distributes directly to rack-level power shelves. GPU-native DC-DC converters inside the rack handle the final step. The result: higher efficiency, lower cooling burden on the power chain, and smaller copper footprint.
+
+Eaton, Vertiv, and Schneider Electric are all acquiring capabilities in this space. OCP's Open Rack Wide (ORW) specification formalizes the 800V DC rack interface. NVIDIA's NVLink architecture is designed around DC-native power delivery.
+
+The constraint: NFPA 70 (the National Electrical Code) does not yet have complete guidance for 800V DC in occupied buildings. Until the code catches up, facilities must navigate a patchwork of Authority Having Jurisdiction (AHJ) interpretations. Greenfield campuses are building to 800V DC today. Retrofits are operationally complex and expensive.`,
+    questions: [
+      {
+        q: "What is the primary efficiency advantage of 800V DC distribution?",
+        options: ["Higher voltage means less heat", "Fewer AC/DC conversion stages in the power chain", "Copper wire is cheaper at 800V", "UPS systems are not required"],
+        correct: 1,
+        explanation: "800V DC eliminates multiple conversion stages (transformer→switchgear→UPS→PDU→server), each of which wastes energy. Fewer conversions = higher round-trip efficiency."
+      },
+      {
+        q: "What is the current primary constraint on 800V DC adoption in existing facilities?",
+        options: ["Cost of copper busbars", "NFPA 70 code gap for 800V DC in occupied buildings", "GPU incompatibility", "Utility resistance to DC loads"],
+        correct: 1,
+        explanation: "NFPA 70 lacks complete code guidance for 800V DC. This forces facilities to work with local AHJ interpretations, creating inconsistency and risk across jurisdictions."
+      },
+      {
+        q: "Which of the following companies is NOT mentioned as acquiring capabilities in 800V DC infrastructure?",
+        options: ["Eaton", "Vertiv", "Schneider Electric", "Siemens"],
+        correct: 3,
+        explanation: "The brief mentions Eaton, Vertiv, and Schneider Electric. Siemens is a major player in this space but was not cited in this specific brief."
+      },
+    ],
+  },
+  "Dark Fiber": {
+    name: "Power Architecture Terms #1",
+    domain: "Power Architecture",
+    pairs: [
+      { term:"BUSBAR",      def:"A rigid conductor — copper or aluminum — that distributes electrical power within switchgear, bus ducts, or PDUs at high current with minimal loss"                },
+      { term:"CDU",         def:"Coolant Distribution Unit — the rack-side heat exchanger that circulates chilled facility water to server-side cold plates in a direct liquid cooling loop"    },
+      { term:"PUE",         def:"Power Usage Effectiveness — total facility power divided by IT load power; a score of 1.0 is perfect; real-world AI facilities target 1.2–1.4"                 },
+      { term:"SWITCHGEAR",  def:"The assembly of circuit breakers, disconnects, and protective devices that controls and protects the electrical distribution system in a facility"             },
+      { term:"WUE",         def:"Water Usage Effectiveness — liters of water consumed per kWh of IT load; the cooling equivalent of PUE; world-class target is below 0.5L/kWh"               },
+      { term:"INTERCONNECT",def:"The physical and contractual connection between a generation asset or large load and the ISO/RTO transmission grid; acquiring a queue position takes years" },
+    ],
+  },
+  Frequency: {
+    name: "Power Architecture Quiz #1",
+    domain: "Power Architecture",
+    questions: [
+      {
+        q: "What does the acronym 'BYOG' stand for in data center power strategy?",
+        options: ["Build Your Own Grid", "Bring Your Own Generation", "Bypass Your Operator Grid", "Backup Your Own Generator"],
+        correct: 1,
+        explanation: "BYOG (Bring Your Own Generation) refers to operators developing or contracting dedicated generation assets — nuclear, gas, solar — rather than relying solely on grid power."
+      },
+      {
+        q: "Which ISO/RTO has the largest interconnection queue backlog in North America as of 2026?",
+        options: ["ERCOT", "CAISO", "PJM", "MISO"],
+        correct: 2,
+        explanation: "PJM (covering the Mid-Atlantic and Midwest) has the largest backlog, with average queue wait times exceeding 5 years driven by AI data center demand in Northern Virginia and Ohio."
+      },
+      {
+        q: "At what voltage does the emerging DC power distribution standard for high-density AI racks operate?",
+        options: ["48V DC", "240V DC", "415V DC", "800V DC"],
+        correct: 3,
+        explanation: "800V DC is the emerging standard for high-density rack distribution, supported by OCP's Open Rack Wide (ORW) spec and NVIDIA's NVLink power architecture."
+      },
+      {
+        q: "What does 'entitlement' mean in data center site selection?",
+        options: ["Tax incentive approval", "Utility interconnection agreement", "Zoning and permitting approval for the intended use", "Grid capacity allocation"],
+        correct: 2,
+        explanation: "Entitlement refers to the regulatory and zoning approvals that permit the intended development. Entitled land with a grid queue position is categorically more valuable than unentitled land."
+      },
+    ],
+  },
+};
+
+// ── Publish pipeline helper ──────────────────────────────────────────────────
+// In production: fetch from Airtable filtering Published = "Live"
+// Status flow: Draft → In Review → Approved → Scheduled → Live → Retired
+function getPuzzleStatus(puzzleType) {
+  // Mock: all games are live for demo; in production this reads Airtable
+  return "Live";
+}
+
+// ── Shared components ─────────────────────────────────────────────────────────
+function SL({ children, color }) {
+  return <span style={{ fontSize:"10px", letterSpacing:"0.14em", color:color||C.muted, textTransform:"uppercase", ...mono }}>{children}</span>;
+}
+
+function Btn({ children, onClick, disabled, variant="primary", small }) {
+  const styles = {
+    primary: { background:`rgba(196,146,42,0.12)`, border:`1px solid rgba(196,146,42,0.4)`, color:C.gold },
+    ghost:   { background:`rgba(255,255,255,0.04)`, border:`1px solid ${C.border}`, color:C.muted },
+    success: { background:`rgba(74,222,128,0.1)`, border:`1px solid rgba(74,222,128,0.3)`, color:C.green },
+    danger:  { background:`rgba(248,113,113,0.1)`, border:`1px solid rgba(248,113,113,0.3)`, color:C.red },
+  };
+  return (
+    <button onClick={onClick} disabled={disabled} style={{
+      ...styles[variant], borderRadius:"6px",
+      padding: small ? "6px 14px" : "10px 20px",
+      fontSize: small ? "10px" : "11px",
+      cursor: disabled ? "not-allowed" : "pointer",
+      opacity: disabled ? 0.5 : 1,
+      letterSpacing:"0.08em", transition:"all 0.15s", ...mono,
+    }}>{children}</button>
+  );
+}
+
+function ProgressBar({ value, max, color }) {
+  return (
+    <div style={{ height:"3px", background:"rgba(255,255,255,0.06)", borderRadius:"2px", overflow:"hidden" }}>
+      <div style={{ height:"100%", width:`${(value/max)*100}%`, background:color||C.gold,
+        borderRadius:"2px", transition:"width 0.3s ease" }}/>
+    </div>
+  );
+}
+
+// ── Score display ─────────────────────────────────────────────────────────────
+function ScoreCard({ score, puzzleType, domain, streak, mwEarned, onShare, onNext, isNew7Day }) {
+  const emoji = score >= 130 ? "🔥" : score >= 100 ? "⚡" : score >= 75 ? "✦" : "◎";
+  return (
+    <div style={{ textAlign:"center", display:"flex", flexDirection:"column", alignItems:"center", gap:"20px" }}>
+      <div style={{ fontSize:"48px" }}>{emoji}</div>
+      <div>
+        <div style={{ fontSize:"48px", fontWeight:800, color:C.gold, letterSpacing:"-0.04em", ...sans }}>{score}</div>
+        <div style={{ fontSize:"11px", color:C.muted, marginTop:"4px", ...mono }}>points · {puzzleType}</div>
+      </div>
+      <div style={{ background:`rgba(196,146,42,0.06)`, border:`1px solid rgba(196,146,42,0.2)`,
+        borderRadius:"8px", padding:"12px 20px", display:"flex", gap:"24px" }}>
+        <div style={{ textAlign:"center" }}>
+          <div style={{ fontSize:"16px", fontWeight:700, color:C.gold, ...sans }}>{streak}</div>
+          <div style={{ fontSize:"9px", color:C.muted, ...mono }}>day streak</div>
+        </div>
+        <div style={{ width:"1px", background:C.border }}/>
+        <div style={{ textAlign:"center" }}>
+          <div style={{ fontSize:"16px", fontWeight:700, color:C.green, ...sans }}>+{mwEarned}</div>
+          <div style={{ fontSize:"9px", color:C.muted, ...mono }}>MW earned</div>
+        </div>
+      </div>
+      {isNew7Day && (
+        <div style={{ background:"rgba(245,158,11,0.08)", border:"1px solid rgba(245,158,11,0.3)",
+          borderRadius:"6px", padding:"10px 16px", fontSize:"11px", color:C.amber, ...mono }}>
+          ⚡ Week Warrior — 7-day streak! +{MW_STREAK_BONUS} bonus MW
+        </div>
+      )}
+      <div style={{ display:"flex", gap:"10px" }}>
+        <Btn onClick={onShare} variant="ghost" small>↑ Share Result</Btn>
+        <Btn onClick={onNext}>Play Another →</Btn>
+      </div>
+      <div style={{ fontSize:"9px", color:C.dim, ...mono }}>
+        Score includes {getStreakMultiplier(streak).mult}× streak multiplier
+      </div>
+    </div>
+  );
+}
+
+// ══════════════════════════════════════════════════════════════════════════════
+// GAME: RACKL — Connections-style tile grouping
+// ══════════════════════════════════════════════════════════════════════════════
+function GameRackl({ puzzle, streak, onComplete }) {
+  const allItems = puzzle.groups.flatMap((g, gi) => g.items.map((item, i) => ({ item, groupIdx:gi, id:`${gi}-${i}` })));
+  const [tiles,    setTiles]    = useState(() => [...allItems].sort(() => Math.random()-0.5));
+  const [selected, setSelected] = useState([]);
+  const [solved,   setSolved]   = useState([]);
+  const [mistakes, setMistakes] = useState(0);
+  const [feedback, setFeedback] = useState(null);
+  const [done,     setDone]     = useState(false);
+  const [scoreVal, setScoreVal] = useState(null);
+  const startTime = useRef(Date.now());
+
+  function toggle(id) {
+    if (solved.includes(id)) return;
+    setSelected(prev => prev.includes(id) ? prev.filter(x=>x!==id) : prev.length < 4 ? [...prev, id] : prev);
+  }
+
+  function submit() {
+    if (selected.length !== 4) return;
+    const groups = selected.map(id => tiles.find(t=>t.id===id).groupIdx);
+    if (groups.every(g => g === groups[0])) {
+      const newSolved = [...solved, ...selected];
+      setSolved(newSolved);
+      setSelected([]);
+      setFeedback({ type:"correct", label:puzzle.groups[groups[0]].label });
+      setTimeout(() => setFeedback(null), 1500);
+      if (newSolved.length === 16) {
+        const elapsed = (Date.now() - startTime.current) / 1000;
+        const perfect = mistakes === 0;
+        const s = calcScore({ basePoints:16, maxPoints:16, timeElapsed:elapsed, timeLimit:180, perfect, streak });
+        setScoreVal(s);
+        setDone(true);
+      }
+    } else {
+      setMistakes(m => m+1);
+      setFeedback({ type:"wrong" });
+      setSelected([]);
+      setTimeout(() => setFeedback(null), 800);
+    }
+  }
+
+  if (done) return <ScoreCard score={scoreVal} puzzleType="Rackl" domain={puzzle.domain}
+    streak={streak} mwEarned={MW_PER_PUZZLE} onShare={()=>{}} onNext={()=>onComplete(scoreVal)}
+    isNew7Day={streak===7} />;
+
+  return (
+    <div style={{ display:"flex", flexDirection:"column", gap:"16px" }}>
+      {/* Solved groups */}
+      {puzzle.groups.filter((_, gi) => solved.some(id => tiles.find(t=>t.id===id)?.groupIdx===gi)).map((g, gi) => (
+        <div key={gi} style={{ background:g.color, borderRadius:"8px", padding:"12px 16px",
+          display:"flex", alignItems:"center", gap:"12px" }}>
+          <span style={{ fontSize:"11px", fontWeight:700, color:g.textColor, letterSpacing:"0.06em", ...mono }}>{g.label}</span>
+          <span style={{ fontSize:"10px", color:g.textColor, opacity:0.7, ...mono }}>{g.items.join(" · ")}</span>
+        </div>
+      ))}
+
+      {/* Active tiles — crème background for readability */}
+      <div style={{ display:"grid", gridTemplateColumns:"repeat(4,1fr)", gap:"8px" }}>
+        {tiles.filter(t => !solved.includes(t.id)).map(t => {
+          const isSelected = selected.includes(t.id);
+          return (
+            <button key={t.id} onClick={() => toggle(t.id)} style={{
+              background: isSelected ? `rgba(196,146,42,0.2)` : C.cream,
+              border: `2px solid ${isSelected ? C.gold : "rgba(28,52,36,0.15)"}`,
+              borderRadius:"8px", padding:"14px 8px",
+              cursor:"pointer", transition:"all 0.12s",
+              transform: isSelected ? "translateY(-2px)" : "none",
+              boxShadow: isSelected ? `0 4px 12px rgba(196,146,42,0.2)` : "none",
+            }}>
+              <span style={{ fontSize:"11px", fontWeight:600, color: isSelected ? C.gold : C.black,
+                lineHeight:1.3, textAlign:"center", display:"block", ...sans }}>{t.item}</span>
+            </button>
+          );
+        })}
+      </div>
+
+      {feedback && (
+        <div style={{ textAlign:"center", fontSize:"11px", ...mono,
+          color: feedback.type==="correct" ? C.green : C.red,
+          background: feedback.type==="correct" ? "rgba(74,222,128,0.08)" : "rgba(248,113,113,0.08)",
+          border:`1px solid ${feedback.type==="correct" ? "rgba(74,222,128,0.3)" : "rgba(248,113,113,0.3)"}`,
+          borderRadius:"6px", padding:"8px" }}>
+          {feedback.type==="correct" ? `✓ ${feedback.label}` : "✗ Not quite — try again"}
+        </div>
+      )}
+
+      <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center" }}>
+        <div style={{ display:"flex", gap:"6px" }}>
+          {[...Array(4)].map((_, i) => (
+            <div key={i} style={{ width:"10px", height:"10px", borderRadius:"50%",
+              background: i < mistakes ? C.red : C.dim }} />
+          ))}
+          <span style={{ fontSize:"9px", color:C.muted, marginLeft:"6px", ...mono }}>{mistakes} mistakes</span>
+        </div>
+        <Btn onClick={submit} disabled={selected.length !== 4}>
+          Submit {selected.length}/4
+        </Btn>
+      </div>
+    </div>
+  );
+}
+
+// ══════════════════════════════════════════════════════════════════════════════
+// GAME: SIGNAL DROP — Wordle-style
+// ══════════════════════════════════════════════════════════════════════════════
+function GameSignalDrop({ puzzle, streak, onComplete }) {
+  const word     = puzzle.word.toUpperCase();
+  const [guesses, setGuesses]   = useState([]);
+  const [current, setCurrent]   = useState("");
+  const [won,     setWon]       = useState(false);
+  const [lost,    setLost]      = useState(false);
+  const [shake,   setShake]     = useState(false);
+  const [scoreVal,setScoreVal]  = useState(null);
+  const [hint,    setHint]      = useState(0);
+  const maxGuesses = 6;
+  const startTime  = useRef(Date.now());
+
+  function addLetter(l) {
+    if (current.length < word.length && !won && !lost) setCurrent(c => c+l);
+  }
+  function removeLetter() { setCurrent(c => c.slice(0,-1)); }
+
+  function submitGuess() {
+    if (current.length !== word.length) return;
+    const newGuesses = [...guesses, current];
+    setGuesses(newGuesses);
+    setCurrent("");
+    if (current === word) {
+      setWon(true);
+      const elapsed  = (Date.now() - startTime.current) / 1000;
+      const perfect  = newGuesses.length === 1;
+      const baseP    = Math.max(0, maxGuesses - newGuesses.length + 1);
+      const s = calcScore({ basePoints:baseP, maxPoints:maxGuesses, timeElapsed:elapsed, timeLimit:300, perfect, streak });
+      setScoreVal(s);
+    } else if (newGuesses.length >= maxGuesses) {
+      setLost(true);
+      setScoreVal(10);
+    }
+  }
+
+  function getTileState(rowIdx, colIdx) {
+    const guess = guesses[rowIdx];
+    if (!guess) return "empty";
+    const letter = guess[colIdx];
+    if (letter === word[colIdx]) return "correct";
+    if (word.includes(letter)) return "present";
+    return "absent";
+  }
+
+  const tileColors = { correct:"#1C3424", present:"#5A4010", absent:"#2A2520", empty:"rgba(255,255,255,0.03)" };
+  const tileText   = { correct:C.green, present:C.amber, absent:C.muted, empty:C.dim };
+
+  if (won || lost) return <ScoreCard score={scoreVal} puzzleType="Signal Drop" domain={puzzle.domain}
+    streak={streak} mwEarned={MW_PER_PUZZLE} onShare={()=>{}} onNext={()=>onComplete(scoreVal)}
+    isNew7Day={streak===7} />;
+
+  return (
+    <div style={{ display:"flex", flexDirection:"column", gap:"16px", alignItems:"center" }}>
+      <div style={{ fontSize:"10px", color:C.muted, textAlign:"center", lineHeight:1.6, ...mono, maxWidth:"360px" }}>
+        {puzzle.clue}
+        {hint > 0 && <div style={{ color:C.amber, marginTop:"4px" }}>Hint: {puzzle.hint1}</div>}
+        {hint > 1 && <div style={{ color:C.amber }}>Hint 2: {puzzle.hint2}</div>}
+      </div>
+
+      {/* Grid */}
+      <div style={{ display:"flex", flexDirection:"column", gap:"4px" }}>
+        {[...Array(maxGuesses)].map((_, ri) => {
+          const guess = guesses[ri] || (ri === guesses.length ? current : "");
+          return (
+            <div key={ri} style={{ display:"flex", gap:"4px" }}>
+              {[...Array(word.length)].map((_, ci) => {
+                const state = ri < guesses.length ? getTileState(ri, ci) : (guess[ci] ? "current" : "empty");
+                return (
+                  <div key={ci} style={{
+                    width:"44px", height:"44px", borderRadius:"4px",
+                    background: state === "current" ? "rgba(255,255,255,0.06)" : tileColors[state] || tileColors.empty,
+                    border: `2px solid ${state === "current" ? C.border : (state === "empty" ? C.dim : "transparent")}`,
+                    display:"flex", alignItems:"center", justifyContent:"center",
+                    fontSize:"16px", fontWeight:700, color: state === "current" ? C.text : (tileText[state] || C.muted),
+                    transition:"all 0.2s", ...mono,
+                  }}>
+                    {guess[ci] || ""}
+                  </div>
+                );
+              })}
+            </div>
+          );
+        })}
+      </div>
+
+      {/* Keyboard */}
+      <div style={{ display:"flex", flexDirection:"column", gap:"5px", alignItems:"center" }}>
+        {[["Q","W","E","R","T","Y","U","I","O","P"],["A","S","D","F","G","H","J","K","L"],["ENTER","Z","X","C","V","B","N","M","⌫"]].map((row, ri) => (
+          <div key={ri} style={{ display:"flex", gap:"4px" }}>
+            {row.map(key => {
+              const used = guesses.some(g => g.includes(key));
+              const isCorrect = guesses.some((g, gi) => g.split("").some((l,ci) => l===key && word[ci]===key));
+              const isPresent = !isCorrect && guesses.some(g => g.includes(key) && word.includes(key));
+              return (
+                <button key={key} onClick={() => {
+                  if (key === "ENTER") submitGuess();
+                  else if (key === "⌫") removeLetter();
+                  else addLetter(key);
+                }} style={{
+                  background: isCorrect ? "#1C3424" : isPresent ? "#5A4010" : used ? "#2A2520" : "rgba(255,255,255,0.07)",
+                  border:"none", borderRadius:"4px",
+                  width: key.length > 1 ? "52px" : "32px", height:"40px",
+                  color: isCorrect ? C.green : isPresent ? C.amber : C.text,
+                  fontSize:"11px", cursor:"pointer", fontWeight:600, ...mono,
+                }}>{key}</button>
+              );
+            })}
+          </div>
+        ))}
+      </div>
+
+      <div style={{ display:"flex", gap:"8px" }}>
+        {hint < 2 && <Btn onClick={() => setHint(h=>h+1)} variant="ghost" small>💡 Hint ({2-hint} left)</Btn>}
+      </div>
+    </div>
+  );
+}
+
+// ══════════════════════════════════════════════════════════════════════════════
+// GAME: THE STACK — Drag-to-rank
+// ══════════════════════════════════════════════════════════════════════════════
+function GameStack({ puzzle, streak, onComplete }) {
+  const [order,    setOrder]    = useState(() => [...puzzle.items.map((_,i)=>i)].sort(()=>Math.random()-0.5));
+  const [dragging, setDragging] = useState(null);
+  const [submitted,setSubmitted]= useState(false);
+  const [scoreVal, setScoreVal] = useState(null);
+  const startTime = useRef(Date.now());
+
+  function dragStart(idx) { setDragging(idx); }
+  function dragOver(e, idx) {
+    e.preventDefault();
+    if (dragging === null || dragging === idx) return;
+    const newOrder = [...order];
+    const item = newOrder.splice(dragging, 1)[0];
+    newOrder.splice(idx, 0, item);
+    setOrder(newOrder);
+    setDragging(idx);
+  }
+  function dragEnd() { setDragging(null); }
+
+  function submit() {
+    // Score: count how many are in correct relative position
+    const correct = order.filter((item, idx) => puzzle.correctOrder.indexOf(item) === idx).length;
+    const perfect = correct === order.length;
+    const elapsed = (Date.now() - startTime.current) / 1000;
+    const s = calcScore({ basePoints:correct, maxPoints:order.length, timeElapsed:elapsed, timeLimit:120, perfect, streak });
+    setScoreVal(s);
+    setSubmitted(true);
+  }
+
+  if (submitted) return (
+    <div style={{ display:"flex", flexDirection:"column", gap:"16px" }}>
+      {order.map((itemIdx, rankIdx) => {
+        const correctRank = puzzle.correctOrder.indexOf(itemIdx);
+        const isCorrect   = correctRank === rankIdx;
+        return (
+          <div key={itemIdx} style={{
+            background: isCorrect ? "rgba(74,222,128,0.08)" : "rgba(248,113,113,0.06)",
+            border:`1px solid ${isCorrect ? "rgba(74,222,128,0.3)" : "rgba(248,113,113,0.2)"}`,
+            borderRadius:"8px", padding:"12px 16px",
+            display:"flex", justifyContent:"space-between", alignItems:"center" }}>
+            <div style={{ display:"flex", gap:"12px", alignItems:"center" }}>
+              <span style={{ fontSize:"10px", color:isCorrect?C.green:C.red, ...mono }}>#{rankIdx+1}</span>
+              <span style={{ fontSize:"12px", color:C.text }}>{puzzle.items[itemIdx]}</span>
+            </div>
+            <div style={{ textAlign:"right" }}>
+              <span style={{ fontSize:"10px", color:C.muted, ...mono }}>{puzzle.values?.[correctRank] || ""}</span>
+              {!isCorrect && <div style={{ fontSize:"9px", color:C.red, ...mono }}>Correct: #{correctRank+1}</div>}
+            </div>
+          </div>
+        );
+      })}
+      <div style={{ fontSize:"10px", color:C.muted, ...mono, textAlign:"center" }}>
+        Ranking by: {puzzle.metric}
+      </div>
+      <ScoreCard score={scoreVal} puzzleType="The Stack" domain={puzzle.domain}
+        streak={streak} mwEarned={MW_PER_PUZZLE} onShare={()=>{}} onNext={()=>onComplete(scoreVal)}
+        isNew7Day={streak===7} />
+    </div>
+  );
+
+  return (
+    <div style={{ display:"flex", flexDirection:"column", gap:"12px" }}>
+      <div style={{ fontSize:"10px", color:C.muted, textAlign:"center", ...mono }}>
+        {puzzle.metric} — drag to reorder
+      </div>
+      {order.map((itemIdx, rankIdx) => (
+        <div key={itemIdx} draggable
+          onDragStart={() => dragStart(rankIdx)}
+          onDragOver={(e) => dragOver(e, rankIdx)}
+          onDragEnd={dragEnd}
+          style={{
+            background: dragging === rankIdx ? "rgba(196,146,42,0.1)" : C.surface,
+            border:`1px solid ${dragging === rankIdx ? C.gold : C.border}`,
+            borderRadius:"8px", padding:"14px 16px",
+            display:"flex", alignItems:"center", gap:"14px",
+            cursor:"grab", transition:"all 0.1s",
+            transform: dragging === rankIdx ? "scale(1.02)" : "none",
+          }}>
+          <span style={{ fontSize:"16px", color:C.dim, userSelect:"none" }}>⠿</span>
+          <span style={{ fontSize:"14px", color:C.text, flex:1, ...sans }}>{puzzle.items[itemIdx]}</span>
+          <span style={{ fontSize:"10px", color:C.muted, ...mono }}>#{rankIdx+1}</span>
+        </div>
+      ))}
+      <div style={{ marginTop:"8px" }}>
+        <Btn onClick={submit}>Lock In Ranking →</Btn>
+      </div>
+    </div>
+  );
+}
+
+// ══════════════════════════════════════════════════════════════════════════════
+// GAME: CIRCUIT — True/False sprint with timer
+// ══════════════════════════════════════════════════════════════════════════════
+function GameCircuit({ puzzle, streak, onComplete }) {
+  const [qIdx,    setQIdx]    = useState(0);
+  const [answers, setAnswers] = useState([]);
+  const [timeLeft,setTimeLeft]= useState(puzzle.timeLimit);
+  const [done,    setDone]    = useState(false);
+  const [scoreVal,setScoreVal]= useState(null);
+  const [lastFeedback, setLastFeedback] = useState(null);
+  const startTime = useRef(Date.now());
+
+  useEffect(() => {
+    if (done) return;
+    const t = setInterval(() => {
+      setTimeLeft(prev => {
+        if (prev <= 1) { clearInterval(t); finish(answers); return 0; }
+        return prev - 1;
+      });
+    }, 1000);
+    return () => clearInterval(t);
+  }, [done, answers]);
+
+  function answer(val) {
+    const q   = puzzle.questions[qIdx];
+    const ok  = (val === q.a);
+    const newAnswers = [...answers, { q:q.q, given:val, correct:q.a, ok, explanation:q.explanation }];
+    setLastFeedback(ok);
+    setTimeout(() => {
+      setLastFeedback(null);
+      if (qIdx + 1 >= puzzle.questions.length) { finish(newAnswers); }
+      else { setQIdx(i => i+1); setAnswers(newAnswers); }
+    }, 600);
+  }
+
+  function finish(finalAnswers) {
+    setDone(true);
+    const correct = finalAnswers.filter(a => a.ok).length;
+    const elapsed = (Date.now() - startTime.current) / 1000;
+    const perfect = correct === puzzle.questions.length;
+    const s = calcScore({ basePoints:correct, maxPoints:puzzle.questions.length, timeElapsed:elapsed, timeLimit:puzzle.timeLimit, perfect, streak });
+    setScoreVal(s);
+  }
+
+  if (done && scoreVal !== null) return (
+    <div style={{ display:"flex", flexDirection:"column", gap:"12px" }}>
+      {answers.map((a, i) => (
+        <div key={i} style={{
+          background: a.ok ? "rgba(74,222,128,0.05)" : "rgba(248,113,113,0.05)",
+          border:`1px solid ${a.ok ? "rgba(74,222,128,0.2)" : "rgba(248,113,113,0.2)"}`,
+          borderRadius:"8px", padding:"12px 14px" }}>
+          <div style={{ fontSize:"11px", color:C.text, marginBottom:"4px" }}>{a.q}</div>
+          <div style={{ fontSize:"9px", color:a.ok?C.green:C.red, ...mono }}>
+            {a.ok ? "✓ Correct" : `✗ You said ${a.given?"TRUE":"FALSE"} · Answer: ${a.correct?"TRUE":"FALSE"}`}
+          </div>
+          <div style={{ fontSize:"9px", color:C.muted, marginTop:"4px", lineHeight:1.5, ...mono }}>{a.explanation}</div>
+        </div>
+      ))}
+      <ScoreCard score={scoreVal} puzzleType="Circuit" domain={puzzle.domain}
+        streak={streak} mwEarned={MW_PER_PUZZLE} onShare={()=>{}} onNext={()=>onComplete(scoreVal)}
+        isNew7Day={streak===7} />
+    </div>
+  );
+
+  const q = puzzle.questions[qIdx];
+  const timePct = (timeLeft / puzzle.timeLimit) * 100;
+  const timeColor = timePct > 50 ? C.green : timePct > 25 ? C.amber : C.red;
+
+  return (
+    <div style={{ display:"flex", flexDirection:"column", gap:"20px" }}>
+      <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center" }}>
+        <SL>{qIdx+1} / {puzzle.questions.length}</SL>
+        <span style={{ fontSize:"16px", fontWeight:700, color:timeColor, ...mono }}>{timeLeft}s</span>
+      </div>
+      <ProgressBar value={timeLeft} max={puzzle.timeLimit} color={timeColor}/>
+
+      <div style={{ background:"rgba(255,255,255,0.03)", border:`1px solid ${C.border}`,
+        borderRadius:"10px", padding:"24px", minHeight:"100px",
+        display:"flex", alignItems:"center", justifyContent:"center",
+        transition:"background 0.2s",
+        backgroundColor: lastFeedback === true ? "rgba(74,222,128,0.06)" : lastFeedback === false ? "rgba(248,113,113,0.06)" : undefined }}>
+        <p style={{ fontSize:"15px", color:C.text, textAlign:"center", margin:0, lineHeight:1.6, ...sans }}>{q.q}</p>
+      </div>
+
+      <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:"12px" }}>
+        <button onClick={() => answer(true)} style={{
+          background:"rgba(74,222,128,0.08)", border:"1px solid rgba(74,222,128,0.3)",
+          borderRadius:"8px", padding:"18px", color:C.green,
+          fontSize:"14px", fontWeight:700, cursor:"pointer", ...sans,
+          transition:"all 0.1s",
+        }}>TRUE ✓</button>
+        <button onClick={() => answer(false)} style={{
+          background:"rgba(248,113,113,0.08)", border:"1px solid rgba(248,113,113,0.3)",
+          borderRadius:"8px", padding:"18px", color:C.red,
+          fontSize:"14px", fontWeight:700, cursor:"pointer", ...sans,
+          transition:"all 0.1s",
+        }}>FALSE ✗</button>
+      </div>
+    </div>
+  );
+}
+
+// ══════════════════════════════════════════════════════════════════════════════
+// GAME: THE BRIEF — Read + comprehension
+// ══════════════════════════════════════════════════════════════════════════════
+function GameBrief({ puzzle, streak, onComplete }) {
+  const [phase,   setPhase]   = useState("read"); // read | quiz | done
+  const [qIdx,    setQIdx]    = useState(0);
+  const [answers, setAnswers] = useState([]);
+  const [selected,setSelected]= useState(null);
+  const [scoreVal,setScoreVal]= useState(null);
+  const [timeLeft,setTimeLeft]= useState(puzzle.readTime);
+  const startTime = useRef(Date.now());
+
+  useEffect(() => {
+    if (phase !== "read") return;
+    const t = setInterval(() => {
+      setTimeLeft(prev => { if (prev <= 0) { clearInterval(t); return 0; } return prev - 1; });
+    }, 1000);
+    return () => clearInterval(t);
+  }, [phase]);
+
+  function pickAnswer(idx) { setSelected(idx); }
+
+  function nextQuestion() {
+    const q = puzzle.questions[qIdx];
+    const newAnswers = [...answers, { given:selected, correct:q.correct, ok:selected===q.correct, explanation:q.explanation }];
+    setAnswers(newAnswers);
+    setSelected(null);
+    if (qIdx + 1 >= puzzle.questions.length) {
+      const correct = newAnswers.filter(a => a.ok).length;
+      const elapsed = (Date.now() - startTime.current) / 1000;
+      const perfect = correct === puzzle.questions.length;
+      const s = calcScore({ basePoints:correct, maxPoints:puzzle.questions.length, timeElapsed:elapsed, timeLimit:300, perfect, streak });
+      setScoreVal(s);
+      setPhase("done");
+    } else {
+      setQIdx(i => i+1);
+    }
+  }
+
+  if (phase === "done") return (
+    <div style={{ display:"flex", flexDirection:"column", gap:"12px" }}>
+      {puzzle.questions.map((q, i) => (
+        <div key={i} style={{
+          background: answers[i]?.ok ? "rgba(74,222,128,0.05)" : "rgba(248,113,113,0.05)",
+          border:`1px solid ${answers[i]?.ok ? "rgba(74,222,128,0.2)" : "rgba(248,113,113,0.2)"}`,
+          borderRadius:"8px", padding:"12px 14px" }}>
+          <div style={{ fontSize:"11px", color:C.text, marginBottom:"6px" }}>{q.q}</div>
+          <div style={{ fontSize:"10px", color:answers[i]?.ok?C.green:C.red, ...mono }}>
+            {answers[i]?.ok ? "✓ Correct" : `✗ Correct: "${q.options[q.correct]}"`}
+          </div>
+          <div style={{ fontSize:"9px", color:C.muted, marginTop:"4px", lineHeight:1.5, ...mono }}>{q.explanation}</div>
+        </div>
+      ))}
+      <ScoreCard score={scoreVal} puzzleType="The Brief" domain={puzzle.domain}
+        streak={streak} mwEarned={MW_PER_PUZZLE} onShare={()=>{}} onNext={()=>onComplete(scoreVal)}
+        isNew7Day={streak===7} />
+    </div>
+  );
+
+  if (phase === "read") return (
+    <div style={{ display:"flex", flexDirection:"column", gap:"16px" }}>
+      <div style={{ display:"flex", justifyContent:"space-between" }}>
+        <SL>Read the brief</SL>
+        <span style={{ fontSize:"10px", color:C.muted, ...mono }}>{timeLeft}s suggested read time</span>
+      </div>
+      <div style={{ background:"rgba(255,255,255,0.025)", border:`1px solid ${C.border}`,
+        borderRadius:"8px", padding:"20px", maxHeight:"320px", overflowY:"auto" }}>
+        {puzzle.brief.split("\n\n").map((p, i) => (
+          <p key={i} style={{ fontSize:"12px", color:C.text, lineHeight:1.7, marginBottom:"12px",
+            marginTop:0, ...sans }}>{p}</p>
+        ))}
+      </div>
+      <Btn onClick={() => setPhase("quiz")}>Ready — Take the Quiz →</Btn>
+    </div>
+  );
+
+  const q = puzzle.questions[qIdx];
+  return (
+    <div style={{ display:"flex", flexDirection:"column", gap:"16px" }}>
+      <SL>Question {qIdx+1} of {puzzle.questions.length}</SL>
+      <div style={{ background:C.surface, border:`1px solid ${C.border}`,
+        borderRadius:"8px", padding:"16px" }}>
+        <p style={{ fontSize:"13px", color:C.text, margin:0, lineHeight:1.6, ...sans }}>{q.q}</p>
+      </div>
+      <div style={{ display:"flex", flexDirection:"column", gap:"8px" }}>
+        {q.options.map((opt, i) => (
+          <button key={i} onClick={() => pickAnswer(i)} style={{
+            background: selected === i ? "rgba(196,146,42,0.1)" : C.surface,
+            border:`1px solid ${selected === i ? C.gold : C.border}`,
+            borderRadius:"6px", padding:"12px 16px", textAlign:"left",
+            cursor:"pointer", fontSize:"12px", color: selected===i ? C.gold : C.text,
+            transition:"all 0.12s", ...sans,
+          }}>
+            <span style={{ color:C.muted, marginRight:"10px", ...mono }}>{String.fromCharCode(65+i)}.</span>{opt}
+          </button>
+        ))}
+      </div>
+      <Btn onClick={nextQuestion} disabled={selected === null}>
+        {qIdx + 1 < puzzle.questions.length ? "Next Question →" : "Submit Answers →"}
+      </Btn>
+    </div>
+  );
+}
+
+// ══════════════════════════════════════════════════════════════════════════════
+// GAME: DARK FIBER — Term ↔ Definition matching
+// ══════════════════════════════════════════════════════════════════════════════
+function GameDarkFiber({ puzzle, streak, onComplete }) {
+  const [selectedTerm, setSelectedTerm] = useState(null);
+  const [selectedDef,  setSelectedDef]  = useState(null);
+  const [matched,      setMatched]      = useState([]);
+  const [wrong,        setWrong]        = useState(false);
+  const [scoreVal,     setScoreVal]     = useState(null);
+  const [done,         setDone]         = useState(false);
+  const [mistakes,     setMistakes]     = useState(0);
+  const [shuffledDefs, setShuffledDefs] = useState(() => [...puzzle.pairs].sort(()=>Math.random()-0.5).map(p=>p.term));
+  const startTime = useRef(Date.now());
+
+  useEffect(() => {
+    if (!selectedTerm || !selectedDef) return;
+    if (selectedTerm === selectedDef) {
+      const newMatched = [...matched, selectedTerm];
+      setMatched(newMatched);
+      setSelectedTerm(null);
+      setSelectedDef(null);
+      if (newMatched.length === puzzle.pairs.length) {
+        const elapsed = (Date.now() - startTime.current) / 1000;
+        const perfect = mistakes === 0;
+        const s = calcScore({ basePoints:puzzle.pairs.length, maxPoints:puzzle.pairs.length, timeElapsed:elapsed, timeLimit:180, perfect, streak });
+        setScoreVal(s);
+        setDone(true);
+      }
+    } else {
+      setWrong(true);
+      setMistakes(m=>m+1);
+      setTimeout(() => { setWrong(false); setSelectedTerm(null); setSelectedDef(null); }, 800);
+    }
+  }, [selectedTerm, selectedDef]);
+
+  if (done) return <ScoreCard score={scoreVal} puzzleType="Dark Fiber" domain={puzzle.domain}
+    streak={streak} mwEarned={MW_PER_PUZZLE} onShare={()=>{}} onNext={()=>onComplete(scoreVal)}
+    isNew7Day={streak===7} />;
+
+  return (
+    <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:"10px" }}>
+      {/* Terms column */}
+      <div style={{ display:"flex", flexDirection:"column", gap:"6px" }}>
+        <SL color={C.gold}>Terms</SL>
+        {puzzle.pairs.map(p => {
+          const isMatched = matched.includes(p.term);
+          const isSel = selectedTerm === p.term;
+          return (
+            <button key={p.term} onClick={() => !isMatched && setSelectedTerm(p.term)} style={{
+              background: isMatched ? "rgba(74,222,128,0.08)" : isSel ? "rgba(196,146,42,0.12)" : C.surface,
+              border:`1px solid ${isMatched ? "rgba(74,222,128,0.3)" : isSel ? C.gold : C.border}`,
+              borderRadius:"6px", padding:"10px 12px", textAlign:"left",
+              cursor: isMatched ? "default" : "pointer",
+              color: isMatched ? C.green : isSel ? C.gold : C.text,
+              fontSize:"11px", fontWeight:600, ...mono, transition:"all 0.12s",
+            }}>{p.term}</button>
+          );
+        })}
+      </div>
+      {/* Definitions column */}
+      <div style={{ display:"flex", flexDirection:"column", gap:"6px" }}>
+        <SL color={C.cyan||C.sage}>Definitions</SL>
+        {shuffledDefs.map(term => {
+          const pair = puzzle.pairs.find(p => p.term === term);
+          const isMatched = matched.includes(term);
+          const isSel = selectedDef === term;
+          return (
+            <button key={term} onClick={() => !isMatched && setSelectedDef(term)} style={{
+              background: isMatched ? "rgba(74,222,128,0.08)" : isSel ? "rgba(140,166,138,0.12)" : C.surface,
+              border:`1px solid ${isMatched ? "rgba(74,222,128,0.3)" : isSel ? C.sage : (wrong&&isSel?"rgba(248,113,113,0.4)":C.border)}`,
+              borderRadius:"6px", padding:"10px 12px", textAlign:"left",
+              cursor: isMatched ? "default" : "pointer",
+              color: isMatched ? C.green : isSel ? C.sage : C.muted,
+              fontSize:"10px", lineHeight:1.5, ...mono, transition:"all 0.12s",
+            }}>{pair.def.length > 80 ? pair.def.slice(0,80)+"…" : pair.def}</button>
+          );
+        })}
+      </div>
+      {wrong && (
+        <div style={{ gridColumn:"1/-1", textAlign:"center", fontSize:"10px", color:C.red,
+          background:"rgba(248,113,113,0.06)", border:"1px solid rgba(248,113,113,0.2)",
+          borderRadius:"4px", padding:"6px", ...mono }}>
+          ✗ Incorrect match — try again ({mistakes} mistakes)
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ══════════════════════════════════════════════════════════════════════════════
+// GAME: FREQUENCY — Multiple choice quiz
+// ══════════════════════════════════════════════════════════════════════════════
+function GameFrequency({ puzzle, streak, onComplete }) {
+  const [qIdx,    setQIdx]    = useState(0);
+  const [answers, setAnswers] = useState([]);
+  const [selected,setSelected]= useState(null);
+  const [revealed,setRevealed]= useState(false);
+  const [scoreVal,setScoreVal]= useState(null);
+  const [done,    setDone]    = useState(false);
+  const startTime = useRef(Date.now());
+
+  function pick(idx) {
+    if (revealed) return;
+    setSelected(idx);
+    setRevealed(true);
+  }
+
+  function next() {
+    const q = puzzle.questions[qIdx];
+    const newAnswers = [...answers, { given:selected, correct:q.correct, ok:selected===q.correct, explanation:q.explanation }];
+    setAnswers(newAnswers);
+    setSelected(null);
+    setRevealed(false);
+    if (qIdx + 1 >= puzzle.questions.length) {
+      const correct = newAnswers.filter(a=>a.ok).length;
+      const elapsed = (Date.now() - startTime.current) / 1000;
+      const perfect = correct === puzzle.questions.length;
+      const s = calcScore({ basePoints:correct, maxPoints:puzzle.questions.length, timeElapsed:elapsed, timeLimit:240, perfect, streak });
+      setScoreVal(s);
+      setDone(true);
+    } else {
+      setQIdx(i=>i+1);
+    }
+  }
+
+  if (done) return (
+    <div style={{ display:"flex", flexDirection:"column", gap:"12px" }}>
+      {puzzle.questions.map((q,i) => (
+        <div key={i} style={{
+          background: answers[i]?.ok ? "rgba(74,222,128,0.05)" : "rgba(248,113,113,0.05)",
+          border:`1px solid ${answers[i]?.ok ? "rgba(74,222,128,0.2)" : "rgba(248,113,113,0.2)"}`,
+          borderRadius:"8px", padding:"12px" }}>
+          <div style={{ fontSize:"11px", color:C.text, marginBottom:"4px" }}>{q.q}</div>
+          <div style={{ fontSize:"10px", color:answers[i]?.ok?C.green:C.red, ...mono }}>
+            {answers[i]?.ok ? "✓ Correct" : `✗ Answer: "${q.options[q.correct]}"`}
+          </div>
+          <div style={{ fontSize:"9px", color:C.muted, marginTop:"4px", lineHeight:1.5, ...mono }}>{q.explanation}</div>
+        </div>
+      ))}
+      <ScoreCard score={scoreVal} puzzleType="Frequency" domain={puzzle.domain}
+        streak={streak} mwEarned={MW_PER_PUZZLE} onShare={()=>{}} onNext={()=>onComplete(scoreVal)}
+        isNew7Day={streak===7} />
+    </div>
+  );
+
+  const q = puzzle.questions[qIdx];
+  return (
+    <div style={{ display:"flex", flexDirection:"column", gap:"16px" }}>
+      <div style={{ display:"flex", justifyContent:"space-between" }}>
+        <SL>{qIdx+1} / {puzzle.questions.length}</SL>
+        <ProgressBar value={qIdx+1} max={puzzle.questions.length} color={C.violet||C.sage} />
+      </div>
+      <div style={{ background:C.surface, border:`1px solid ${C.border}`, borderRadius:"10px", padding:"20px" }}>
+        <p style={{ fontSize:"14px", color:C.text, margin:0, lineHeight:1.6, ...sans }}>{q.q}</p>
+      </div>
+      <div style={{ display:"flex", flexDirection:"column", gap:"8px" }}>
+        {q.options.map((opt, i) => {
+          const isCorrect = revealed && i === q.correct;
+          const isWrong   = revealed && i === selected && i !== q.correct;
+          return (
+            <button key={i} onClick={() => pick(i)} style={{
+              background: isCorrect ? "rgba(74,222,128,0.1)" : isWrong ? "rgba(248,113,113,0.1)" :
+                (selected===i&&!revealed) ? "rgba(196,146,42,0.1)" : C.surface,
+              border:`1px solid ${isCorrect ? "rgba(74,222,128,0.4)" : isWrong ? "rgba(248,113,113,0.4)" :
+                (selected===i&&!revealed) ? C.gold : C.border}`,
+              borderRadius:"6px", padding:"12px 16px", textAlign:"left",
+              cursor: revealed ? "default" : "pointer",
+              fontSize:"12px", color: isCorrect ? C.green : isWrong ? C.red :
+                (selected===i&&!revealed) ? C.gold : C.text,
+              transition:"all 0.15s", ...sans,
+            }}>
+              <span style={{ color:C.muted, marginRight:"10px", ...mono }}>{String.fromCharCode(65+i)}.</span>{opt}
+            </button>
+          );
+        })}
+      </div>
+      {revealed && (
+        <div>
+          <div style={{ fontSize:"10px", color:C.muted, lineHeight:1.6, ...mono,
+            background:"rgba(255,255,255,0.02)", borderRadius:"6px", padding:"10px",
+            marginBottom:"10px" }}>{q.explanation}</div>
+          <Btn onClick={next}>
+            {qIdx + 1 < puzzle.questions.length ? "Next Question →" : "See Results →"}
+          </Btn>
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ══════════════════════════════════════════════════════════════════════════════
+// SOCIAL GATE — Email capture
+// ══════════════════════════════════════════════════════════════════════════════
+function SocialGate({ trigger, onRegister, onDismiss }) {
+  const [email,   setEmail]   = useState("");
+  const [sent,    setSent]    = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [error,   setError]   = useState("");
+
+  const headlines = {
+    leaderboard:   { h:"You just scored. See where you rank.", sub:"Drop your email to join the leaderboard and track your streak." },
+    streak:        { h:"7-day streak — you're on a run.", sub:"Register to keep your streak alive across sessions." },
+    team:          { h:"You've been challenged.", sub:"Add your email to accept and track your score against theirs." },
+    default:       { h:"Want to track your streak?", sub:"One email. No password. We send a magic link." },
+  };
+  const copy = headlines[trigger] || headlines.default;
+
+  async function submit() {
+    if (!email || !email.includes("@")) { setError("Enter a valid email address"); return; }
+    setLoading(true);
+    setError("");
+    // In production: POST to your magic link endpoint (challenge@faradayintelligence.com flow)
+    // For now: simulate the registration
+    await new Promise(r => setTimeout(r, 1200));
+    setSent(true);
+    setLoading(false);
+    if (onRegister) onRegister(email);
+  }
+
+  if (sent) return (
+    <div style={{ textAlign:"center", padding:"24px" }}>
+      <div style={{ fontSize:"32px", marginBottom:"12px" }}>✦</div>
+      <div style={{ fontSize:"15px", fontWeight:700, color:C.gold, marginBottom:"8px", ...sans }}>Check your inbox</div>
+      <div style={{ fontSize:"11px", color:C.muted, lineHeight:1.6, ...mono }}>
+        We sent a magic link to <span style={{ color:C.text }}>{email}</span>.<br/>
+        Click it to activate your leaderboard profile and streak tracking.
+      </div>
+      <div style={{ marginTop:"16px" }}>
+        <Btn onClick={onDismiss} variant="ghost" small>Continue playing →</Btn>
+      </div>
+    </div>
+  );
+
+  return (
+    <div style={{ display:"flex", flexDirection:"column", gap:"16px" }}>
+      <div>
+        <div style={{ fontSize:"16px", fontWeight:700, color:C.text, marginBottom:"6px", ...sans }}>{copy.h}</div>
+        <div style={{ fontSize:"11px", color:C.muted, lineHeight:1.5, ...mono }}>{copy.sub}</div>
+      </div>
+      <div style={{ display:"flex", gap:"8px" }}>
+        <input value={email} onChange={e=>setEmail(e.target.value)}
+          onKeyDown={e=>e.key==="Enter"&&submit()}
+          placeholder="your@email.com"
+          style={{ flex:1, background:"rgba(255,255,255,0.04)", border:`1px solid ${C.border}`,
+            borderRadius:"6px", padding:"10px 14px", color:C.text, fontSize:"12px", ...mono }} />
+        <Btn onClick={submit} disabled={loading || !email}>
+          {loading ? "…" : "→"}
+        </Btn>
+      </div>
+      {error && <div style={{ fontSize:"10px", color:C.red, ...mono }}>{error}</div>}
+      <div style={{ display:"flex", gap:"10px", alignItems:"center" }}>
+        <div style={{ flex:1, height:"1px", background:C.border }}/>
+        <span style={{ fontSize:"9px", color:C.dim, ...mono }}>OR</span>
+        <div style={{ flex:1, height:"1px", background:C.border }}/>
+      </div>
+      <Btn onClick={onDismiss} variant="ghost" small>Skip — play without tracking</Btn>
+      <div style={{ fontSize:"9px", color:C.dim, lineHeight:1.5, ...mono }}>
+        No password. No newsletter. One magic link per session. Your email is only used for game notifications and streak persistence.
+      </div>
+    </div>
+  );
+}
+
+// ══════════════════════════════════════════════════════════════════════════════
+// GAME TILES — Lobby
+// ══════════════════════════════════════════════════════════════════════════════
+const GAME_CONFIGS = [
+  { type:"Rackl",       icon:"◈", desc:"Group the tiles — four connected sets", time:"~3 min", color:"#1C3424"  },
+  { type:"Signal Drop", icon:"◉", desc:"Guess the industry term — Wordle style", time:"~2 min", color:"#2A1A0A"  },
+  { type:"The Stack",   icon:"⠿", desc:"Drag to rank in the correct order",    time:"~2 min", color:"#0A2A1A"  },
+  { type:"Circuit",     icon:"⚡", desc:"True/False sprint — beat the clock",   time:"~2 min", color:"#2A0A1A"  },
+  { type:"The Brief",   icon:"◎", desc:"Read the intelligence brief, then answer", time:"~4 min", color:"#0A1A2A" },
+  { type:"Dark Fiber",  icon:"◇", desc:"Match terms to their definitions",     time:"~3 min", color:"#1A1A0A"  },
+  { type:"Frequency",   icon:"⬡", desc:"Multiple choice knowledge quiz",       time:"~3 min", color:"#0A0A2A"  },
+];
+
+function GameTile({ config, plays, onPlay }) {
+  return (
+    <button onClick={onPlay} style={{
+      background:`linear-gradient(135deg, ${config.color}, rgba(255,255,255,0.01))`,
+      border:`1px solid rgba(255,255,255,0.08)`,
+      borderRadius:"12px", padding:"20px",
+      cursor:"pointer", textAlign:"left",
+      transition:"all 0.15s", display:"flex", flexDirection:"column", gap:"8px",
+    }}
+    onMouseEnter={e => { e.currentTarget.style.border="1px solid rgba(196,146,42,0.3)"; e.currentTarget.style.transform="translateY(-2px)"; }}
+    onMouseLeave={e => { e.currentTarget.style.border="1px solid rgba(255,255,255,0.08)"; e.currentTarget.style.transform="none"; }}>
+      <div style={{ display:"flex", justifyContent:"space-between", alignItems:"flex-start" }}>
+        <span style={{ fontSize:"22px" }}>{config.icon}</span>
+        <span style={{ fontSize:"9px", color:C.muted, ...mono }}>{config.time}</span>
+      </div>
+      <div style={{ fontSize:"14px", fontWeight:700, color:C.text, ...sans }}>{config.type}</div>
+      <div style={{ fontSize:"10px", color:C.muted, lineHeight:1.4, ...mono }}>{config.desc}</div>
+      <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginTop:"4px" }}>
+        <span style={{ fontSize:"9px", color:C.dim, ...mono }}>Power Architecture</span>
+        <span style={{ fontSize:"9px", color:C.dim, ...mono }}>{plays.toLocaleString()} plays today</span>
+      </div>
+    </button>
+  );
+}
+
+// ══════════════════════════════════════════════════════════════════════════════
+// MAIN — Daily Challenge App
+// ══════════════════════════════════════════════════════════════════════════════
+export default function DailyChallenge() {
+  const [screen,     setScreen]     = useState("lobby");  // lobby | game | gate | result
+  const [activeGame, setActiveGame] = useState(null);
+  const [email,      setEmail]      = useState(null);     // registered email
+  const [streak,     setStreak]     = useState(3);        // mock: 3-day streak
+  const [mwBalance,  setMwBalance]  = useState(487);
+  const [gamesPlayed,setGamesPlayed]= useState(0);
+  const [gateReason, setGateReason] = useState(null);
+  const [lastScore,  setLastScore]  = useState(null);
+  // mock play counts for tiles (would come from live Supabase in production)
+  const [playCounts] = useState({
+    "Rackl":1240,"Signal Drop":892,"The Stack":743,"Circuit":1105,
+    "The Brief":580,"Dark Fiber":671,"Frequency":834,
+  });
+
+  useEffect(() => {
+    const link = document.createElement("link");
+    link.rel  = "stylesheet";
+    link.href = "https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@300;400;500&family=IBM+Plex+Serif:ital,wght@0,400;0,700;1,400&family=Bricolage+Grotesque:wght@400;500;600;700&display=swap";
+    document.head.appendChild(link);
+    const style = document.createElement("style");
+    style.textContent = `
+      * { box-sizing:border-box; }
+      @keyframes fadeUp { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:translateY(0)} }
+      @keyframes pulse  { 0%,100%{opacity:1} 50%{opacity:0.4} }
+      .ca { animation:fadeUp 0.3s ease forwards; }
+      button { font-family:inherit; }
+      input { font-family:inherit; }
+      input:focus { border-color:rgba(196,146,42,0.4)!important; outline:none; box-shadow:0 0 0 2px rgba(196,146,42,0.05); }
+      ::-webkit-scrollbar { width:4px; }
+      ::-webkit-scrollbar-thumb { background:rgba(255,255,255,0.08); border-radius:2px; }
+    `;
+    document.head.appendChild(style);
+  }, []);
+
+  function startGame(gameType) {
+    setActiveGame(gameType);
+    setScreen("game");
+  }
+
+  function onGameComplete(score) {
+    setLastScore(score);
+    setGamesPlayed(g => g+1);
+    setMwBalance(b => b + MW_PER_PUZZLE + (streak === 6 ? MW_STREAK_BONUS : 0));
+    setStreak(s => s+1);
+    // Show social gate after first game if not registered
+    if (!email && gamesPlayed === 0) {
+      setGateReason("leaderboard");
+      setScreen("gate");
+    } else {
+      setScreen("lobby");
+    }
+  }
+
+  function onRegister(emailAddr) {
+    setEmail(emailAddr);
+    setTimeout(() => setScreen("lobby"), 2000);
+  }
+
+  function onGateDismiss() {
+    setScreen("lobby");
+  }
+
+  const GAME_COMPONENTS = {
+    "Rackl":       GameRackl,
+    "Signal Drop": GameSignalDrop,
+    "The Stack":   GameStack,
+    "Circuit":     GameCircuit,
+    "The Brief":   GameBrief,
+    "Dark Fiber":  GameDarkFiber,
+    "Frequency":   GameFrequency,
+  };
+
+  return (
+    <div style={{ minHeight:"100vh", background:C.bg, color:C.text, ...mono }}>
+
+      {/* ── HEADER ── */}
+      <div style={{ borderBottom:`1px solid ${C.border}`, padding:"14px 24px",
+        display:"flex", justifyContent:"space-between", alignItems:"center",
+        background:"rgba(0,0,0,0.3)", backdropFilter:"blur(8px)",
+        position:"sticky", top:0, zIndex:50 }}>
+        <div style={{ display:"flex", alignItems:"center", gap:"10px" }}>
+          <div style={{ width:"28px", height:"28px", borderRadius:"6px",
+            background:`linear-gradient(135deg,${C.forest},${C.gold}66)`,
+            border:`1px solid ${C.gold}44`,
+            display:"flex", alignItems:"center", justifyContent:"center",
+            fontSize:"11px", fontWeight:800, color:C.gold, ...serif }}>F</div>
+          <div>
+            <div style={{ fontSize:"12px", fontWeight:700, color:C.text, letterSpacing:"-0.01em", ...sans }}>Faraday</div>
+            <div style={{ fontSize:"9px", color:C.muted, letterSpacing:"0.1em" }}>DAILY CHALLENGE</div>
+          </div>
+        </div>
+        <div style={{ display:"flex", alignItems:"center", gap:"10px" }}>
+          {/* Live pulse */}
+          <div style={{ display:"flex", alignItems:"center", gap:"5px" }}>
+            <div style={{ width:"5px", height:"5px", borderRadius:"50%",
+              background:C.green, animation:"pulse 2s ease infinite" }}/>
+            <span style={{ fontSize:"9px", color:C.green, letterSpacing:"0.1em" }}>LIVE</span>
+          </div>
+          {/* Streak */}
+          <div style={{ display:"flex", alignItems:"center", gap:"5px",
+            background:"rgba(245,158,11,0.08)", border:"1px solid rgba(245,158,11,0.2)",
+            borderRadius:"4px", padding:"4px 8px" }}>
+            <span style={{ fontSize:"9px" }}>🔥</span>
+            <span style={{ fontSize:"10px", color:C.amber }}>{streak} day streak</span>
+          </div>
+          {/* MW balance */}
+          <div style={{ fontSize:"10px", color:C.gold, background:"rgba(196,146,42,0.08)",
+            border:`1px solid rgba(196,146,42,0.2)`, borderRadius:"4px", padding:"4px 8px" }}>
+            {mwBalance} MW
+          </div>
+          {!email && (
+            <button onClick={() => { setGateReason("default"); setScreen("gate"); }} style={{
+              background:"rgba(255,255,255,0.04)", border:`1px solid ${C.border}`,
+              color:C.muted, borderRadius:"4px", padding:"5px 12px",
+              fontSize:"9px", cursor:"pointer", letterSpacing:"0.08em", ...mono }}>
+              Sign In →
+            </button>
+          )}
+          {screen !== "lobby" && (
+            <button onClick={() => setScreen("lobby")} style={{
+              background:"none", border:`1px solid ${C.border}`,
+              color:C.muted, borderRadius:"4px", padding:"5px 12px",
+              fontSize:"9px", cursor:"pointer", ...mono }}>
+              ← Lobby
+            </button>
+          )}
+        </div>
+      </div>
+
+      {/* ── BODY ── */}
+      <div style={{ maxWidth:"760px", margin:"0 auto", padding:"28px 24px" }}>
+
+        {/* LOBBY */}
+        {screen === "lobby" && (
+          <div className="ca">
+            <div style={{ marginBottom:"28px" }}>
+              <h1 style={{ fontSize:"28px", fontWeight:800, color:C.text,
+                letterSpacing:"-0.03em", margin:"0 0 8px", ...sans }}>
+                Test your edge.
+              </h1>
+              <p style={{ fontSize:"12px", color:C.muted, margin:0, lineHeight:1.6, ...mono }}>
+                Seven daily intelligence challenges for people who work in and around<br/>
+                the AI data center economy. Free to play. Two minutes.
+              </p>
+            </div>
+
+            {/* Game tiles */}
+            <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fill,minmax(200px,1fr))", gap:"12px", marginBottom:"32px" }}>
+              {GAME_CONFIGS.map(config => (
+                <GameTile key={config.type} config={config}
+                  plays={playCounts[config.type] || 0}
+                  onPlay={() => startGame(config.type)} />
+              ))}
+            </div>
+
+            {/* Social proof strip */}
+            <div style={{ display:"flex", gap:"24px", padding:"16px 20px",
+              background:"rgba(255,255,255,0.02)", border:`1px solid ${C.border}`,
+              borderRadius:"8px", marginBottom:"24px" }}>
+              {[
+                { label:"Active streaks today", value:"847", color:C.amber },
+                { label:"Total plays today",    value:"5,065", color:C.gold },
+                { label:"Share rate",           value:"23%",   color:C.green },
+              ].map(s => (
+                <div key={s.label}>
+                  <div style={{ fontSize:"16px", fontWeight:700, color:s.color, ...sans }}>{s.value}</div>
+                  <div style={{ fontSize:"9px", color:C.muted, ...mono }}>{s.label}</div>
+                </div>
+              ))}
+              {email && (
+                <div style={{ marginLeft:"auto" }}>
+                  <div style={{ fontSize:"10px", color:C.green, ...mono }}>✓ Registered</div>
+                  <div style={{ fontSize:"9px", color:C.muted, ...mono }}>{email}</div>
+                </div>
+              )}
+            </div>
+
+            {/* Tip of the day */}
+            <div style={{ background:C.forest, borderRadius:"8px", padding:"20px 24px",
+              borderTop:`3px solid ${C.gold}` }}>
+              <div style={{ display:"flex", justifyContent:"space-between", marginBottom:"10px" }}>
+                <SL color={C.cream}>Faraday Tip of the Day</SL>
+                <span style={{ fontSize:"9px", color:C.gold, background:`rgba(196,146,42,0.15)`,
+                  border:`1px solid rgba(196,146,42,0.3)`, padding:"2px 8px", borderRadius:"3px",
+                  ...mono, letterSpacing:"0.08em" }}>POWER ARCHITECTURE</span>
+              </div>
+              <p style={{ fontSize:"13px", color:C.cream, lineHeight:1.7, margin:0, ...serif,
+                fontStyle:"italic" }}>
+                "The 800V DC transition isn't a technology decision — it's a real estate decision.
+                Legacy AC facilities can't retrofit fast enough to host Blackwell-class density.
+                The hardware roadmap and the facility obsolescence schedule are the same document."
+              </p>
+            </div>
+          </div>
+        )}
+
+        {/* GAME */}
+        {screen === "game" && activeGame && (() => {
+          const GameComponent = GAME_COMPONENTS[activeGame];
+          const puzzle = PUZZLE_DATA[activeGame];
+          const config = GAME_CONFIGS.find(c=>c.type===activeGame);
+          if (!GameComponent || !puzzle) return <div style={{ color:C.red }}>Puzzle not found</div>;
+          return (
+            <div className="ca">
+              {/* Game header */}
+              <div style={{ marginBottom:"20px" }}>
+                <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:"6px" }}>
+                  <div style={{ display:"flex", alignItems:"center", gap:"8px" }}>
+                    <span style={{ fontSize:"16px" }}>{config.icon}</span>
+                    <span style={{ fontSize:"14px", fontWeight:700, color:C.text, ...sans }}>{activeGame}</span>
+                  </div>
+                  <div style={{ display:"flex", gap:"8px" }}>
+                    <span style={{ fontSize:"9px", color:C.muted, background:"rgba(255,255,255,0.04)",
+                      border:`1px solid ${C.border}`, padding:"3px 8px", borderRadius:"3px", ...mono }}>
+                      {puzzle.domain}
+                    </span>
+                    <span style={{ fontSize:"9px", color:C.muted, ...mono }}>{config.time}</span>
+                  </div>
+                </div>
+                <div style={{ fontSize:"11px", color:C.muted, ...mono }}>{puzzle.name}</div>
+              </div>
+              <GameComponent puzzle={puzzle} streak={streak} onComplete={onGameComplete} />
+            </div>
+          );
+        })()}
+
+        {/* SOCIAL GATE */}
+        {screen === "gate" && (
+          <div className="ca" style={{ maxWidth:"420px", margin:"0 auto" }}>
+            <div style={{ background:C.surface, border:`1px solid ${C.border}`,
+              borderRadius:"12px", padding:"28px" }}>
+              <SocialGate trigger={gateReason} onRegister={onRegister} onDismiss={onGateDismiss} />
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
