@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Faraday Intelligence — Subscriber Profile</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Serif:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Bricolage+Grotesque:wght@300;400;500;600&family=IBM+Plex+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: #0D110E; }
+</style>
+</head>
+<body>
+<div id="root"></div>
+
+<script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
+<script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
+<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+<script>
+// Fetch the JSX source, patch imports/exports, compile with Babel, and render
+fetch('faraday-subscriber-profile-v7.jsx')
+  .then(r => r.text())
+  .then(jsx => {
+    // Remove ES module import/export syntax for browser use
+    jsx = jsx.replace(/^import\s.*from\s+["']react["'];?/m, 'const { useState, useEffect, useRef } = React;');
+    jsx = jsx.replace(/^export\s+default\s+/m, '');
+
+    // Compile JSX to JS using Babel
+    const compiled = Babel.transform(jsx, { presets: ['react'] }).code;
+
+    // Execute compiled code
+    const fn = new Function('React', 'ReactDOM', compiled + '\nreturn SubscriberProfileV7;');
+    const Component = fn(React, ReactDOM);
+
+    // Render
+    const root = ReactDOM.createRoot(document.getElementById('root'));
+    root.render(React.createElement(Component));
+  })
+  .catch(err => {
+    document.getElementById('root').innerHTML =
+      '<div style="color:#F87171;padding:40px;font-family:monospace">' +
+      '<h2>Profile Loading Error</h2><pre>' + err.message + '</pre></div>';
+  });
+</script>
+</body>
+</html>
