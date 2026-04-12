@@ -13,7 +13,7 @@
   "routes": [
     { "src": "/api/subscribe/?", "dest": "/api/subscribe.js" },
     { "src": "^/$", "dest": "/public/faraday-home.html" },
-    { "src": "/profile", "dest": "/public/faraday-subscriber-profile-v7.jsx" },
+    { "src": "/profile", "dest": "/public/faraday-subscriber-profile-v7.html" },
     { "src": "/wattl", "dest": "/public/wattl/index.html" },
     { "src": "/wattl/(.*)", "dest": "/public/wattl/$1" },
     { "src": "/rackl", "dest": "/public/rackl/index.html" },
@@ -27,3 +27,4 @@
     { "src": "/(.*)", "dest": "/public/$1" }
   ]
 }
+
