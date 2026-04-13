@@ -86,7 +86,7 @@
         jsxCode = jsxCode
           .replace(/import\s+\{[^}]*\}\s+from\s+['"].*?['"];?/g, '')
           .replace(/import\s+.*?from\s+['"].*?['"];?/g, '')
-          .replace(/export\s+default\s+function\s+/g, 'function _App_')
+          .replace(/export\s+default\s+function\s+\w+/g, 'function _App_')
           .replace(/export\s+default\s+/g, 'const _App_ = ')
           .replace(/export\s+const\s+/g, 'const ')
           .replace(/export\s+function\s+/g, 'function ');
@@ -99,8 +99,7 @@
         const compiled = Babel.transform(jsxCode, {
           presets: ['react'],
           filename: 'daily-challenge.jsx'
-        });
-
+.replace(/export\s+default\s+function\s+\w+/g, 'function _App_')
         // Execute the compiled code
         const fn = new Function('React', 'ReactDOM', 'useState', 'useEffect', 'useRef', 'useCallback', compiled.code);
         fn(React, ReactDOM, useState, useEffect, useRef, useCallback);
