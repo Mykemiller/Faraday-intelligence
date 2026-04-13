@@ -1,0 +1,510 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Faraday Daily Challenge — Teams</title>
+<meta name="description" content="Form a team, play the Daily Challenge together, and compete on the seasonal leaderboard.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Serif:ital,wght@0,400;0,600;0,700;1,400&family=Bricolage+Grotesque:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --forest: #1C3424;
+    --forest-mid: #244228;
+    --forest-light: #325638;
+    --gold: #C4922A;
+    --gold-light: #DAB050;
+    --warm-white: #F8F5F0;
+    --warm-cream: #EEE6DA;
+    --near-black: #141210;
+    --sage: #8CA68A;
+    --warm-gray: #B2A898;
+    --serif: 'IBM Plex Serif', Georgia, serif;
+    --body: 'Bricolage Grotesque', sans-serif;
+    --mono: 'IBM Plex Mono', monospace;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    background: var(--warm-white);
+    color: var(--near-black);
+    font-family: var(--body);
+    font-size: 16px;
+    line-height: 1.6;
+    min-height: 100vh;
+  }
+  a { color: inherit; text-decoration: none; }
+
+  .header {
+    background: var(--forest);
+    color: var(--warm-white);
+    padding: 16px 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 2px solid var(--gold);
+  }
+  .brand {
+    font-family: var(--serif);
+    font-weight: 700;
+    font-size: 18px;
+    letter-spacing: 0.02em;
+  }
+  .brand .bolt { color: var(--gold); }
+  .nav a {
+    font-family: var(--mono);
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin-left: 20px;
+    color: var(--warm-cream);
+    transition: color 0.2s;
+  }
+  .nav a:hover { color: var(--gold); }
+
+  .container {
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 40px 24px 80px;
+  }
+
+  .hero {
+    text-align: center;
+    padding: 40px 0 32px;
+    border-bottom: 1px solid rgba(28,52,36,0.12);
+    margin-bottom: 40px;
+  }
+  .eyebrow {
+    font-family: var(--mono);
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.18em;
+    color: var(--gold);
+    margin-bottom: 12px;
+  }
+  h1 {
+    font-family: var(--serif);
+    font-weight: 700;
+    font-size: 44px;
+    line-height: 1.1;
+    color: var(--forest);
+    margin-bottom: 16px;
+  }
+  .lede {
+    font-size: 18px;
+    color: var(--forest-mid);
+    max-width: 600px;
+    margin: 0 auto;
+  }
+
+  .season-banner {
+    background: linear-gradient(135deg, var(--forest) 0%, var(--forest-mid) 100%);
+    color: var(--warm-white);
+    border-radius: 12px;
+    padding: 20px 24px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 16px;
+    margin-bottom: 32px;
+    border: 1px solid var(--gold);
+  }
+  .season-label {
+    font-family: var(--mono);
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.16em;
+    color: var(--gold);
+    margin-bottom: 4px;
+  }
+  .season-name {
+    font-family: var(--serif);
+    font-weight: 700;
+    font-size: 22px;
+  }
+  .season-dates {
+    font-family: var(--mono);
+    font-size: 13px;
+    color: var(--warm-cream);
+    opacity: 0.85;
+  }
+
+  .grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+    margin-bottom: 40px;
+  }
+  @media (max-width: 720px) { .grid { grid-template-columns: 1fr; } }
+
+  .card {
+    background: white;
+    border: 1px solid var(--warm-cream);
+    border-radius: 12px;
+    padding: 28px;
+    transition: box-shadow 0.2s, transform 0.2s;
+  }
+  .card:hover { box-shadow: 0 6px 18px rgba(28,52,36,0.08); }
+
+  .card h2 {
+    font-family: var(--serif);
+    font-weight: 700;
+    font-size: 22px;
+    color: var(--forest);
+    margin-bottom: 8px;
+  }
+  .card p {
+    color: var(--forest-mid);
+    font-size: 14px;
+    margin-bottom: 20px;
+  }
+
+  label {
+    display: block;
+    font-family: var(--mono);
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: var(--forest-light);
+    margin-bottom: 6px;
+    margin-top: 14px;
+  }
+  input[type="text"], input[type="email"] {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid var(--warm-cream);
+    border-radius: 6px;
+    font-family: var(--body);
+    font-size: 14px;
+    background: var(--warm-white);
+    color: var(--near-black);
+  }
+  input:focus {
+    outline: none;
+    border-color: var(--gold);
+    box-shadow: 0 0 0 3px rgba(196,146,42,0.15);
+  }
+
+  .btn {
+    display: inline-block;
+    background: var(--forest);
+    color: var(--warm-white);
+    padding: 10px 20px;
+    border: none;
+    border-radius: 6px;
+    font-family: var(--mono);
+    font-size: 12px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    cursor: pointer;
+    margin-top: 16px;
+    transition: background 0.2s;
+  }
+  .btn:hover { background: var(--forest-mid); }
+  .btn.gold { background: var(--gold); color: var(--forest); }
+  .btn.gold:hover { background: var(--gold-light); }
+
+  .leaderboard {
+    background: white;
+    border: 1px solid var(--warm-cream);
+    border-radius: 12px;
+    padding: 28px;
+    margin-bottom: 32px;
+  }
+  .leaderboard h2 {
+    font-family: var(--serif);
+    font-weight: 700;
+    font-size: 24px;
+    color: var(--forest);
+    margin-bottom: 4px;
+  }
+  .leaderboard .sub {
+    color: var(--forest-light);
+    font-size: 13px;
+    margin-bottom: 20px;
+  }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  th {
+    text-align: left;
+    font-family: var(--mono);
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: var(--forest-light);
+    padding: 10px 12px;
+    border-bottom: 1px solid var(--warm-cream);
+  }
+  th.num, td.num { text-align: right; }
+  td {
+    padding: 14px 12px;
+    border-bottom: 1px solid var(--warm-cream);
+    font-size: 14px;
+  }
+  tr:last-child td { border-bottom: none; }
+  .rank {
+    font-family: var(--mono);
+    font-weight: 500;
+    color: var(--gold);
+  }
+  .team-name {
+    font-family: var(--serif);
+    font-weight: 600;
+    color: var(--forest);
+  }
+  .mw {
+    font-family: var(--mono);
+    font-weight: 500;
+    color: var(--forest-mid);
+  }
+
+  .explainer {
+    background: var(--warm-cream);
+    border-radius: 12px;
+    padding: 28px;
+    margin-bottom: 24px;
+  }
+  .explainer h3 {
+    font-family: var(--serif);
+    font-weight: 700;
+    font-size: 18px;
+    color: var(--forest);
+    margin-bottom: 12px;
+  }
+  .explainer ul {
+    list-style: none;
+    padding: 0;
+  }
+  .explainer li {
+    padding: 6px 0 6px 22px;
+    position: relative;
+    color: var(--forest-mid);
+    font-size: 14px;
+  }
+  .explainer li::before {
+    content: "⚡";
+    color: var(--gold);
+    position: absolute;
+    left: 0;
+  }
+
+  .hidden { display: none; }
+  .share-block {
+    margin-top: 14px;
+    padding: 12px;
+    background: var(--warm-cream);
+    border-radius: 6px;
+    font-family: var(--mono);
+    font-size: 12px;
+    word-break: break-all;
+    color: var(--forest);
+  }
+  .copied {
+    color: var(--gold);
+    font-family: var(--mono);
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin-left: 8px;
+  }
+
+  footer {
+    text-align: center;
+    padding: 32px 24px;
+    color: var(--warm-gray);
+    font-family: var(--mono);
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    border-top: 1px solid rgba(28,52,36,0.08);
+  }
+</style>
+</head>
+<body>
+<header class="header">
+  <a href="/" class="brand">⚡ Faraday <span class="bolt">Intelligence</span></a>
+  <nav class="nav">
+    <a href="/daily-challenge">Daily Challenge</a>
+    <a href="/teams">Teams</a>
+    <a href="/profile">Profile</a>
+  </nav>
+</header>
+
+<div class="container">
+  <section class="hero">
+    <div class="eyebrow">Daily Challenge · Teams</div>
+    <h1>Play together. Win together.</h1>
+    <p class="lede">Form a team, rack up MW across every Daily Challenge game, and climb the seasonal leaderboard. ESPN Tournament Challenge energy — Faraday scale.</p>
+  </section>
+
+  <div class="season-banner">
+    <div>
+      <div class="season-label">Current Season</div>
+      <div class="season-name" id="seasonName">Spring 2026</div>
+    </div>
+    <div class="season-dates" id="seasonDates">March 21 — June 20, 2026</div>
+  </div>
+
+  <div class="grid">
+    <div class="card" id="createCard">
+      <h2>Create a team</h2>
+      <p>Any affiliation: company, school, Slack crew, family. Invite anyone by link — no approvals required.</p>
+      <label for="teamName">Team name</label>
+      <input type="text" id="teamName" placeholder="e.g. The Hyperscalers" maxlength="40">
+      <label for="captainName">Your name (captain)</label>
+      <input type="text" id="captainName" placeholder="Gil Faraday" maxlength="40">
+      <label for="captainEmail">Your email</label>
+      <input type="email" id="captainEmail" placeholder="you@company.com">
+      <button class="btn gold" onclick="createTeam()">Create team</button>
+      <div id="shareBlock" class="share-block hidden"></div>
+    </div>
+
+    <div class="card" id="joinCard">
+      <h2>Join a team</h2>
+      <p>Got an invite link? Paste the team code below — or click a link your captain sent.</p>
+      <label for="joinCode">Team code</label>
+      <input type="text" id="joinCode" placeholder="e.g. HYPER-2026" maxlength="20">
+      <label for="joinerName">Your name</label>
+      <input type="text" id="joinerName" placeholder="Mach Eigen" maxlength="40">
+      <label for="joinerEmail">Your email</label>
+      <input type="email" id="joinerEmail" placeholder="you@company.com">
+      <button class="btn" onclick="joinTeam()">Join team</button>
+      <div id="joinStatus" class="share-block hidden"></div>
+    </div>
+  </div>
+
+  <section class="leaderboard">
+    <h2>Season Leaderboard</h2>
+    <div class="sub">Top teams by cumulative MW this season. Updated after every Daily Challenge cycle.</div>
+    <table>
+      <thead>
+        <tr>
+          <th style="width:60px">Rank</th>
+          <th>Team</th>
+          <th class="num">Members</th>
+          <th class="num">MW</th>
+        </tr>
+      </thead>
+      <tbody id="leaderboardBody">
+        <tr><td class="rank">1</td><td class="team-name">The Hyperscalers</td><td class="num">14</td><td class="num mw">2,847</td></tr>
+        <tr><td class="rank">2</td><td class="team-name">Dark Fiber Collective</td><td class="num">11</td><td class="num mw">2,512</td></tr>
+        <tr><td class="rank">3</td><td class="team-name">Loudoun Locals</td><td class="num">9</td><td class="num mw">2,188</td></tr>
+        <tr><td class="rank">4</td><td class="team-name">Liquid Cooled</td><td class="num">8</td><td class="num mw">1,964</td></tr>
+        <tr><td class="rank">5</td><td class="team-name">Grid Edge</td><td class="num">7</td><td class="num mw">1,740</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <section class="explainer">
+    <h3>How Teams work</h3>
+    <ul>
+      <li>Create or join a team with a shareable link — any affiliation welcome.</li>
+      <li>Every team member's daily MW rolls up to the team total.</li>
+      <li>Four seasons per year: Spring, Summer, Fall, Winter. Standings reset each season.</li>
+      <li>All 7 Daily Challenge games count: Rackl, Wattl, Circuit, Signal Drop, The Stack, Dark Fiber, Frequency.</li>
+      <li>Top teams at season close earn a spot on the Faraday Wall of Fame.</li>
+    </ul>
+  </section>
+</div>
+
+<footer>
+  ⚡ Faraday Intelligence · Always on. Always ahead.
+</footer>
+
+<script>
+  // ── Season detection ──────────────────────────────────────
+  function currentSeason() {
+    const now = new Date();
+    const y = now.getFullYear();
+    const seasons = [
+      { name: "Spring", start: new Date(y, 2, 21), end: new Date(y, 5, 20) },
+      { name: "Summer", start: new Date(y, 5, 21), end: new Date(y, 8, 22) },
+      { name: "Fall",   start: new Date(y, 8, 23), end: new Date(y, 11, 20) },
+      { name: "Winter", start: new Date(y, 11, 21), end: new Date(y + 1, 2, 20) }
+    ];
+    for (const s of seasons) {
+      if (now >= s.start && now <= s.end) {
+        return { ...s, year: y };
+      }
+    }
+    return { name: "Winter", start: new Date(y - 1, 11, 21), end: new Date(y, 2, 20), year: y };
+  }
+  (function renderSeason() {
+    const s = currentSeason();
+    document.getElementById("seasonName").textContent = `${s.name} ${s.year}`;
+    const fmt = d => d.toLocaleDateString("en-US", { month: "long", day: "numeric" });
+    document.getElementById("seasonDates").textContent = `${fmt(s.start)} — ${fmt(s.end)}, ${s.end.getFullYear()}`;
+  })();
+
+  // ── Team creation ─────────────────────────────────────────
+  function slugify(str) {
+    return str.toUpperCase()
+              .replace(/[^A-Z0-9]+/g, "-")
+              .replace(/^-|-$/g, "")
+              .slice(0, 12);
+  }
+
+  function createTeam() {
+    const name = document.getElementById("teamName").value.trim();
+    const captain = document.getElementById("captainName").value.trim();
+    const email = document.getElementById("captainEmail").value.trim();
+    if (!name || !captain || !email) {
+      alert("Team name, your name, and email are all required.");
+      return;
+    }
+    const code = slugify(name) + "-" + new Date().getFullYear();
+    const link = `${window.location.origin}/teams?code=${encodeURIComponent(code)}`;
+    const block = document.getElementById("shareBlock");
+    block.classList.remove("hidden");
+    block.innerHTML = `
+      <div style="font-family:var(--serif); font-size:14px; color:var(--forest); margin-bottom:8px; font-weight:600;">Team created ✓</div>
+      <div style="margin-bottom:6px;"><strong>Code:</strong> ${code}</div>
+      <div style="margin-bottom:10px;"><strong>Invite link:</strong><br>${link}</div>
+      <button class="btn" onclick="copyLink('${link}', this)">Copy link</button>
+    `;
+    // In production: POST to /api/teams/create with name, captain, email, code
+  }
+
+  function copyLink(link, btn) {
+    navigator.clipboard.writeText(link).then(() => {
+      const marker = document.createElement("span");
+      marker.className = "copied";
+      marker.textContent = "Copied";
+      btn.parentNode.appendChild(marker);
+      setTimeout(() => marker.remove(), 2000);
+    });
+  }
+
+  function joinTeam() {
+    const code = document.getElementById("joinCode").value.trim().toUpperCase();
+    const name = document.getElementById("joinerName").value.trim();
+    const email = document.getElementById("joinerEmail").value.trim();
+    if (!code || !name || !email) {
+      alert("Team code, your name, and email are all required.");
+      return;
+    }
+    const status = document.getElementById("joinStatus");
+    status.classList.remove("hidden");
+    status.innerHTML = `
+      <div style="font-family:var(--serif); font-size:14px; color:var(--forest); font-weight:600;">Joined ${code} ✓</div>
+      <div style="margin-top:6px;">Your daily MW will start counting toward the team total tomorrow.</div>
+    `;
+    // In production: POST to /api/teams/join with code, name, email
+  }
+
+  // ── Auto-fill code if present in query string ────────────
+  (function autofillCode() {
+    const params = new URLSearchParams(window.location.search);
+    const code = params.get("code");
+    if (code) {
+      document.getElementById("joinCode").value = code;
+      document.getElementById("joinCard").scrollIntoView({ behavior: "smooth", block: "center" });
+    }
+  })();
+</script>
+</body>
+</html>
