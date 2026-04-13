@@ -12,6 +12,7 @@
   ],
   "routes": [
     { "src": "/api/subscribe/?", "dest": "/api/subscribe.js" },
+    { "src": "/api/lexicon/?", "dest": "/api/lexicon.js" },
     { "src": "^/$", "dest": "/public/faraday-home.html" },
     { "src": "/profile", "dest": "/public/faraday-subscriber-profile-v7.html" },
     { "src": "/wattl", "dest": "/public/wattl/index.html" },
@@ -22,9 +23,11 @@
     { "src": "/academy/(.*)", "dest": "/public/academy/$1" },
     { "src": "/academy-store", "dest": "/public/academy-store/index.html" },
     { "src": "/academy-store/(.*)", "dest": "/public/academy-store/$1" },
-    { "src": "/daily-challenge", "dest": "/public/daily-challenge/index.html" },
+    { "src": "/daily-challenge", "dest": "/public/daily-challenge-index.html" },
+    { "src": "/teams", "dest": "/public/teams.html" },
+    { "src": "/sitemap.xml", "dest": "/public/sitemap.xml" },
+    { "src": "/robots.txt", "dest": "/public/robots.txt" },
     { "src": "/daily-challenge/(.*)", "dest": "/public/daily-challenge/$1" },
     { "src": "/(.*)", "dest": "/public/$1" }
   ]
 }
-
