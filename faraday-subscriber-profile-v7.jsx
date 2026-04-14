@@ -1,4 +1,11 @@
 import { useState, useEffect, useRef } from "react";
+import {
+  teamCreate,
+  teamJoin,
+  teamLeave,
+  teamGetMyTeam,
+  teamLeaderboard,
+} from "./teamsApi";
 
 // ── Brand tokens ──────────────────────────────────────────────────────────────
 const C = {
@@ -186,23 +193,26 @@ const CONTRIBUTIONS = [
 ];
 
 // ── Teams (Daily Challenge seasonal competition) ──────────────────────────────
-const TEAMS_LEADERBOARD = [
-  { id:"T-HYPER",   rank:1, name:"The Hyperscalers",       members:14, mw:2847 },
-  { id:"T-DFIBER",  rank:2, name:"Dark Fiber Collective",  members:11, mw:2512 },
-  { id:"T-LOUDOUN", rank:3, name:"Loudoun Locals",         members:9,  mw:2188 },
-  { id:"T-LIQUID",  rank:4, name:"Liquid Cooled",          members:8,  mw:1964 },
-  { id:"T-EDGE",    rank:5, name:"Grid Edge",              members:7,  mw:1740 },
-];
+// Live data is loaded from Supabase RPCs (see ./teamsApi.js).
+// These are kept as empty fallbacks so the UI renders during first paint.
+const TEAMS_LEADERBOARD = [];
+const INITIAL_MY_TEAM = null;
 
-// Mock: which team (if any) the current subscriber is on. Null = not on a team.
-const INITIAL_MY_TEAM = {
-  id:      "T-HYPER",
-  code:    "HYPER-2026",
-  name:    "The Hyperscalers",
-  role:    "Member",   // or "Captain"
-  joined:  "Mar 22",
-  myMW:    185,        // this subscriber's MW contribution to the team this season
-};
+// Normalise a RPC "my team" row into the shape the UI uses throughout.
+function normalizeMyTeam(row) {
+  if (!row) return null;
+  return {
+    id:     row.team_id,
+    code:   row.code,
+    name:   row.name,
+    role:   row.role === "creator" ? "Captain" : "Member",
+    joined: row.joined_at ? new Date(row.joined_at).toLocaleDateString("en-US", { month:"short", day:"numeric" }) : "",
+    myMW:   row.my_mw ?? 0,
+    members: row.members ?? 0,
+    mw:      row.mw_total ?? 0,
+    season:  row.season,
+  };
+}
 
 function currentSeason() {
   const now = new Date();
@@ -482,7 +492,27 @@ export default function SubscriberProfileV7() {
   const [teamMode,        setTeamMode]        = useState("create");   // "create" | "join" — when not on a team
   const [teamDraft,       setTeamDraft]       = useState({ name:"", code:"" });
   const [teamShareBlock,  setTeamShareBlock]  = useState(null);        // { code, link } after create
+  const [teamsBoard,      setTeamsBoard]      = useState(TEAMS_LEADERBOARD);
+  const [teamsLoading,    setTeamsLoading]    = useState(false);
   const season = currentSeason();
+
+  // Load leaderboard + myTeam on mount (and whenever the subscriber email changes).
+  async function refreshTeams() {
+    setTeamsLoading(true);
+    try {
+      const [board, mine] = await Promise.all([
+        teamLeaderboard({ limit: 25 }),
+        teamGetMyTeam({ email: profile.email }),
+      ]);
+      setTeamsBoard(Array.isArray(board) ? board : []);
+      setMyTeam(normalizeMyTeam(Array.isArray(mine) ? mine[0] : mine));
+    } catch (e) {
+      showToast(`Teams load failed: ${e.message}`);
+    } finally {
+      setTeamsLoading(false);
+    }
+  }
+  useEffect(() => { refreshTeams(); /* eslint-disable-next-line react-hooks/exhaustive-deps */ }, [profile.email]);
 
   const allotment    = ALLOTMENT[profile.tier];
   const pct          = Math.round((balance / allotment) * 100);
@@ -530,37 +560,47 @@ export default function SubscriberProfileV7() {
     showToast("Intelligence focus saved");
   }
 
-  // ── Team actions ──
-  function createTeam() {
+  // ── Team actions (live — Supabase RPCs via teamsApi) ──
+  async function createTeam() {
     const name = teamDraft.name.trim();
     if (!name) { showToast("Team name required"); return; }
-    const code = slugifyTeam(name) + "-" + new Date().getFullYear();
-    const link = `${typeof window !== "undefined" ? window.location.origin : ""}/teams?code=${encodeURIComponent(code)}`;
-    setTeamShareBlock({ code, link });
-    setMyTeam({ id:`T-${code}`, code, name, role:"Captain", joined:new Date().toLocaleDateString("en-US",{month:"short",day:"numeric"}), myMW:0 });
-    setTeamDraft({ name:"", code:"" });
-    showToast(`Team "${name}" created`);
-    // Production: POST /api/teams/create { name, captain, email, code }
+    try {
+      const row = await teamCreate({ email: profile.email, name });
+      const code = row.code;
+      const link = `${typeof window !== "undefined" ? window.location.origin : ""}/teams?code=${encodeURIComponent(code)}`;
+      setTeamShareBlock({ code, link });
+      setTeamDraft({ name:"", code:"" });
+      await refreshTeams();
+      showToast(`Team "${name}" created`);
+    } catch (e) {
+      showToast(`Create failed: ${e.message}`);
+    }
   }
 
-  function joinTeam() {
+  async function joinTeam() {
     const code = teamDraft.code.trim().toUpperCase();
     if (!code) { showToast("Team code required"); return; }
-    const match = TEAMS_LEADERBOARD.find(t => slugifyTeam(t.name) + "-" + new Date().getFullYear() === code);
-    const name = match ? match.name : code;
-    setMyTeam({ id:match?.id || `T-${code}`, code, name, role:"Member", joined:new Date().toLocaleDateString("en-US",{month:"short",day:"numeric"}), myMW:0 });
-    setTeamDraft({ name:"", code:"" });
-    setTeamShareBlock(null);
-    showToast(`Joined ${name}`);
-    // Production: POST /api/teams/join { code, name, email }
+    try {
+      const row = await teamJoin({ email: profile.email, code });
+      setTeamDraft({ name:"", code:"" });
+      setTeamShareBlock(null);
+      await refreshTeams();
+      showToast(`Joined ${row.name}`);
+    } catch (e) {
+      showToast(`Join failed: ${e.message}`);
+    }
   }
 
-  function leaveTeam() {
-    setMyTeam(null);
-    setTeamShareBlock(null);
-    setTeamMode("create");
-    showToast("Left team");
-    // Production: POST /api/teams/leave
+  async function leaveTeam() {
+    try {
+      await teamLeave({ email: profile.email });
+      setTeamShareBlock(null);
+      setTeamMode("create");
+      await refreshTeams();
+      showToast("Left team");
+    } catch (e) {
+      showToast(`Leave failed: ${e.message}`);
+    }
   }
 
   function copyTeamLink(link) {
@@ -726,10 +766,10 @@ export default function SubscriberProfileV7() {
                 </button>
               </div>
               {myTeam ? (() => {
-                const lb  = TEAMS_LEADERBOARD.find(t => t.id === myTeam.id);
+                const lb  = teamsBoard.find(t => t.team_id === myTeam.id);
                 const rank = lb?.rank;
-                const mw   = lb?.mw ?? 0;
-                const mem  = lb?.members ?? 1;
+                const mw   = lb?.mw ?? myTeam.mw ?? 0;
+                const mem  = lb?.members ?? myTeam.members ?? 1;
                 return (
                   <div style={{ display:"flex", alignItems:"center", gap:"20px", flexWrap:"wrap" }}>
                     <div style={{ flex:"1 1 200px", minWidth:0 }}>
@@ -1077,10 +1117,10 @@ export default function SubscriberProfileV7() {
             {/* My team OR create/join */}
             {myTeam ? (
               (() => {
-                const lb  = TEAMS_LEADERBOARD.find(t => t.id === myTeam.id);
+                const lb  = teamsBoard.find(t => t.team_id === myTeam.id);
                 const rank = lb?.rank;
-                const mw   = lb?.mw ?? 0;
-                const mem  = lb?.members ?? 1;
+                const mw   = lb?.mw ?? myTeam.mw ?? 0;
+                const mem  = lb?.members ?? myTeam.members ?? 1;
                 return (
                   <div style={{ background:C.surface, border:`1px solid ${C.gold}33`,
                     borderRadius:"10px", padding:"24px" }}>
@@ -1227,13 +1267,18 @@ export default function SubscriberProfileV7() {
                 Top teams by cumulative MW this season · updated after every Daily Challenge cycle
               </div>
               <div>
-                {TEAMS_LEADERBOARD.map((t, i) => {
-                  const mine = myTeam?.id === t.id;
+                {teamsBoard.length === 0 && (
+                  <div style={{ fontSize:"12px", color:C.muted, padding:"14px 10px", ...mono }}>
+                    {teamsLoading ? "Loading leaderboard…" : "No teams yet this season. Be the first to create one."}
+                  </div>
+                )}
+                {teamsBoard.map((t, i) => {
+                  const mine = myTeam?.id === t.team_id;
                   return (
-                    <div key={t.id} style={{ display:"grid",
+                    <div key={t.team_id} style={{ display:"grid",
                       gridTemplateColumns:"50px 1fr 80px 100px", gap:"12px",
                       padding:"11px 10px",
-                      borderBottom: i < TEAMS_LEADERBOARD.length-1 ? `1px solid ${C.border}` : "none",
+                      borderBottom: i < teamsBoard.length-1 ? `1px solid ${C.border}` : "none",
                       background: mine ? "rgba(196,146,42,0.06)" : "transparent",
                       borderRadius: mine ? "6px" : "0",
                       alignItems:"center" }}>
