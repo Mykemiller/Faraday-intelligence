@@ -23,7 +23,7 @@
   "alternateName": "Faraday",
   "url": "https://faradayintelligence.com/",
   "logo": "https://faradayintelligence.com/faraday-logo.svg",
-  "description": "An AI-powered intelligence service covering the AI data center economy. Delivers domain-specific intelligence through a personalized, subscription-tiered experience.",
+  "description": "An AI-powered intelligence service covering the AI data center economy. Delivers domain-specific intelligence on a usage-based token model.",
   "slogan": "Always on. Always ahead. Always Faraday.",
   "foundingDate": "2025",
   "sameAs": [
@@ -522,9 +522,9 @@
     margin-top: 2px;
   }
 
-  /* ── PAID TIERS — COMING SOON ────────────────────────── */
+  /* ── PRICING — TOKEN BUCKETS ─────────────────────────── */
   .tiers-section {
-    background: var(--near-black);
+    background: var(--forest);
     padding: 80px 40px;
     position: relative;
     overflow: hidden;
@@ -1110,10 +1110,14 @@
 <header class="masthead">
   <div class="masthead-brand">
     <div class="masthead-mark">
-      <svg width="20" height="20" viewBox="0 0 110 110">
-        <polygon points="63,12 36,56 52,56 47,98 79,50 62,50" fill="#F8F5F0"/>
-        <polygon points="63,12 36,56 52,56 47,98 79,50 62,50" fill="#C4922A" opacity="0.7" transform="translate(2,2)"/>
-        <polygon points="63,12 36,56 52,56 47,98 79,50 62,50" fill="#C4922A" transform="translate(0,0)"/>
+      <!-- Faraday brand mark — cream geometric F, gold precision terminals (Round 6) -->
+      <svg width="20" height="20" viewBox="0 0 110 110" role="img" aria-label="Faraday">
+        <rect x="30" y="14" width="14" height="82" fill="#F8F5F0"/>
+        <rect x="30" y="14" width="52" height="13" fill="#F8F5F0"/>
+        <rect x="30" y="50" width="42" height="12" fill="#F8F5F0"/>
+        <rect x="78" y="14" width="4" height="13" fill="#C4922A"/>
+        <rect x="68" y="50" width="4" height="12" fill="#C4922A"/>
+        <rect x="30" y="92" width="14" height="4" fill="#C4922A"/>
       </svg>
     </div>
     <div>
@@ -1122,8 +1126,8 @@
   </div>
   <div class="masthead-meta">Intelligence Service · Beta</div>
   <nav class="masthead-nav">
-    <a href="#starter">Get Started</a>
-    <a href="#paid">Paid Tiers</a>
+    <a href="#free">Get Started</a>
+    <a href="#paid">Pricing</a>
     <a href="#academy">Academy</a>
     <a href="/challenge">Rackl</a>
     <a href="faraday-pulse.html">Pulse</a>
@@ -1138,7 +1142,7 @@
     <h1 class="hero-headline">The data center market<br>doesn't wait.<br><em>Neither does Faraday.</em></h1>
     <p class="hero-sub">The first intelligence service purpose-built for professionals who operate in and around the AI data center economy. Always on. Always ahead. The colleague you've always needed.</p>
     <div class="hero-actions">
-      <a href="#starter" class="btn-primary">Start getting your unfair advantage today</a>
+      <a href="#free" class="btn-primary">Start free</a>
       <a href="#waitlist" class="btn-ghost">Join the Waitlist</a>
     </div>
     <div class="hero-rule"></div>
@@ -1158,7 +1162,7 @@
       <div class="ask-response-label" id="ask-response-label">✦ Faraday</div>
       <div class="ask-response-text" id="ask-response-text"></div>
       <div class="ask-response-cta" id="ask-response-cta" style="display:none">
-        Want deeper intelligence across multiple domains, every day? <a href="#starter">Start getting your unfair advantage.</a>
+        Want deeper intelligence across every domain, every day? <a href="#free">Start free.</a>
       </div>
     </div>
   </div>
@@ -1169,7 +1173,7 @@
   <div class="challenge-banner-inner" style="flex-direction: column; gap: 20px; align-items: flex-start;">
     <div style="display:flex; justify-content:space-between; align-items:center; width:100%;">
       <div>
-        <div class="challenge-label">⚡ Daily Challenge</div>
+        <div class="challenge-label">Daily Challenge</div>
         <div class="challenge-title">Test your edge today</div>
       </div>
       <a href="/challenge" class="challenge-link" style="flex-shrink:0;">
@@ -1183,7 +1187,7 @@
         <div style="background:var(--warm-white); border:1px solid var(--gold); border-radius:8px; padding:12px 14px; transition:all 0.15s;" onmouseover="this.style.background='var(--warm-cream)'" onmouseout="this.style.background='var(--warm-white)'">
           <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
             <div style="display:flex; align-items:center; gap:8px;">
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><rect x="2" y="4" width="20" height="16" rx="3" stroke="#00FFB2" stroke-width="1.5" fill="rgba(0,255,178,0.08)"/><rect x="5" y="8" width="4" height="3" rx="1" fill="#00FFB2"/><rect x="10" y="8" width="4" height="3" rx="1" fill="#00FFB2" opacity="0.6"/><rect x="15" y="8" width="4" height="3" rx="1" fill="#00FFB2" opacity="0.3"/><rect x="5" y="13" width="4" height="3" rx="1" fill="#00FFB2" opacity="0.3"/><rect x="10" y="13" width="4" height="3" rx="1" fill="#00FFB2" opacity="0.6"/><rect x="15" y="13" width="4" height="3" rx="1" fill="#00FFB2"/></svg>
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><rect x="2" y="4" width="20" height="16" rx="3" stroke="#00FFC8" stroke-width="1.5" fill="rgba(0,255,178,0.08)"/><rect x="5" y="8" width="4" height="3" rx="1" fill="#00FFC8"/><rect x="10" y="8" width="4" height="3" rx="1" fill="#00FFC8" opacity="0.6"/><rect x="15" y="8" width="4" height="3" rx="1" fill="#00FFC8" opacity="0.3"/><rect x="5" y="13" width="4" height="3" rx="1" fill="#00FFC8" opacity="0.3"/><rect x="10" y="13" width="4" height="3" rx="1" fill="#00FFC8" opacity="0.6"/><rect x="15" y="13" width="4" height="3" rx="1" fill="#00FFC8"/></svg>
               <span style="font-family:var(--serif); font-size:14px; font-weight:700; color:var(--near-black);">Rackl</span>
             </div>
             <span style="font-family:var(--mono); font-size:9px; color:var(--gold); background:rgba(196,146,42,0.12); border:1px solid var(--gold); padding:2px 7px; border-radius:10px;">● LIVE</span>
@@ -1197,7 +1201,7 @@
         <div style="background:var(--warm-white); border:1px solid var(--gold); border-radius:8px; padding:12px 14px; transition:all 0.15s;" onmouseover="this.style.background='var(--warm-cream)'" onmouseout="this.style.background='var(--warm-white)'">
           <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
             <div style="display:flex; align-items:center; gap:8px;">
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><rect x="3" y="4" width="5" height="5" rx="1" fill="#FF6B35" opacity="0.3"/><rect x="9.5" y="4" width="5" height="5" rx="1" fill="#FF6B35" opacity="0.6"/><rect x="16" y="4" width="5" height="5" rx="1" fill="#FF6B35"/><rect x="3" y="10.5" width="5" height="5" rx="1" fill="#FF6B35"/><rect x="9.5" y="10.5" width="5" height="5" rx="1" fill="#FF6B35" opacity="0.3"/><path d="M4 20 Q8 17 12 20 Q16 23 20 20" stroke="#FF6B35" stroke-width="1.5" fill="none"/></svg>
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><rect x="3" y="4" width="5" height="5" rx="1" fill="#FF2D78" opacity="0.3"/><rect x="9.5" y="4" width="5" height="5" rx="1" fill="#FF2D78" opacity="0.6"/><rect x="16" y="4" width="5" height="5" rx="1" fill="#FF2D78"/><rect x="3" y="10.5" width="5" height="5" rx="1" fill="#FF2D78"/><rect x="9.5" y="10.5" width="5" height="5" rx="1" fill="#FF2D78" opacity="0.3"/><path d="M4 20 Q8 17 12 20 Q16 23 20 20" stroke="#FF2D78" stroke-width="1.5" fill="none"/></svg>
               <span style="font-family:var(--serif); font-size:14px; font-weight:700; color:var(--near-black);">Signal Drop</span>
             </div>
             <span style="font-family:var(--mono); font-size:9px; color:var(--gold); background:rgba(196,146,42,0.12); border:1px solid var(--gold); padding:2px 7px; border-radius:10px;">● LIVE</span>
@@ -1211,7 +1215,7 @@
         <div style="background:var(--warm-white); border:1px solid var(--gold); border-radius:8px; padding:12px 14px; transition:all 0.15s;" onmouseover="this.style.background='var(--warm-cream)'" onmouseout="this.style.background='var(--warm-white)'">
           <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
             <div style="display:flex; align-items:center; gap:8px;">
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><rect x="3" y="16" width="18" height="3" rx="1.5" fill="#FFD600"/><rect x="5" y="11" width="14" height="3" rx="1.5" fill="#FFD600" opacity="0.7"/><rect x="7" y="6" width="10" height="3" rx="1.5" fill="#FFD600" opacity="0.4"/></svg>
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><rect x="3" y="16" width="18" height="3" rx="1.5" fill="#FFE600"/><rect x="5" y="11" width="14" height="3" rx="1.5" fill="#FFE600" opacity="0.7"/><rect x="7" y="6" width="10" height="3" rx="1.5" fill="#FFE600" opacity="0.4"/></svg>
               <span style="font-family:var(--serif); font-size:14px; font-weight:700; color:var(--near-black);">The Stack</span>
             </div>
             <span style="font-family:var(--mono); font-size:9px; color:var(--gold); background:rgba(196,146,42,0.12); border:1px solid var(--gold); padding:2px 7px; border-radius:10px;">● LIVE</span>
@@ -1225,7 +1229,7 @@
         <div style="background:var(--warm-white); border:1px solid var(--gold); border-radius:8px; padding:12px 14px; transition:all 0.15s;" onmouseover="this.style.background='var(--warm-cream)'" onmouseout="this.style.background='var(--warm-white)'">
           <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
             <div style="display:flex; align-items:center; gap:8px;">
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="5" r="3" stroke="#00E5FF" stroke-width="1.5" fill="rgba(0,229,255,0.1)"/><line x1="12" y1="8" x2="7" y2="13" stroke="#00E5FF" stroke-width="1.2"/><line x1="12" y1="8" x2="17" y2="13" stroke="#00E5FF" stroke-width="1.2"/><rect x="3" y="14" width="8" height="4" rx="1" fill="#00E5FF" opacity="0.3"/><rect x="13" y="14" width="8" height="4" rx="1" fill="#00E5FF" opacity="0.6"/><text x="5" y="17.2" font-size="4" fill="#00E5FF" font-family="monospace" font-weight="700">T</text><text x="15.5" y="17.2" font-size="4" fill="#00E5FF" font-family="monospace" font-weight="700">F</text></svg>
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="5" r="3" stroke="#00CFFF" stroke-width="1.5" fill="rgba(0,229,255,0.1)"/><line x1="12" y1="8" x2="7" y2="13" stroke="#00CFFF" stroke-width="1.2"/><line x1="12" y1="8" x2="17" y2="13" stroke="#00CFFF" stroke-width="1.2"/><rect x="3" y="14" width="8" height="4" rx="1" fill="#00CFFF" opacity="0.3"/><rect x="13" y="14" width="8" height="4" rx="1" fill="#00CFFF" opacity="0.6"/><text x="5" y="17.2" font-size="4" fill="#00CFFF" font-family="monospace" font-weight="700">T</text><text x="15.5" y="17.2" font-size="4" fill="#00CFFF" font-family="monospace" font-weight="700">F</text></svg>
               <span style="font-family:var(--serif); font-size:14px; font-weight:700; color:var(--near-black);">Circuit</span>
             </div>
             <span style="font-family:var(--mono); font-size:9px; color:var(--gold); background:rgba(196,146,42,0.12); border:1px solid var(--gold); padding:2px 7px; border-radius:10px;">● LIVE</span>
@@ -1239,7 +1243,7 @@
         <div style="background:var(--warm-white); border:1px solid var(--gold); border-radius:8px; padding:12px 14px; transition:all 0.15s;" onmouseover="this.style.background='var(--warm-cream)'" onmouseout="this.style.background='var(--warm-white)'">
           <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
             <div style="display:flex; align-items:center; gap:8px;">
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><rect x="4" y="2" width="16" height="20" rx="2" stroke="#E040FB" stroke-width="1.5" fill="rgba(224,64,251,0.08)"/><line x1="7" y1="7" x2="17" y2="7" stroke="#E040FB" stroke-width="1.2" opacity="0.8"/><line x1="7" y1="10.5" x2="15" y2="10.5" stroke="#E040FB" stroke-width="1.2" opacity="0.5"/><line x1="7" y1="14" x2="16" y2="14" stroke="#E040FB" stroke-width="1.2" opacity="0.5"/><line x1="7" y1="17.5" x2="12" y2="17.5" stroke="#E040FB" stroke-width="1.2" opacity="0.3"/></svg>
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><rect x="4" y="2" width="16" height="20" rx="2" stroke="#B8FF00" stroke-width="1.5" fill="rgba(224,64,251,0.08)"/><line x1="7" y1="7" x2="17" y2="7" stroke="#B8FF00" stroke-width="1.2" opacity="0.8"/><line x1="7" y1="10.5" x2="15" y2="10.5" stroke="#B8FF00" stroke-width="1.2" opacity="0.5"/><line x1="7" y1="14" x2="16" y2="14" stroke="#B8FF00" stroke-width="1.2" opacity="0.5"/><line x1="7" y1="17.5" x2="12" y2="17.5" stroke="#B8FF00" stroke-width="1.2" opacity="0.3"/></svg>
               <span style="font-family:var(--serif); font-size:14px; font-weight:700; color:var(--near-black);">The Brief</span>
             </div>
             <span style="font-family:var(--mono); font-size:9px; color:var(--gold); background:rgba(196,146,42,0.12); border:1px solid var(--gold); padding:2px 7px; border-radius:10px;">● LIVE</span>
@@ -1253,7 +1257,7 @@
         <div style="background:var(--warm-white); border:1px solid var(--gold); border-radius:8px; padding:12px 14px; transition:all 0.15s;" onmouseover="this.style.background='var(--warm-cream)'" onmouseout="this.style.background='var(--warm-white)'">
           <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
             <div style="display:flex; align-items:center; gap:8px;">
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><rect x="2" y="5" width="7" height="4" rx="1" fill="#76FF03" opacity="0.5"/><rect x="2" y="15" width="7" height="4" rx="1" fill="#76FF03" opacity="0.5"/><rect x="15" y="5" width="7" height="4" rx="1" fill="#76FF03" opacity="0.5"/><rect x="15" y="15" width="7" height="4" rx="1" fill="#76FF03" opacity="0.5"/><path d="M9 7 L15 17" stroke="#76FF03" stroke-width="1.2" opacity="0.7"/><path d="M9 17 L15 7" stroke="#76FF03" stroke-width="1.2" opacity="0.7"/></svg>
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><rect x="2" y="5" width="7" height="4" rx="1" fill="#BF5FFF" opacity="0.5"/><rect x="2" y="15" width="7" height="4" rx="1" fill="#BF5FFF" opacity="0.5"/><rect x="15" y="5" width="7" height="4" rx="1" fill="#BF5FFF" opacity="0.5"/><rect x="15" y="15" width="7" height="4" rx="1" fill="#BF5FFF" opacity="0.5"/><path d="M9 7 L15 17" stroke="#BF5FFF" stroke-width="1.2" opacity="0.7"/><path d="M9 17 L15 7" stroke="#BF5FFF" stroke-width="1.2" opacity="0.7"/></svg>
               <span style="font-family:var(--serif); font-size:14px; font-weight:700; color:var(--near-black);">Dark Fiber</span>
             </div>
             <span style="font-family:var(--mono); font-size:9px; color:var(--gold); background:rgba(196,146,42,0.12); border:1px solid var(--gold); padding:2px 7px; border-radius:10px;">● LIVE</span>
@@ -1267,7 +1271,7 @@
         <div style="background:var(--warm-white); border:1px solid var(--gold); border-radius:8px; padding:12px 14px; transition:all 0.15s;" onmouseover="this.style.background='var(--warm-cream)'" onmouseout="this.style.background='var(--warm-white)'">
           <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
             <div style="display:flex; align-items:center; gap:8px;">
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M2 12 Q5 4 8 12 Q11 20 14 12 Q17 4 20 12" stroke="#FF4081" stroke-width="1.8" fill="none"/><circle cx="5" cy="8" r="1.5" fill="#FF4081" opacity="0.4"/><circle cx="11" cy="16" r="1.5" fill="#FF4081" opacity="0.6"/><circle cx="17" cy="8" r="1.5" fill="#FF4081" opacity="0.8"/><circle cx="22" cy="12" r="1.5" fill="#FF4081"/></svg>
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M2 12 Q5 4 8 12 Q11 20 14 12 Q17 4 20 12" stroke="#FF6B00" stroke-width="1.8" fill="none"/><circle cx="5" cy="8" r="1.5" fill="#FF6B00" opacity="0.4"/><circle cx="11" cy="16" r="1.5" fill="#FF6B00" opacity="0.6"/><circle cx="17" cy="8" r="1.5" fill="#FF6B00" opacity="0.8"/><circle cx="22" cy="12" r="1.5" fill="#FF6B00"/></svg>
               <span style="font-family:var(--serif); font-size:14px; font-weight:700; color:var(--near-black);">Frequency</span>
             </div>
             <span style="font-family:var(--mono); font-size:9px; color:var(--gold); background:rgba(196,146,42,0.12); border:1px solid var(--gold); padding:2px 7px; border-radius:10px;">● LIVE</span>
@@ -1280,113 +1284,55 @@
   </div>
 </div>
 
-<!-- PAID TIERS — immediately after challenge teaser -->
+<!-- PRICING — token buckets, immediately after challenge teaser -->
 <section class="tiers-section" id="paid">
   <div class="tiers-inner">
-    <div class="tiers-eyebrow">Intelligence Tiers</div>
-    <h2 class="tiers-heading">The right level of edge<br>for where you are.</h2>
-    <p class="tiers-sub">From your first daily signal to a full intelligence advantage — Faraday scales with your ambition. Four tiers. Every domain. Always on.</p>
+    <div class="tiers-eyebrow">Buy tokens. Spend them on answers.</div>
+    <h2 class="tiers-heading">Buy tokens.<br>Spend them on answers.</h2>
+    <p class="tiers-sub">No subscription. No seat license. Tokens never expire — spend them only when you ask for depth. Three surfaces are free, every day; the rest are metered in tokens.</p>
 
-    <div class="tier-cards" style="grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));">
+    <div class="tier-cards" style="grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); max-width:760px; margin-left:auto; margin-right:auto;">
 
-      <!-- Starter -->
+      <!-- 500 tokens -->
       <div class="tier-card" style="background:var(--warm-cream); border-color:rgba(28,52,36,0.18);">
-        <div class="tier-card-icon" style="background:var(--forest); border-color:rgba(196,146,42,0.2);">
-          <svg width="28" height="28" viewBox="0 0 110 110">
-            <polygon points="63,12 36,56 52,56 47,98 79,50 62,50" fill="#C4922A"/>
-          </svg>
-        </div>
-        <div class="tier-card-name" style="color:var(--forest);">Starter</div>
-        <div class="tier-card-price" style="color:var(--forest); opacity:0.55;">Your unfair advantage starts here</div>
-        <div class="tier-card-tagline" style="color:#4a5e4a;">The daily habit. Real intelligence, every morning.</div>
+        <div class="tier-card-name" style="color:var(--forest); font-family:var(--mono); font-size:12px; letter-spacing:0.16em; text-transform:uppercase;">500 tokens</div>
+        <div class="tier-card-price" style="color:var(--forest); font-family:var(--serif); font-weight:700; font-size:40px;">$49</div>
         <ul class="tier-card-features">
-          <li style="color:var(--forest); opacity:0.8;">Ask me anything</li>
-          <li style="color:var(--forest); opacity:0.8;">Play the Daily Challenge</li>
-          <li style="color:var(--forest); opacity:0.8;">Intelligent Alert</li>
-          <li style="color:var(--forest); opacity:0.8;">Faraday Pulse</li>
-          <li style="color:var(--forest); opacity:0.8;">Intro to Faraday Academy</li>
+          <li style="color:var(--forest); opacity:0.8;">Every metered product</li>
+          <li style="color:var(--forest); opacity:0.8;">Tokens never expire</li>
+          <li style="color:var(--forest); opacity:0.8;">Start the day you sign up</li>
         </ul>
-        <a href="#starter" class="waitlist-btn" style="background:var(--forest); color:var(--warm-white); border-color:var(--forest);">Start getting your unfair advantage →</a>
+        <a href="#waitlist" class="waitlist-btn" style="background:var(--forest); color:var(--warm-white); border-color:var(--forest);">Join the waitlist</a>
       </div>
 
-      <!-- Signal -->
-      <div class="tier-card" style="background:var(--warm-cream); border-color:rgba(28,52,36,0.18);">
-        <span class="tier-card-stealth">Stealth · Waitlist</span>
-        <div class="tier-card-icon" style="background:var(--forest); border-color:rgba(196,146,42,0.2);">
-          <svg width="28" height="28" viewBox="0 0 110 110">
-            <line x1="18" y1="28" x2="92" y2="28" stroke="#F8F5F0" stroke-width="7" stroke-linecap="round" opacity="0.9"/>
-            <line x1="18" y1="46" x2="84" y2="46" stroke="#F8F5F0" stroke-width="5" stroke-linecap="round" opacity="0.65"/>
-            <line x1="18" y1="62" x2="72" y2="62" stroke="#F8F5F0" stroke-width="4" stroke-linecap="round" opacity="0.45"/>
-            <line x1="18" y1="76" x2="60" y2="76" stroke="#F8F5F0" stroke-width="3" stroke-linecap="round" opacity="0.3"/>
-            <polygon points="63,12 36,56 52,56 47,98 79,50 62,50" fill="#C4922A" transform="scale(0.35) translate(-10,-20)"/>
-          </svg>
-        </div>
-        <div class="tier-card-name" style="color:var(--forest);">Signal</div>
-        <div class="tier-card-price" style="color:var(--forest); opacity:0.55;">Pricing at launch</div>
-        <div class="tier-card-tagline" style="color:#4a5e4a;">Your first signal advantage. Curated intelligence across multiple Intelligence Domains.</div>
+      <!-- 1,000 tokens — featured -->
+      <div class="tier-card" style="background:var(--warm-cream); border-color:var(--gold);">
+        <div class="tier-card-name" style="color:var(--forest); font-family:var(--mono); font-size:12px; letter-spacing:0.16em; text-transform:uppercase;">1,000 tokens</div>
+        <div class="tier-card-price" style="color:var(--forest); font-family:var(--serif); font-weight:700; font-size:40px;">$89</div>
         <ul class="tier-card-features">
-          <li style="color:var(--forest); opacity:0.8;">Everything in Free</li>
-          <li style="color:var(--forest); opacity:0.8;">Intelligence Feed — 3 domains</li>
-          <li style="color:var(--forest); opacity:0.8;">Domain Briefings — 3 domains</li>
-          <li style="color:var(--forest); opacity:0.8;">Signal Alerts</li>
-          <li style="color:var(--forest); opacity:0.8;">Academy 101 + 201</li>
+          <li style="color:var(--forest); opacity:0.8;">Every metered product</li>
+          <li style="color:var(--forest); opacity:0.8;">Tokens never expire</li>
+          <li style="color:var(--forest); opacity:0.8;">The working analyst's bucket</li>
         </ul>
-        <a href="#waitlist" class="waitlist-btn">Join Waitlist</a>
+        <a href="#waitlist" class="waitlist-btn" style="background:var(--gold); color:var(--forest); border-color:var(--gold);">Join the waitlist</a>
       </div>
 
-      <!-- Premier -->
-      <div class="tier-card" style="background:var(--warm-cream); border-color:rgba(196,146,42,0.35);">
-        <span class="tier-card-stealth">Stealth · Waitlist</span>
-        <div class="tier-card-icon" style="background:var(--forest); border-color:rgba(196,146,42,0.3);">
-          <svg width="28" height="28" viewBox="0 0 110 110">
-            <circle cx="55" cy="55" r="36" fill="none" stroke="#C4922A" stroke-width="2.5" opacity="0.6"/>
-            <polygon points="63,12 36,56 52,56 47,98 79,50 62,50" fill="#C4922A" transform="rotate(25,55,55) scale(0.4) translate(28,-10)"/>
-          </svg>
-        </div>
-        <div class="tier-card-name" style="color:var(--forest);">Premier</div>
-        <div class="tier-card-price" style="color:var(--gold);">Pricing at launch</div>
-        <div class="tier-card-tagline" style="color:#4a5e4a;">The unfair advantage. Faraday works with you, not just for you.</div>
-        <ul class="tier-card-features">
-          <li style="color:var(--forest); opacity:0.8;">Everything in Signal</li>
-          <li style="color:var(--forest); opacity:0.8;">Intelligence Feed — All Intelligence Domains</li>
-          <li style="color:var(--forest); opacity:0.8;">Unlimited Live Agent</li>
-          <li style="color:var(--forest); opacity:0.8;">Thought Forge</li>
-          <li style="color:var(--forest); opacity:0.8;">Custom Briefs</li>
-          <li style="color:var(--forest); opacity:0.8;">Academy — All Intelligence Domains</li>
-        </ul>
-        <a href="#waitlist" class="waitlist-btn" style="background:var(--gold); color:var(--forest); border-color:var(--gold);">Join Waitlist</a>
-      </div>
-
-      <!-- Academy -->
+      <!-- 10,000 tokens -->
       <div class="tier-card" style="background:var(--warm-cream); border-color:rgba(28,52,36,0.18);">
-        <span class="tier-card-stealth">Separate Product</span>
-        <div class="tier-card-icon" style="background:var(--forest); border-color:rgba(196,146,42,0.2);">
-          <svg width="28" height="28" viewBox="0 0 110 110">
-            <rect x="22" y="14" width="66" height="82" rx="4" fill="none" stroke="#F8F5F0" stroke-width="3" opacity="0.5"/>
-            <line x1="34" y1="34" x2="76" y2="34" stroke="#C4922A" stroke-width="3" stroke-linecap="round"/>
-            <line x1="34" y1="48" x2="76" y2="48" stroke="#F8F5F0" stroke-width="2" stroke-linecap="round" opacity="0.5"/>
-            <line x1="34" y1="60" x2="76" y2="60" stroke="#F8F5F0" stroke-width="2" stroke-linecap="round" opacity="0.5"/>
-            <line x1="34" y1="72" x2="60" y2="72" stroke="#F8F5F0" stroke-width="2" stroke-linecap="round" opacity="0.35"/>
-            <polygon points="63,12 36,56 52,56 47,98 79,50 62,50" fill="#C4922A" transform="scale(0.28) translate(-5,220)"/>
-          </svg>
-        </div>
-        <div class="tier-card-name" style="color:var(--forest);">Academy</div>
-        <div class="tier-card-price" style="color:var(--forest); opacity:0.55;">Pricing at launch</div>
-        <div class="tier-card-tagline" style="color:#4a5e4a;">Earn your credential. The only cert that proves present-market engagement.</div>
+        <div class="tier-card-name" style="color:var(--forest); font-family:var(--mono); font-size:12px; letter-spacing:0.16em; text-transform:uppercase;">10,000 tokens</div>
+        <div class="tier-card-price" style="color:var(--forest); font-family:var(--serif); font-weight:700; font-size:40px;">$799</div>
         <ul class="tier-card-features">
-          <li style="color:var(--forest); opacity:0.8;">All Intelligence Domains</li>
-          <li style="color:var(--forest); opacity:0.8;">101 · 201 · 301 · 401 levels</li>
-          <li style="color:var(--forest); opacity:0.8;">Domain certifications</li>
-          <li style="color:var(--forest); opacity:0.8;">Daily Challenge integration</li>
-          <li style="color:var(--forest); opacity:0.8;">Team &amp; institutional licensing</li>
+          <li style="color:var(--forest); opacity:0.8;">Every metered product</li>
+          <li style="color:var(--forest); opacity:0.8;">Tokens never expire</li>
+          <li style="color:var(--forest); opacity:0.8;">For teams and heavy use</li>
         </ul>
-        <a href="/academy" class="waitlist-btn" style="background:var(--forest); color:var(--warm-white); border-color:var(--forest);">Explore Academy →</a>
+        <a href="#waitlist" class="waitlist-btn" style="background:var(--forest); color:var(--warm-white); border-color:var(--forest);">Join the waitlist</a>
       </div>
 
     </div>
 
-    <div style="text-align:center; font-family:var(--mono); font-size:11px; color:rgba(140,166,138,0.45); letter-spacing:0.06em; max-width:460px; margin:0 auto;">
-      Paid tiers open when the product is ready and the waitlist signals demand. Both gates must clear.
+    <div style="text-align:center; font-family:var(--mono); font-size:11px; color:rgba(140,166,138,0.55); letter-spacing:0.06em; max-width:520px; margin:0 auto;">
+      Token costs per product are shown at the point of use. Faraday Academy is priced separately. Token checkout opens soon — join the waitlist to be first.
     </div>
   </div>
 </section>
@@ -1406,10 +1352,10 @@
 
 <div class="double-rule"><div class="double-rule-forest"></div><div class="double-rule-gold"></div></div>
 
-<!-- STARTER OPTIONS — below tier cards -->
-<section class="section" id="starter">
+<!-- FREE — ALWAYS ON — below pricing -->
+<section class="section" id="free">
   <div class="section-inner">
-    <div class="section-label">Starter — Always On</div>
+    <div class="section-label">Free — Always On</div>
     <h2 class="section-heading">Real Intelligence. Every Morning.</h2>
     <p class="section-sub">Three options. Zero friction. Every day.</p>
 
@@ -1433,11 +1379,11 @@
       <a href="/challenge" class="product-card">
         <div class="product-card-icon">
           <svg width="28" height="28" viewBox="0 0 56 56">
-            <rect x="3" y="3" width="23" height="23" rx="4" fill="#00FFB2"/>
+            <rect x="3" y="3" width="23" height="23" rx="4" fill="#00FFC8"/>
             <rect x="30" y="3" width="23" height="23" rx="4" fill="#FF6B00"/>
             <rect x="3" y="30" width="23" height="23" rx="4" fill="#FFE600"/>
-            <rect x="30" y="30" width="23" height="23" rx="4" fill="#0a1a10" stroke="#00FFB2" stroke-width="1.5" stroke-dasharray="3 2"/>
-            <text x="41.5" y="47" text-anchor="middle" fill="#00FFB2" font-size="12" font-weight="800" font-family="monospace">?</text>
+            <rect x="30" y="30" width="23" height="23" rx="4" fill="#0a1a10" stroke="#00FFC8" stroke-width="1.5" stroke-dasharray="3 2"/>
+            <text x="41.5" y="47" text-anchor="middle" fill="#00FFC8" font-size="12" font-weight="800" font-family="monospace">?</text>
           </svg>
         </div>
         <div class="product-card-name">Daily Challenge</div>
