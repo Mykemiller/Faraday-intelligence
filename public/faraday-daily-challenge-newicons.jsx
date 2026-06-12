@@ -39,9 +39,9 @@ const GAME_COLORS = {
 const BASE_SCORE = 100;
 const STREAK_MULTIPLIERS = [
   { days:1,  mult:1.0,  badge:null              },
-  { days:7,  mult:1.25, badge:"⚡ Week Warrior"  },
-  { days:14, mult:1.5,  badge:"🏆 Fortnight"    },
-  { days:30, mult:2.0,  badge:"🌐 Signal Constant" },
+  { days:7,  mult:1.25, badge:"Week Warrior"  },
+  { days:14, mult:1.5,  badge:"Fortnight"    },
+  { days:30, mult:2.0,  badge:"Signal Constant" },
 ];
 const SPEED_BONUS_THRESHOLD = 0.5;
 const PERFECT_BONUS = 15;
@@ -390,7 +390,7 @@ function ProgressBar({ value, max, color }) {
 
 // ── Score display ─────────────────────────────────────────────────────────────
 function ScoreCard({ score, puzzleType, domain, streak, mwEarned, onShare, onNext, isNew7Day }) {
-  const emoji = score >= 130?"🔥":score>=100?"⚡":score>=75?"✦":"◎";
+  const emoji = score >= 130?"✦✦":score>=100?"✦":score>=75?"◈":"◎";
   return (
     <div style={{ textAlign:"center", display:"flex", flexDirection:"column", alignItems:"center", gap:"20px" }}>
       <div style={{ fontSize:"48px" }}>{emoji}</div>
@@ -413,7 +413,7 @@ function ScoreCard({ score, puzzleType, domain, streak, mwEarned, onShare, onNex
       {isNew7Day && (
         <div style={{ background:"rgba(245,158,11,0.08)", border:"1px solid rgba(245,158,11,0.3)",
           borderRadius:"6px", padding:"10px 16px", fontSize:"11px", color:C.amber, ...mono }}>
-          ⚡ Week Warrior — 7-day streak! +{MW_STREAK_BONUS} bonus MW
+          Week Warrior — 7-day streak! +{MW_STREAK_BONUS} bonus MW
         </div>
       )}
       <div style={{ display:"flex", gap:"10px" }}>
@@ -608,7 +608,7 @@ function GameSignalDrop({ puzzle, streak, onComplete }) {
         ))}
       </div>
       <div style={{display:"flex",gap:"8px",alignItems:"center"}}>
-        {hint<2&&<Btn onClick={()=>setHint(h=>h+1)} variant="ghost" small>💡 Hint ({2-hint} left)</Btn>}
+        {hint<2&&<Btn onClick={()=>setHint(h=>h+1)} variant="ghost" small>Hint ({2-hint} left)</Btn>}
         {!lexiconDef&&<Btn onClick={fetchLexiconDefinition} variant="ghost" small>📖 Lexicon Drop (2 tokens)</Btn>}
       </div>
     </div>
@@ -976,7 +976,7 @@ const GAME_CONFIGS = [
   { type:"Frequency",   desc:"Multiple choice knowledge quiz",              time:"~3 min" },
 ];
 
-function GameTile({ config, plays, onPlay }) {
+function GameTile({ config, onPlay }) {
   const [hov,setHov]=useState(false);
   const IconComponent=GAME_ICONS[config.type];
   const c=GAME_COLORS[config.type];
@@ -1006,7 +1006,7 @@ function GameTile({ config, plays, onPlay }) {
           color:c.primary,borderRadius:"3px",padding:"2px 7px",...mono,letterSpacing:"0.04em"}}>
           Power Architecture
         </span>
-        <span style={{fontSize:"9px",color:C.dim,...mono}}>{plays.toLocaleString()} plays</span>
+        <span style={{fontSize:"9px",color:C.dim,...mono}}>Free · daily</span>
       </div>
     </button>
   );
@@ -1019,11 +1019,10 @@ export default function DailyChallenge() {
   const [screen,setScreen]=useState("lobby");
   const [activeGame,setActiveGame]=useState(null);
   const [email,setEmail]=useState(null);
-  const [streak,setStreak]=useState(3);
-  const [mwBalance,setMwBalance]=useState(487);
+  const [streak,setStreak]=useState(0);
+  const [mwBalance,setMwBalance]=useState(0);
   const [gamesPlayed,setGamesPlayed]=useState(0);
   const [gateReason,setGateReason]=useState(null);
-  const [playCounts]=useState({"Rackl":1240,"Signal Drop":892,"The Stack":743,"Circuit":1105,"The Brief":580,"Dark Fiber":671,"Frequency":834});
 
   useEffect(()=>{
     const link=document.createElement("link");link.rel="stylesheet";
@@ -1081,12 +1080,14 @@ export default function DailyChallenge() {
             <div style={{ width:"5px", height:"5px", borderRadius:"50%", background:"#4ADE80", animation:"pulse 2s ease infinite" }}/>
             <span style={{ fontSize:"9px", color:"#4ADE80", letterSpacing:"0.1em" }}>LIVE</span>
           </div>
-          <div style={{ display:"flex", alignItems:"center", gap:"5px",
-            background:"rgba(245,158,11,0.12)", border:"1px solid rgba(245,158,11,0.25)",
-            borderRadius:"4px", padding:"4px 8px" }}>
-            <span style={{ fontSize:"9px" }}>🔥</span>
-            <span style={{ fontSize:"10px", color:C.amber }}>{streak} day streak</span>
-          </div>
+          {streak>0&&(
+            <div style={{ display:"flex", alignItems:"center", gap:"5px",
+              background:"rgba(245,158,11,0.12)", border:"1px solid rgba(245,158,11,0.25)",
+              borderRadius:"4px", padding:"4px 8px" }}>
+              <span style={{ fontSize:"9px", color:C.amber }}>✦</span>
+              <span style={{ fontSize:"10px", color:C.amber }}>{streak} day streak</span>
+            </div>
+          )}
           <div style={{ fontSize:"10px", color:C.gold, background:"rgba(196,146,42,0.12)",
             border:`1px solid rgba(196,146,42,0.3)`, borderRadius:"4px", padding:"4px 8px" }}>
             {mwBalance} MW
@@ -1127,32 +1128,21 @@ export default function DailyChallenge() {
             <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fill,minmax(210px,1fr))", gap:"14px", marginBottom:"32px" }}>
               {GAME_CONFIGS.map(config=>(
                 <GameTile key={config.type} config={config}
-                  plays={playCounts[config.type]||0}
                   onPlay={()=>startGame(config.type)}/>
               ))}
             </div>
 
-            {/* Social proof strip */}
-            <div style={{ display:"flex", gap:"24px", padding:"16px 20px",
-              background:C.white, border:`1px solid ${C.border}`,
-              borderRadius:"8px", marginBottom:"24px" }}>
-              {[
-                {label:"Active streaks today",value:"847",color:C.amber},
-                {label:"Total plays today",value:"5,065",color:C.gold},
-                {label:"Share rate",value:"23%",color:"#4ADE80"},
-              ].map(s=>(
-                <div key={s.label}>
-                  <div style={{fontSize:"16px",fontWeight:700,color:s.color,...sans}}>{s.value}</div>
-                  <div style={{fontSize:"9px",color:C.muted,...mono}}>{s.label}</div>
-                </div>
-              ))}
-              {email&&(
-                <div style={{marginLeft:"auto"}}>
+            {/* Registered indicator — community stats removed until bound to live Supabase data (FAR-63) */}
+            {email&&(
+              <div style={{ display:"flex", gap:"24px", padding:"16px 20px",
+                background:C.white, border:`1px solid ${C.border}`,
+                borderRadius:"8px", marginBottom:"24px" }}>
+                <div>
                   <div style={{fontSize:"10px",color:"#4ADE80",...mono}}>✓ Registered</div>
                   <div style={{fontSize:"9px",color:C.muted,...mono}}>{email}</div>
                 </div>
-              )}
-            </div>
+              </div>
+            )}
 
             {/* Tip of the day — forest green panel */}
             <div style={{ background:C.forest, borderRadius:"10px", padding:"22px 26px",
