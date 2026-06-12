@@ -75,3 +75,18 @@ The staged fix (product-agnostic wallet + RLS + non-expiring balance) is `supaba
 ## 6. Out-of-scope drift flagged (not fixed, needs its own pass)
 
 Retired-tier copy still exists in other public-addressable files in this repo: `public/faraday-alert.html` (~53 tier refs), `public/faraday-academy.jsx` (~45), `public/faraday-subscriber-profile-v7.jsx` (~61), `public/faraday-pulse.html` (2), `public/academy/index.html` (~31). These are subscriber-facing surfaces → editorial gate applies; recommend a dedicated FAR story rather than silent rewrites.
+
+---
+
+## ADDENDUM — evening execution (Myke's decision batch, 2026-06-12 ~23:00 UTC)
+
+Myke's answers: (1) merge approved · (2) D1 wallet migration approved · (3) JW repo = https://github.com/Mykemiller/jw · (4) secrets later tonight · (5) update lobby · (6) diagram deferred.
+
+Executed:
+
+1. **Merged + live.** `claude/faraday-revenue-activation-c6irvb` fast-forwarded to `main` (`b3e1286`); Vercel production deploy `dpl_HQQCCiNuVXf7CFWzvYEvWZtpmayw` READY (project `faraday-intelligence`, target=production). Verified on the deployed build: `/challenge` 301s to the rebranded warm-cream lobby. (Sandbox network policy blocks fetching the custom domain directly — Myke eyeballs faraday-intelligence.ai.)
+2. **Wallet migration applied:** `wallet_generalization_v1` on Supabase `ycadmmngkdhvpcsrcuaq`. The staged `0006_…staged.sql` (Mykemiller/Faraday) was scope-inaccessible from this session, so the migration was **re-derived** from the verified defects + FAR-44 spec + Decision-Log values only — reconcile against the staged file when that repo is in scope. Contents: `jw_token_balance()` month-window removed (tokens never expire) · `token_products` (3 buckets + Academy, Stripe ID columns empty for Myke) · `product_meters` (8 rows, ALL DRAFT) · `wallet_record_grant()` (exact-token, idempotent, security definer, pinned search_path) · RLS enabled on `token_transactions`/`stripe_events`/`jw_plans`/`token_products`/`product_meters` with read policies. Safe because all write paths are SECURITY DEFINER RPCs (verified).
+   **Test evidence (rolled back, 0 rows persisted):** grant 500 → `{balance:500,duplicate:false}`; same event replayed → `{balance:500,duplicate:true}`; +250 grant backdated 3 months → balance 750 (= expected).
+3. **JW repo URL recorded** in the Hub (D5 resolved).
+
+**First-dollar chain remaining:** Stripe products + Stripe IDs into `token_products` + secrets (Myke, tonight) → Claude Code session scoped to `Mykemiller/jw`: fix `UpgradeRequiredError`, point webhook at `wallet_record_grant()`, deploy, run FAR-45 end-to-end with replay proof. Deferred: lobby domain/SSO (D2), `jw_plans` retirement (D3), diagram checkbox, Beehiiv tags.
