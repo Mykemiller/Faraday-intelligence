@@ -25,11 +25,11 @@
     { "src": "/academy-store/(.*)", "dest": "/public/academy-store/$1" },
     { "src": "/challenge", "status": 301, "headers": { "Location": "/daily-challenge" } },
     { "src": "/challenge/(.*)", "status": 301, "headers": { "Location": "/daily-challenge" } },
-    { "src": "/daily-challenge", "dest": "/public/daily-challenge-index.html" },
+    { "src": "/daily-challenge", "dest": "https://v0-faraday-daily-challenge-n2u5-faraday-4b264abc.vercel.app/daily-challenge/challenge" },
+    { "src": "/daily-challenge/(.*)", "dest": "https://v0-faraday-daily-challenge-n2u5-faraday-4b264abc.vercel.app/daily-challenge/$1" },
     { "src": "/teams", "dest": "/public/teams.html" },
     { "src": "/sitemap.xml", "dest": "/public/sitemap.xml" },
     { "src": "/robots.txt", "dest": "/public/robots.txt" },
-    { "src": "/daily-challenge/(.*)", "status": 301, "headers": { "Location": "/daily-challenge" } },
     { "src": "/(.*)", "dest": "/public/$1" }
   ]
 }
