@@ -1,21 +1,14 @@
-# CLAUDE.md — Faraday-intelligence (brand site)
+# CLAUDE.md — Faraday-intelligence (RETIRED / dormant)
 
-Static site served at `faraday-intelligence.ai`: `vercel.json` v2 `builds` + `routes`
-serving `public/` (HTML) and `api/` (`@vercel/node`). Not a live Vite build despite
-the Vercel project framework label.
+As of 2026-06-19 this static site is **retired** (FAR-119). `faraday-intelligence.ai`
+(+ `www`) was moved to the Next.js engine project **`v0-faraday-daily-challenge`**
+(`v0-faraday-daily-challenge-n2u5`), which now serves the **entire** site —
+homepage, all 8 storefronts, Daily Challenge, leaderboard, and the APIs ported
+from here (Ask Faraday, waitlist/subscribe, lexicon).
 
-## Daily Challenge canon (set 2026-06-19, reverses Decision Log D2 — approved by Myke)
-
-The **canonical Daily Challenge is the Next.js engine** in the separate repo
-**`v0-faraday-daily-challenge`** (project `v0-faraday-daily-challenge-n2u5`,
-`prj_A7MhvdAWivMLOccGMTp6AFYZQ1s1`), mounted under `basePath:/daily-challenge`.
-
-- This repo **only proxies** it: `vercel.json` rewrites `/daily-challenge` and
-  `/daily-challenge/:path*` → the engine's production deployment. Do **not**
-  re-create a Daily Challenge surface here. The old in-repo Babel-standalone files
-  (`public/daily-challenge-index.html`, `public/faraday-daily-challenge*.jsx`) were
-  retired (FAR-63).
-- `faradaydailychallenge.com` 301s to `faraday-intelligence.ai/daily-challenge`
-  (redirect lives on the engine project, not here).
-- The proxy targets the engine's production alias and requires that project's
-  production URL to stay public (its Deployment Protection = *Only Preview Deployments*).
+- This project **no longer holds a production domain**. Do **not** build new
+  surfaces here — the canonical site lives in `v0-faraday-daily-challenge` (see
+  that repo's CLAUDE.md).
+- Historical: this was a `vercel.json` v2 static site (`public/*.html`) that
+  briefly proxied `/daily-challenge` to the engine (FAR-63); superseded by the
+  full engine-as-site migration (FAR-119).
