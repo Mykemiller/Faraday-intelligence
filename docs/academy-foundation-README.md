@@ -45,10 +45,12 @@ The pure functions (`extractSections`, `buildPayload`, `parseCourseCode`,
   (36 rows) + the live tags written to the **Course Production — Faraday Academy**
   Notion database.
 - The 36 D1–D9 Tower courses (4 levels × 9 domains) were tagged as **Notion
-  properties** on rows in the Course Production database (Sprint = `Re-tag`). Five
-  columns were added to that database to complete the 8-field schema:
+  properties** on rows in the Course Production database (Sprint = `Re-tag`). Seven
+  columns were added to that database:
   `Tower Name`, `Audience Personas`, `Difficulty`, `Format`,
-  `Certification Eligible`. The existing standalone course pages were **not**
+  `Certification Eligible` (task-brief schema) plus `Maturity` and
+  `Secondary Domains` (backfilled to also satisfy the FAR-149 ticket AC schema).
+  The existing standalone course pages were **not**
   edited (content/status untouched — properties only).
 
 ### 8-field schema → how each field was derived
@@ -65,6 +67,8 @@ All IDs are grounded in the **IDF 4.0 Master Registry**
 | `difficulty` | 101 → Foundational · 201/301 → Practitioner · 401 → Expert (3-bucket collapse of the 101→401 ladder). |
 | `format` | 101 → Video · 201 → Interactive · 301/401 → Workshop (from each course's delivery Format). |
 | `certification_eligible` | `true` for 301 + 401 (Academy: certifications are tied to the 301/401 levels), `false` for 101/201. |
+| `maturity` (backfill) | `Established` for all 36 — D1–D9 are all Established per the IDF 4.0 Domain Registry. |
+| `secondary_domains[]` (backfill) | Other IDF domains each course substantively covers, grounded in its catalog module content (e.g. D1 rack-density courses → D2 power + D7 cooling). Empty where a course is wholly within its primary domain (FA-301/401-08). |
 
 Pricing (`$4.99` for 101, `$9.99` otherwise) and `Access Layer = Purchased` were
 also set per the Curriculum 4.0 commercial rules (AC-008 / AC-003) as a
