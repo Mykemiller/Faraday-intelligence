@@ -68,6 +68,26 @@ drains the initial 297-row sweep in a few hours and is a no-op once the
   config, reset `status='registered'` + `fetch_config.verify_fail_count=0`,
   and let the verify cron retry.
 
+## v8 (2026-07-17): cadence-aware polling + relevance gate
+
+- Run mode now over-fetches oldest-first and filters to **cadence-due** sources
+  (`isDue` in `poller-relevance.ts`): hourly ≥50min, daily ≥20h, weekly ≥6.5d.
+  Long-tail sources at `cadence='weekly'` stop consuming hourly-cron slots —
+  the volume lever for the 6,250-company build.
+- **Relevance gate**: query-lane items (`scope='query_feed'`) that match no
+  infrastructure term (word-boundary list in `RELEVANCE_TERMS`) are inserted
+  with `enrich_status='skipped'` — kept for audit, never sent to the
+  enrichment LLM. Curated feeds are never gated.
+
+## enrich-artifacts v20 (2026-07-17): Message Batches API
+
+Rebuilt on Anthropic's Batches API (−50% on both token meters; throughput
+~17k/day vs the old 1,440/day drain). Cron `enrich-artifacts-drain` (*/10)
+posts `{mode:"auto"}`: drains finished batches (≤120 artifacts/invocation,
+resume-safe via `enrich_batches`), then submits a fresh batch (≤500 pending)
+when none is in flight. Plaintext CRON_TOKEN removed — SHA-256 house-token
+auth. Source captured at `supabase/functions/enrich-artifacts/`.
+
 ## Boundaries
 
 - Writes ONLY `source_registry` (its own `subsystem='poller'` rows),
