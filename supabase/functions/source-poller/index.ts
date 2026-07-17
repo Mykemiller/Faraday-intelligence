@@ -26,8 +26,9 @@ import {
   toIso,
 } from "./poller-pure.ts";
 import { jsonFetchUrl, parseJsonSource } from "./poller-json.ts";
+import { extractIndexItems, type IndexPollConfig } from "./poller-index.ts";
 
-const CRAWLER_ID = "source-poller_v1.1"; // v1.1 = Wave-2 JSON-API adapters
+const CRAWLER_ID = "source-poller_v1.2"; // v1.1 JSON-API adapters · v1.2 index-poll
 const AUTO_ID = "AUTO-199";
 const UA = "FaradayIntelligenceBot/1.0 (+https://faraday-intelligence.ai; data-source poller)";
 const CRON_TOKEN_FALLBACK_SHA256 = "dd88c73bb785f950802d296ede8541501b486da1c141aef14635680d2780ea63";
@@ -98,6 +99,9 @@ async function verifyOne(src: SourceRow): Promise<{ ok: boolean; detail: string 
   let candidates = discoverCandidates(src.url, src.feed_url);
   // Feed autodiscovery from the homepage HTML (once), appended after direct probes.
   let htmlChecked = false;
+  // Kept for the Wave-3 index-poll fallback when no feed is found.
+  let indexHtml: string | null = null;
+  let indexUrl: string | null = null;
   for (let i = 0; i < candidates.length && tried.length < 8; i++) {
     const cand = candidates[i];
     tried.push(cand);
@@ -141,8 +145,37 @@ async function verifyOne(src: SourceRow): Promise<{ ok: boolean; detail: string 
     // rel=alternate feed links and append them to the probe list.
     if (!htmlChecked && /<html/i.test(body.slice(0, 1000))) {
       htmlChecked = true;
+      indexHtml = body;
+      indexUrl = cand;
       const alts = extractAlternateLinks(body, cand).filter((u) => !candidates.includes(u));
       candidates = [...candidates.slice(0, i + 1), ...alts, ...candidates.slice(i + 1)];
+    }
+  }
+  // Wave-3 fallback: no feed anywhere, but we hold the index page's HTML —
+  // try heuristic article-link extraction and activate as an index_poll source.
+  if (indexHtml && indexUrl) {
+    const cfg = (src.fetch_config?.index_poll ?? {}) as IndexPollConfig;
+    const links = extractIndexItems(indexHtml, indexUrl, cfg);
+    if (links.length >= (cfg.min_items ?? 8)) {
+      const activate = ACTIVATABLE.includes(src.license_status);
+      await supabase
+        .from("source_registry")
+        .update({
+          feed_url: indexUrl,
+          access_method: "index_poll",
+          status: activate ? "active" : src.status,
+          consecutive_failures: 0,
+          fetch_config: {
+            ...src.fetch_config,
+            verified_at: new Date().toISOString(),
+            verify_kind: "index",
+            verify_fail_count: 0,
+            index_sample: links[0]?.link,
+          },
+          updated_at: new Date().toISOString(),
+        })
+        .eq("source_key", src.source_key);
+      return { ok: true, detail: `index @ ${indexUrl} (${links.length} links)${activate ? " (activated)" : ""}` };
     }
   }
   const failCount = (Number(src.fetch_config?.verify_fail_count) || 0) + 1;
@@ -196,7 +229,11 @@ async function pollOne(src: SourceRow): Promise<{ found: number; inserted: numbe
   const body = (await res.text()).slice(0, isJsonCt ? 15_000_000 : 1_500_000);
   const kind = classifyFeed(res.headers.get("content-type"), body);
   let items;
-  if (kind === "json") {
+  if (src.access_method === "index_poll") {
+    // Wave-3: heuristic article-link extraction from the index page. Config
+    // overrides in fetch_config.index_poll (data, no redeploy).
+    items = extractIndexItems(body, fetchUrl, (src.fetch_config?.index_poll ?? {}) as IndexPollConfig);
+  } else if (kind === "json") {
     // Wave-2 adapters: named (KEV/NVD/GCP-status/NWS) + shape-detected
     // (JSON Feed spec, statuspage summary). No adapter → healthy no-op.
     items = parseJsonSource(src.source_key, body, 50);
