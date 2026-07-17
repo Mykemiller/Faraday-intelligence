@@ -184,7 +184,6 @@
 | PCX Corporation | modular_prefab | US |
 | Modular Power Solutions | modular_prefab | US |
 | BMarko Structures | modular_prefab | US |
-| Motivair | cdu_liquid_cooling | US |
 | Boyd | thermal_management | US |
 | Wakefield Thermal | thermal_management | US |
 | Copeland | compressors_hvac | US |
@@ -308,11 +307,6 @@
 | Hirose Electric | connectors | JP |
 | Volex | power_cords_cables | GB |
 | ATEN | kvm | TW |
-| Turner Construction | general_contractor | US |
-| DPR Construction | general_contractor | US |
-| Holder Construction | general_contractor | US |
-| Mortenson | general_contractor | US |
-| HITT Contracting | general_contractor | US |
 | Clark Construction | general_contractor | US |
 | Walbridge | general_contractor | US |
 | Hoffman Construction | general_contractor | US |
@@ -377,7 +371,6 @@
 | Worldwide Mission Critical | commissioning | US |
 | Primary Integration | commissioning | US |
 | LotusWorks | commissioning_operations | IE |
-| Uptime Institute | certification_advisory | US |
 | TUV SUD | testing_certification | DE |
 | TUV Rheinland | testing_certification | DE |
 | DNV | testing_certification | NO |
@@ -422,3 +415,249 @@
 | Tindall | precast_concrete | US |
 | Coreslab Structures | precast_concrete | US |
 | Ames Construction | sitework | US |
+| Geoclima | chillers | IT |
+| Reymsa Cooling Towers | cooling_towers | MX |
+| Tower Tech | cooling_towers | US |
+| Canatal | precision_cooling | CA |
+| Compu-Aire | precision_cooling | US |
+| United CoolAir | precision_cooling | US |
+| HiRef | precision_cooling | IT |
+| Franklin Electric | pumps | US |
+| Viega | piping | DE |
+| K-Flex | insulation | IT |
+| MANN+HUMMEL | air_filtration | DE |
+| Stewart & Stevenson | genset_packager | US |
+| Loftin Equipment | generator_dealer | US |
+| Buckeye Power Sales | generator_dealer | US |
+| Curtis Power Solutions | generator_dealer | US |
+| Penn Power Group | generator_dealer | US |
+| Enercon Engineering | genset_packager | US |
+| Bredenoord | rental_power | NL |
+| Sterling Generators | generators | IN |
+| Olsun Electrics | dry_type_transformers | US |
+| Leclanche | batteries | CH |
+| Polarium | batteries | SE |
+| GenCell | fuel_cells | IL |
+| Ameresco | energy_infrastructure | US |
+| Ufispace | network_odm | TW |
+| Alpha Networks | network_odm | TW |
+| O-Net | optical_components | HK |
+| Arrow Electronics | electronics_distribution | US |
+| Avnet | electronics_distribution | US |
+| TD Synnex | it_distribution | US |
+| Zekelman Industries | steel_modular | US |
+| BlueScope | steel_buildings | AU |
+| Park Place Technologies | dc_hardware_maintenance | US |
+| Service Express | dc_hardware_maintenance | US |
+| Evernex | dc_hardware_maintenance | FR |
+| SK tes | itad | SG |
+| Sims Lifecycle Services | itad | US |
+| Chubb Fire & Security | fire_security_services | GB |
+| Canovate | racks_modular | TR |
+| Buckner HeavyLift | cranes | US |
+| Turtle & Hughes | electrical_distribution | US |
+| Crescent Electric Supply | electrical_distribution | US |
+| Champion Fiberglass | conduit | US |
+| Cantex | conduit | US |
+| Harger | grounding_lightning | US |
+| Pritchard Brown | genset_enclosures | US |
+| IAC Acoustics | acoustic_enclosures | US |
+| Egis | engineering | FR |
+| Granlund | dc_design | FI |
+| Hanmi Global | project_management | KR |
+| NTT Facilities | dc_engineering | JP |
+| Cochran | electrical_contractor | US |
+| Rex Moore | electrical_contractor | US |
+| CSI Electrical Contractors | electrical_contractor | US |
+| MetroPower | electrical_contractor | US |
+| Motor City Electric | electrical_contractor | US |
+| Lighthouse Electric | electrical_contractor | US |
+| Guarantee Electrical | electrical_contractor | US |
+| Egan Company | electrical_contractor | US |
+| Hooper Corporation | electrical_contractor | US |
+| JH Kelly | mechanical_contractor | US |
+| U.S. Engineering | mechanical_contractor | US |
+| Waldinger | mechanical_contractor | US |
+| P1 Group | mechanical_contractor | US |
+| AKF Group | mep_engineering | US |
+| Horizon Engineering Associates | commissioning | US |
+| Gate Precast | precast_concrete | US |
+| High Concrete Group | precast_concrete | US |
+| Beta Engineering | substation_epc | US |
+| Saber Power Services | substation_services | US |
+| Technimove | dc_migration | GB |
+| Schleifenbauer | rack_pdu | NL |
+| A-Gas | refrigerant_lifecycle | GB |
+| Marelli Motori | alternators | IT |
+| GEA Group | heat_exchangers | DE |
+| Yaskawa | drives_motion | JP |
+| Bender | ground_fault_monitoring | DE |
+| Noja Power | switchgear | AU |
+| Clivet | chillers | IT |
+| C&C Power | battery_cabinets_ups | US |
+| Alpine Power Systems | battery_ups_services | US |
+| Emerald Transformer | transformer_services | US |
+| S.D. Myers | transformer_services | US |
+| Kentec | fire_detection | GB |
+| Automatic Systems | entrance_control | BE |
+| ETAP | power_system_software | US |
+| Rahi Systems | dc_integration | US |
+| Milton Cat | generator_dealer | US |
+| Gregory Poole | generator_dealer | US |
+| Edwards Vacuum | semiconductor_equipment | GB |
+| Pfeiffer Vacuum | semiconductor_equipment | DE |
+| Oxford Instruments | semiconductor_equipment | GB |
+| Brooks Automation | semiconductor_equipment | US |
+| Messer | industrial_gases | DE |
+| SK specialty | specialty_gases | KR |
+| Kanto Chemical | electronic_chemicals | JP |
+| Tokai Carbon | carbon_materials | JP |
+| SGL Carbon | carbon_materials | DE |
+| Ferguson | mep_distribution | US |
+| Actalent | engineering_staffing | US |
+| LVI Associates | dc_staffing | GB |
+
+# INVESTORS
+
+| Entity | Category | Country |
+|---|---|---|
+| Blackstone | pe_infra | US |
+| KKR | pe_infra | US |
+| TPG | pe_infra | US |
+| Bain Capital | pe | US |
+| Ares Management | pe_credit | US |
+| Blue Owl Capital | pe_credit_digital | US |
+| Macquarie Asset Management | infra_asset_manager | AU |
+| Morgan Stanley Infrastructure Partners | infra_pe | US |
+| Goldman Sachs Alternatives | alternatives | US |
+| Nuveen | asset_manager_infra | US |
+| MetLife Investment Management | insurance_asset_manager | US |
+| Starwood Capital | real_assets | US |
+| Related Companies | real_estate_dc | US |
+| Hillwood | real_estate_dc | US |
+| Tiger Infrastructure Partners | infra_pe | US |
+| Peppertree Capital | digital_infra_pe | US |
+| SDC Capital Partners | digital_infra_pe | US |
+| AVAIO Digital | digital_infra_pe | US |
+| Argo Infrastructure Partners | infra_pe | US |
+| Sidewalk Infrastructure Partners | infra_tech | US |
+| Generate Capital | sustainable_infra | US |
+| Wafra | sovereign_linked_investor | US |
+| BDT & MSD Partners | merchant_bank_pe | US |
+| Apterra Infrastructure Capital | infra_debt | US |
+| ICG | private_credit | GB |
+| Quantum Capital Group | energy_pe | US |
+| EnCap Investments | energy_pe | US |
+| Denham Capital | energy_pe | US |
+| EIG | energy_infra_pe | US |
+| Actis | infra_pe | GB |
+| CPP Investments | pension_fund | CA |
+| BCI | pension_fund | CA |
+| AIMCo | pension_fund | CA |
+| IMCO | pension_fund | CA |
+| QuadReal | real_assets | CA |
+| Fiera Infrastructure | infra_pe | CA |
+| HOOPP | pension_fund | CA |
+| CalPERS | pension_fund | US |
+| CalSTRS | pension_fund | US |
+| Teacher Retirement System of Texas | pension_fund | US |
+| Washington State Investment Board | pension_fund | US |
+| New York State Common Retirement Fund | pension_fund | US |
+| Copenhagen Infrastructure Partners | infra_fund | DK |
+| iCON Infrastructure | infra_pe | GB |
+| Arjun Infrastructure Partners | infra_pe | GB |
+| Equitix | infra_fund | GB |
+| Amber Infrastructure | infra_fund | GB |
+| 3i Infrastructure | listed_infra_fund | GB |
+| Basalt Infrastructure Partners | infra_pe | GB |
+| Arcus Infrastructure Partners | infra_pe | GB |
+| Ancala Partners | infra_pe | GB |
+| InfraRed Capital Partners | infra_fund | GB |
+| John Laing | infra_investor | GB |
+| Foresight Group | infra_manager | GB |
+| Vantage Infrastructure | infra_manager | GB |
+| Infracapital | infra_pe | GB |
+| Schroders Capital | private_markets | GB |
+| Pension Insurance Corporation | insurance_infra_debt | GB |
+| Aviva Investors | asset_manager_infra | GB |
+| Meridiam | infra_fund | FR |
+| Mirova | asset_manager_infra | FR |
+| Eurazeo | pe | FR |
+| Tikehau Capital | pe_credit | FR |
+| Cube Infrastructure Managers | infra_fund | LU |
+| F2i | infra_fund | IT |
+| Igneo Infrastructure Partners | infra_pe | AU |
+| PGGM | pension_asset_manager | NL |
+| PensionDanmark | pension_fund | DK |
+| PKA | pension_fund | DK |
+| Alecta | pension_fund | SE |
+| Infranode | infra_fund | SE |
+| Norges Bank Investment Management | sovereign_wealth_fund | NO |
+| GIC | sovereign_wealth_fund | SG |
+| Temasek | sovereign_investor | SG |
+| Khazanah Nasional | sovereign_wealth_fund | MY |
+| Korea Investment Corporation | sovereign_wealth_fund | KR |
+| China Investment Corporation | sovereign_wealth_fund | CN |
+| NIIF | sovereign_infra_fund | IN |
+| NZ Super Fund | sovereign_wealth_fund | NZ |
+| Alaska Permanent Fund | sovereign_wealth_fund | US |
+| Mumtalakat | sovereign_wealth_fund | BH |
+| ADIA | sovereign_wealth_fund | AE |
+| Sanabil Investments | sovereign_investor | SA |
+| Hassana Investment Company | pension_investor | SA |
+| Investcorp | alternative_investor | BH |
+| XRG | energy_investor | AE |
+| QIC | infra_asset_manager | AU |
+| Dexus | real_assets | AU |
+| Charter Hall | real_assets | AU |
+| UniSuper | pension_fund | AU |
+| Mitsui & Co | trading_house_investor | JP |
+| Mitsubishi Corporation | trading_house_investor | JP |
+| Sumitomo Corporation | trading_house_investor | JP |
+| Marubeni | trading_house_investor | JP |
+| Itochu | trading_house_investor | JP |
+| Sojitz | trading_house_investor | JP |
+| Mitsui Fudosan | real_estate_dc | JP |
+| Mitsubishi Estate | real_estate_dc | JP |
+| Hulic | real_estate_dc | JP |
+| ORIX | diversified_investor | JP |
+| JIC | government_investment_fund | JP |
+| Mirae Asset | asset_manager | KR |
+| IMM Investment | pe | KR |
+| Gaw Capital | real_assets_pe | HK |
+| Primavera Capital | pe | HK |
+| FountainVest | pe | HK |
+| BTG Pactual | asset_manager_infra | BR |
+| Vinci Partners | asset_manager | BR |
+| Convergence Partners | digital_infra_pe | ZA |
+| AIIM | infra_pe | ZA |
+| Greenoaks | crossover_growth | US |
+| Menlo Ventures | vc | US |
+| Spark Capital | vc | US |
+| GV | corporate_vc | US |
+| NEA | vc | US |
+| Accel | vc | US |
+| Battery Ventures | vc | US |
+| Wellington Management | crossover | US |
+| Baillie Gifford | crossover | GB |
+| T. Rowe Price | crossover | US |
+| D1 Capital Partners | crossover | US |
+| Breakthrough Energy Ventures | energy_vc | US |
+| DCVC | deep_tech_vc | US |
+| Galvanize Climate Solutions | climate_vc | US |
+| Prelude Ventures | climate_vc | US |
+| Intel Capital | corporate_vc | US |
+| TDK Ventures | corporate_vc | US |
+| Applied Ventures | corporate_vc | US |
+| Aramco Ventures | corporate_vc | SA |
+| Koch Disruptive Technologies | corporate_vc | US |
+| MEAG | insurance_asset_manager | DE |
+| Golding Capital Partners | infra_fund_of_funds | DE |
+| Palladio Partners | infra_asset_manager | DE |
+| UBS Asset Management | asset_manager_infra | CH |
+| Amundi | asset_manager | FR |
+| Oak Hill Advisors | private_credit | US |
+| Benefit Street Partners | private_credit | US |
+| Silver Point Capital | credit | US |
+| Bridgepoint | pe_infra | GB |
+| Development Bank of Japan | government_investor | JP |
