@@ -1,4 +1,8 @@
 // Faraday — AUTO-030: Artifact Enrichment Pipeline
+// v21 (2026-07-17): concurrent batches — up to MAX_OPEN_BATCHES in flight at
+// SUBMIT_MAX=1000 each. v20 serialized on a single 500-artifact batch, so one
+// slow batch (Anthropic SLA is 24h) froze all throughput while query-lane
+// first-fetch intake ran ~2k/hour.
 // v20 (2026-07-17): rebuilt on the Anthropic Message Batches API.
 //
 // Why: (1) batch pricing is 50% of synchronous pricing on both input and
@@ -33,9 +37,11 @@ import {
 } from "./enrich-pure.ts";
 
 const AUTO_ID = "AUTO-030";
-const CRAWLER_ID = "AUTO-030_v2.0";
+const CRAWLER_ID = "AUTO-030_v2.1";
 const EMBED_MODEL = "text-embedding-3-small";
-const SUBMIT_MAX = 500;
+const SUBMIT_MAX = 1000;
+const MAX_OPEN_BATCHES = 4; // v21: one slow batch must not freeze the pipe
+const CLAIM_CHUNK = 400; // id-list updates chunked — 1,000 uuids in one .in() exceeds URL limits
 const PROCESS_MAX = 120;
 const STALE_PROCESSING_HOURS = 26;
 const MAX_ATTEMPTS = 3;
@@ -97,10 +103,13 @@ async function submitBatch(anthropicKey: string) {
   if (!batch || batch.length === 0) return { submitted: 0 };
 
   const ids = batch.map((a) => a.artifact_id);
-  await supabase
-    .from("artifacts")
-    .update({ enrich_status: "processing", enrich_queued_at: new Date().toISOString() })
-    .in("artifact_id", ids);
+  const queuedAt = new Date().toISOString();
+  for (let i = 0; i < ids.length; i += CLAIM_CHUNK) {
+    await supabase
+      .from("artifacts")
+      .update({ enrich_status: "processing", enrich_queued_at: queuedAt })
+      .in("artifact_id", ids.slice(i, i + CLAIM_CHUNK));
+  }
 
   const res = await fetch("https://api.anthropic.com/v1/messages/batches", {
     method: "POST",
@@ -109,7 +118,9 @@ async function submitBatch(anthropicKey: string) {
   });
   if (!res.ok) {
     // Release the claim so the next run retries.
-    await supabase.from("artifacts").update({ enrich_status: "pending", enrich_queued_at: null }).in("artifact_id", ids);
+    for (let i = 0; i < ids.length; i += CLAIM_CHUNK) {
+      await supabase.from("artifacts").update({ enrich_status: "pending", enrich_queued_at: null }).in("artifact_id", ids.slice(i, i + CLAIM_CHUNK));
+    }
     throw new Error(`batch create ${res.status}: ${(await res.text()).slice(0, 300)}`);
   }
   const created = await res.json();
@@ -281,16 +292,16 @@ Deno.serve(async (req: Request) => {
       errors.push(...polled.errors);
     }
     if (mode === "auto" || mode === "submit") {
-      // Submit a fresh batch only when no batch is mid-flight AND there is
-      // pending work — keeps at most ~one batch in the pipe per cadence.
-      const { data: inflight } = await supabase.from("enrich_batches").select("batch_id").is("completed_at", null).limit(1);
-      if (mode === "submit" || !inflight || inflight.length === 0) {
+      // v21: keep up to MAX_OPEN_BATCHES in flight — Anthropic's batch SLA is
+      // 24h, so serializing on one batch can freeze throughput behind a slow one.
+      const { count: openCount } = await supabase.from("enrich_batches").select("*", { count: "exact", head: true }).is("completed_at", null);
+      if (mode === "submit" || (openCount ?? 0) < MAX_OPEN_BATCHES) {
         const sub = await submitBatch(anthropicKey);
         out.submitted = sub.submitted;
         if (sub.batch_id) out.batch_id = sub.batch_id;
       } else {
         out.submitted = 0;
-        out.note = "batch in flight — skipped submit";
+        out.note = `${openCount} batches in flight — skipped submit`;
       }
     }
   } catch (e) {
@@ -307,7 +318,7 @@ Deno.serve(async (req: Request) => {
     artifacts_duped: 0,
     errors,
     success: errors.length === 0,
-    notes: `v20 batches mode=${mode} processed=${out.processed ?? 0} failed=${out.failed ?? 0} submitted=${out.submitted ?? 0}`,
+    notes: `v21 batches mode=${mode} processed=${out.processed ?? 0} failed=${out.failed ?? 0} submitted=${out.submitted ?? 0}`,
   });
 
   return new Response(JSON.stringify({ ...out, errors: errors.length ? errors : undefined }), {
