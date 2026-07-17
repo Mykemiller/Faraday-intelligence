@@ -27,8 +27,9 @@ import {
 } from "./poller-pure.ts";
 import { jsonFetchUrl, parseJsonSource } from "./poller-json.ts";
 import { extractIndexItems, type IndexPollConfig } from "./poller-index.ts";
+import { isDue, isRelevant } from "./poller-relevance.ts";
 
-const CRAWLER_ID = "source-poller_v1.2"; // v1.1 JSON-API adapters · v1.2 index-poll
+const CRAWLER_ID = "source-poller_v1.3"; // v1.2 index-poll · v1.3 cadence-aware + relevance gate
 const AUTO_ID = "AUTO-199";
 const UA = "FaradayIntelligenceBot/1.0 (+https://faraday-intelligence.ai; data-source poller)";
 const CRON_TOKEN_FALLBACK_SHA256 = "dd88c73bb785f950802d296ede8541501b486da1c141aef14635680d2780ea63";
@@ -83,14 +84,16 @@ interface SourceRow {
   cadence: string;
   status: string;
   countable: boolean;
+  scope: string | null;
   fetch_config: Record<string, unknown>;
+  last_fetch_at: string | null;
   etag: string | null;
   last_modified: string | null;
   consecutive_failures: number;
 }
 
 const SOURCE_COLS =
-  "source_key,name,url,feed_url,access_method,license,license_status,idf_domains,cadence,status,countable,fetch_config,etag,last_modified,consecutive_failures";
+  "source_key,name,url,feed_url,access_method,license,license_status,idf_domains,cadence,status,countable,scope,fetch_config,etag,last_modified,last_fetch_at,consecutive_failures";
 
 // ---------- verify ----------
 
@@ -259,14 +262,20 @@ async function pollOne(src: SourceRow): Promise<{ found: number; inserted: numbe
     items = parseFeed(body, 50);
   }
   const rows = [];
+  let gated = 0;
   for (const it of items) {
     const idKey = `${src.source_key}|${it.link ?? it.title}`;
     const contentHash = await sha256hex(idKey);
     const raw = `${it.title}\n\n${it.summary}`.trim();
+    // v1.3 relevance gate: query-lane noise is stored for audit but never
+    // sent to the enrichment LLM. Curated feeds are always relevant.
+    const skip = src.scope === "query_feed" && !isRelevant(it);
+    if (skip) gated++;
     rows.push({
       crawler_id: CRAWLER_ID,
       auto_id: AUTO_ID,
       source_type: "web_news",
+      enrich_status: skip ? "skipped" : "pending",
       source_url: it.link ?? src.feed_url,
       published_at: toIso(it.published),
       raw_content: raw || it.title || "(no content)",
@@ -307,7 +316,7 @@ async function pollOne(src: SourceRow): Promise<{ found: number; inserted: numbe
       updated_at: nowIso,
     })
     .eq("source_key", src.source_key);
-  return { found: items.length, inserted, note: "ok" };
+  return { found: items.length, inserted, note: gated > 0 ? `ok gated=${gated}` : "ok" };
 }
 
 async function bumpFailure(src: SourceRow, err: string) {
@@ -390,12 +399,20 @@ Deno.serve(async (req: Request) => {
     // registered rows not yet verified, oldest attempt first (resume-safe)
     q = q.eq("status", "registered").order("updated_at", { ascending: true });
   } else {
-    q = q.eq("status", "active").not("feed_url", "is", null).order("last_fetch_at", { ascending: true, nullsFirst: true });
+    // v1.3: over-fetch oldest-first, then filter to cadence-due client-side —
+    // weekly long-tail sources stop consuming hourly-cron slots.
+    q = supabase.from("source_registry").select(SOURCE_COLS).eq("subsystem", "poller")
+      .eq("status", "active").not("feed_url", "is", null)
+      .order("last_fetch_at", { ascending: true, nullsFirst: true })
+      .limit(Math.min(limit * 4, 400));
   }
-  const { data: sources, error } = await q;
+  const { data: fetched, error } = await q;
   if (error) {
     return new Response(JSON.stringify({ error: error.message }), { status: 500, headers: { "content-type": "application/json" } });
   }
+  const sources = mode === "run" && !bodyIn.source_key
+    ? (fetched ?? []).filter((s) => isDue((s as unknown as SourceRow).cadence, (s as unknown as SourceRow).last_fetch_at as unknown as string | null, Date.now())).slice(0, limit)
+    : fetched;
 
   const results: Record<string, string> = {};
   let processed = 0, okCount = 0, found = 0, inserted = 0;
@@ -410,7 +427,7 @@ Deno.serve(async (req: Request) => {
         results[src.source_key] = r.detail;
       } else {
         const r = await pollOne(src);
-        okCount += r.note === "ok" || r.note === "304" ? 1 : 0;
+        okCount += r.note.startsWith("ok") || r.note === "304" ? 1 : 0;
         found += r.found;
         inserted += r.inserted;
         results[src.source_key] = `${r.note} found=${r.found} new=${r.inserted}`;
