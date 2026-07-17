@@ -58,7 +58,9 @@ drains the initial 297-row sweep in a few hours and is a no-op once the
 - **Index-poll** (`poller-index.ts`): when RSS discovery exhausts, verify falls
   back to heuristic article-link extraction from the index page HTML it already
   holds; ≥8 qualifying links (article-ish path + ≥25-char link text + same
-  host + junk excluded) activates the source as `access_method='index_poll'`.
+  host + junk excluded) activates the source as `access_method='html'` +
+  `fetch_config.verify_kind='index'` (the access_method vocabulary is
+  CHECK-constrained; 'html' is the allowed value).
   Run mode extracts fresh links each poll; items carry no published date
   (discovery time anchors the timeline). Per-source tuning via
   `fetch_config.index_poll = {include, exclude, min_text, min_items, same_host}`

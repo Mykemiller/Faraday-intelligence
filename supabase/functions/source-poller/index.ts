@@ -123,7 +123,7 @@ async function verifyOne(src: SourceRow): Promise<{ ok: boolean; detail: string 
       const items = kind === "json" ? [] : parseFeed(body, 5);
       if (kind !== "json" && items.length === 0) continue; // parseable shell, no items
       const activate = ACTIVATABLE.includes(src.license_status);
-      await supabase
+      const { error: upErr } = await supabase
         .from("source_registry")
         .update({
           feed_url: cand,
@@ -139,6 +139,7 @@ async function verifyOne(src: SourceRow): Promise<{ ok: boolean; detail: string 
           updated_at: new Date().toISOString(),
         })
         .eq("source_key", src.source_key);
+      if (upErr) return { ok: false, detail: `db update failed: ${upErr.message.slice(0, 150)}` };
       return { ok: true, detail: `${kind} @ ${cand}${activate ? " (activated)" : " (verified, not activatable: " + src.license_status + ")"}` };
     }
     // If we got HTML back on the first (homepage-ish) candidate, mine it for
@@ -158,11 +159,13 @@ async function verifyOne(src: SourceRow): Promise<{ ok: boolean; detail: string 
     const links = extractIndexItems(indexHtml, indexUrl, cfg);
     if (links.length >= (cfg.min_items ?? 8)) {
       const activate = ACTIVATABLE.includes(src.license_status);
-      await supabase
+      // access_method vocabulary is CHECK-constrained — 'html' is the allowed
+      // value; verify_kind='index' marks the index-poll pipeline.
+      const { error: upErr } = await supabase
         .from("source_registry")
         .update({
           feed_url: indexUrl,
-          access_method: "index_poll",
+          access_method: "html",
           status: activate ? "active" : src.status,
           consecutive_failures: 0,
           fetch_config: {
@@ -175,6 +178,7 @@ async function verifyOne(src: SourceRow): Promise<{ ok: boolean; detail: string 
           updated_at: new Date().toISOString(),
         })
         .eq("source_key", src.source_key);
+      if (upErr) return { ok: false, detail: `db update failed: ${upErr.message.slice(0, 150)}` };
       return { ok: true, detail: `index @ ${indexUrl} (${links.length} links)${activate ? " (activated)" : ""}` };
     }
   }
@@ -229,9 +233,10 @@ async function pollOne(src: SourceRow): Promise<{ found: number; inserted: numbe
   const body = (await res.text()).slice(0, isJsonCt ? 15_000_000 : 1_500_000);
   const kind = classifyFeed(res.headers.get("content-type"), body);
   let items;
-  if (src.access_method === "index_poll") {
-    // Wave-3: heuristic article-link extraction from the index page. Config
-    // overrides in fetch_config.index_poll (data, no redeploy).
+  if (src.access_method === "html") {
+    // Wave-3: heuristic article-link extraction from the index page
+    // (access_method 'html' + verify_kind 'index'). Config overrides in
+    // fetch_config.index_poll (data, no redeploy).
     items = extractIndexItems(body, fetchUrl, (src.fetch_config?.index_poll ?? {}) as IndexPollConfig);
   } else if (kind === "json") {
     // Wave-2 adapters: named (KEV/NVD/GCP-status/NWS) + shape-detected
