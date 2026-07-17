@@ -210,7 +210,7 @@ async function pollOne(src: SourceRow): Promise<{ found: number; inserted: numbe
       published_at: toIso(it.published),
       raw_content: raw || it.title || "(no content)",
       content_hash: contentHash,
-      content_length: raw.length,
+      // content_length is a GENERATED column — never supply it
       signal_envelope: {
         source_key: src.source_key,
         source_name: src.name,
