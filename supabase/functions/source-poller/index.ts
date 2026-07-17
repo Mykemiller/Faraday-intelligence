@@ -324,7 +324,10 @@ async function bumpFailure(src: SourceRow, err: string) {
     .eq("source_key", src.source_key);
 }
 
-/** R1 countable maintenance: active + license-clear + artifact in trailing 30d. */
+/** R1 countable maintenance: active + license-clear + artifact in trailing 30d.
+ * Query-lane rows (scope='query_feed' — Google News searches etc.) are ingested
+ * like any source but NEVER countable: R1 excludes search queries from the
+ * marketed source count. */
 async function refreshCountable() {
   const cutoff = new Date(Date.now() - 30 * 24 * 3600 * 1000).toISOString();
   await supabase
@@ -334,7 +337,8 @@ async function refreshCountable() {
     .eq("status", "active")
     .in("license_status", ACTIVATABLE)
     .gte("last_artifact_at", cutoff)
-    .eq("countable", false);
+    .eq("countable", false)
+    .is("scope", null);
   await supabase
     .from("source_registry")
     .update({ countable: false })
