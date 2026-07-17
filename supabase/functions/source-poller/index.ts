@@ -25,8 +25,9 @@ import {
   parseFeed,
   toIso,
 } from "./poller-pure.ts";
+import { jsonFetchUrl, parseJsonSource } from "./poller-json.ts";
 
-const CRAWLER_ID = "source-poller_v1.0";
+const CRAWLER_ID = "source-poller_v1.1"; // v1.1 = Wave-2 JSON-API adapters
 const AUTO_ID = "AUTO-199";
 const UA = "FaradayIntelligenceBot/1.0 (+https://faraday-intelligence.ai; data-source poller)";
 const CRON_TOKEN_FALLBACK_SHA256 = "dd88c73bb785f950802d296ede8541501b486da1c141aef14635680d2780ea63";
@@ -102,7 +103,9 @@ async function verifyOne(src: SourceRow): Promise<{ ok: boolean; detail: string 
     tried.push(cand);
     let res: Response;
     try {
-      res = await fetchWithTimeout(cand);
+      // Probe via the windowed URL for JSON APIs whose bare endpoint is huge
+      // (NVD full corpus, NWS historical firehose) — cand stays the stored URL.
+      res = await fetchWithTimeout(jsonFetchUrl(src.source_key, cand, Date.now()));
     } catch {
       continue;
     }
@@ -166,9 +169,10 @@ async function pollOne(src: SourceRow): Promise<{ found: number; inserted: numbe
   const headers: Record<string, string> = {};
   if (src.etag) headers["if-none-match"] = src.etag;
   if (src.last_modified) headers["if-modified-since"] = src.last_modified;
+  const fetchUrl = jsonFetchUrl(src.source_key, src.feed_url!, Date.now());
   let res: Response;
   try {
-    res = await fetchWithTimeout(src.feed_url!, headers);
+    res = await fetchWithTimeout(fetchUrl, headers);
   } catch (e) {
     await bumpFailure(src, `fetch error: ${String(e).slice(0, 200)}`);
     return { found: 0, inserted: 0, note: "fetch error" };
@@ -186,17 +190,32 @@ async function pollOne(src: SourceRow): Promise<{ found: number; inserted: numbe
     await bumpFailure(src, `http ${res.status}`);
     return { found: 0, inserted: 0, note: `http ${res.status}` };
   }
-  const body = (await res.text()).slice(0, 1_500_000);
+  // JSON APIs can be multi-MB (CISA KEV ~8MB) and must not be truncated
+  // mid-document; markup feeds stay tightly capped.
+  const isJsonCt = (res.headers.get("content-type") ?? "").toLowerCase().includes("json");
+  const body = (await res.text()).slice(0, isJsonCt ? 15_000_000 : 1_500_000);
   const kind = classifyFeed(res.headers.get("content-type"), body);
-  if (!kind || kind === "json") {
-    // JSON feeds (KEV/NVD/status APIs) need per-source adapters — Wave 2.
+  let items;
+  if (kind === "json") {
+    // Wave-2 adapters: named (KEV/NVD/GCP-status/NWS) + shape-detected
+    // (JSON Feed spec, statuspage summary). No adapter → healthy no-op.
+    items = parseJsonSource(src.source_key, body, 50);
+    if (items === null) {
+      await supabase
+        .from("source_registry")
+        .update({ last_fetch_at: nowIso, last_ok_at: nowIso, consecutive_failures: 0, updated_at: nowIso })
+        .eq("source_key", src.source_key);
+      return { found: 0, inserted: 0, note: "json (adapter pending)" };
+    }
+  } else if (!kind) {
     await supabase
       .from("source_registry")
-      .update({ last_fetch_at: nowIso, last_ok_at: kind ? nowIso : src.last_modified, consecutive_failures: 0, updated_at: nowIso })
+      .update({ last_fetch_at: nowIso, consecutive_failures: 0, updated_at: nowIso })
       .eq("source_key", src.source_key);
-    return { found: 0, inserted: 0, note: kind === "json" ? "json (adapter pending)" : "not a feed" };
+    return { found: 0, inserted: 0, note: "not a feed" };
+  } else {
+    items = parseFeed(body, 50);
   }
-  const items = parseFeed(body, 50);
   const rows = [];
   for (const it of items) {
     const idKey = `${src.source_key}|${it.link ?? it.title}`;

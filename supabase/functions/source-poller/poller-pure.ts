@@ -75,7 +75,10 @@ export function classifyFeed(contentType: string | null, body: string): "rss" | 
   if (/<feed[\s>][^>]*/i.test(head) && /atom/i.test(head)) return "atom";
   if (/<feed[\s>]/i.test(head)) return "atom";
   const ct = (contentType ?? "").toLowerCase();
-  if (ct.includes("json") || head.trimStart().startsWith("{") || head.trimStart().startsWith("[")) {
+  // Trust a JSON content-type without parsing — callers may pass a TRUNCATED
+  // body (multi-MB payloads like CISA KEV), which a full parse would reject.
+  if (ct.includes("json")) return "json";
+  if (head.trimStart().startsWith("{") || head.trimStart().startsWith("[")) {
     try {
       JSON.parse(body);
       return "json";
