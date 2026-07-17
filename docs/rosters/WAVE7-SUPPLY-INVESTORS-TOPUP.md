@@ -219,3 +219,206 @@
 | Phoenix Contact | automation_controls | DE |
 | Janitza | power_monitoring | DE |
 | Setra Systems | sensors | US |
+| Securiton | fire_detection | CH |
+| Janus Fire Systems | fire_suppression | US |
+| Amerex | fire_suppression | US |
+| Rotarex | fire_suppression | LU |
+| Summit Fire & Security | fire_protection_services | US |
+| Impact Fire Services | fire_protection_services | US |
+| Encore Fire Protection | fire_protection_services | US |
+| Jensen Hughes | fire_engineering | US |
+| LenelS2 | access_control | US |
+| Brivo | access_control | US |
+| Salto Systems | access_control | ES |
+| Suprema | biometric_access | KR |
+| Alcatraz AI | biometric_access | US |
+| i-PRO | video_surveillance | JP |
+| Vivotek | video_surveillance | TW |
+| Eagle Eye Networks | video_surveillance | US |
+| Rhombus | video_surveillance | US |
+| CEIA | screening_detection | IT |
+| GardaWorld | security_services | CA |
+| Prosegur | security_services | ES |
+| H2O Innovation | water_treatment | CA |
+| Garratt-Callahan | water_treatment | US |
+| Buckman | water_treatment | US |
+| SUEZ | water_utility_treatment | FR |
+| Ovivo | water_treatment | CA |
+| Ion Exchange India | water_treatment | IN |
+| Veralto | water_analytics | US |
+| OCC (Optical Cable Corporation) | fiber_cabling | US |
+| Datwyler | structured_cabling | CH |
+| Fluke Networks | cable_test | US |
+| FS.com | dc_connectivity | US |
+| ProLabs | transceivers | GB |
+| OE Solutions | transceivers | KR |
+| HG Genuine | transceivers | CN |
+| Hisense Broadband | transceivers | CN |
+| Smartoptics | optical_networking | NO |
+| VIAVI Solutions | network_test | US |
+| EXFO | network_test | CA |
+| Spirent Communications | network_test | GB |
+| Anritsu | network_test | JP |
+| MultiLane | interconnect_test | LB |
+| Accton Technology | network_odm | TW |
+| Edgecore Networks | network_odm | TW |
+| JSR | semiconductor_materials | JP |
+| Sumitomo Bakelite | semiconductor_materials | JP |
+| Ajinomoto | semiconductor_materials | JP |
+| Namics | semiconductor_materials | JP |
+| Mitsubishi Gas Chemical | semiconductor_materials | JP |
+| Mitsui Chemicals | semiconductor_materials | JP |
+| Lintec | semiconductor_materials | JP |
+| Adeka | semiconductor_materials | JP |
+| Tokuyama | semiconductor_materials | JP |
+| JX Advanced Metals | semiconductor_materials | JP |
+| Proterial | semiconductor_materials | JP |
+| Iwatani | industrial_gases | JP |
+| Heraeus | semiconductor_materials | DE |
+| Tanaka Precious Metals | semiconductor_materials | JP |
+| Materion | semiconductor_materials | US |
+| Isola Group | laminates | US |
+| BASF | electronic_chemicals | DE |
+| CoorsTek | technical_ceramics | US |
+| Maruwa | technical_ceramics | JP |
+| AT&S | ic_substrates | AT |
+| Shinko Electric Industries | ic_substrates | JP |
+| SK Siltron | silicon_wafers | KR |
+| Fujifilm | semiconductor_materials | JP |
+| Huatian Technology | osat_packaging | CN |
+| UTAC | osat_packaging | SG |
+| EV Group | semiconductor_equipment | AT |
+| Nordson | semiconductor_equipment | US |
+| Mycronic | electronics_equipment | SE |
+| Rigaku | metrology | JP |
+| Carl Zeiss SMT | lithography_optics | DE |
+| Trumpf | euv_lasers | DE |
+| Gigaphoton | lithography_lasers | JP |
+| ZT Systems | server_manufacturing | US |
+| Hyve Solutions | server_odm | US |
+| AIC | server_chassis | TW |
+| AMI | server_firmware | US |
+| Solidigm | storage | US |
+| Kingston Technology | memory_modules | US |
+| DDN | ai_storage | US |
+| MEAN WELL | power_supplies | TW |
+| FSP Group | power_supplies | TW |
+| Samtec | connectors | US |
+| JAE | connectors | JP |
+| Hirose Electric | connectors | JP |
+| Volex | power_cords_cables | GB |
+| ATEN | kvm | TW |
+| Turner Construction | general_contractor | US |
+| DPR Construction | general_contractor | US |
+| Holder Construction | general_contractor | US |
+| Mortenson | general_contractor | US |
+| HITT Contracting | general_contractor | US |
+| Clark Construction | general_contractor | US |
+| Walbridge | general_contractor | US |
+| Hoffman Construction | general_contractor | US |
+| Austin Commercial | general_contractor | US |
+| Haskell | design_build | US |
+| Sundt | general_contractor | US |
+| BL Harbert | general_contractor | US |
+| ARCO/Murray | design_build | US |
+| Level 10 Construction | general_contractor | US |
+| DAVIS Construction | general_contractor | US |
+| Hourigan | general_contractor | US |
+| Evans General Contractors | general_contractor | US |
+| Choate Construction | general_contractor | US |
+| Graycor | general_contractor | US |
+| Brinkmann Constructors | general_contractor | US |
+| BOND Building Construction | general_contractor | US |
+| Ledcor | general_contractor | CA |
+| EllisDon | general_contractor | CA |
+| Lendlease | construction_development | AU |
+| John Holland | general_contractor | AU |
+| Gamuda | general_contractor | MY |
+| Sunway Construction | general_contractor | MY |
+| Boustead Projects | dc_construction | SG |
+| ALEC | general_contractor | AE |
+| Sir Robert McAlpine | general_contractor | GB |
+| Bowmer + Kirkland | general_contractor | GB |
+| Max Bogl | general_contractor | DE |
+| Equans | mep_services | FR |
+| Caverion | building_services | FI |
+| Bravida | building_services | SE |
+| Ardmac | dc_fitout | IE |
+| Dornan | mep_contractor | IE |
+| Suir Engineering | mep_contractor | IE |
+| Kandenko | electrical_contractor | JP |
+| Kyudenko | electrical_contractor | JP |
+| Taikisha | hvac_contractor | JP |
+| Shinryo | hvac_contractor | JP |
+| Takasago Thermal Engineering | hvac_contractor | JP |
+| Sanki Engineering | hvac_contractor | JP |
+| Dai-Dan | mep_contractor | JP |
+| Sterling and Wilson | dc_epc | IN |
+| Shapoorji Pallonji | construction | IN |
+| Buro Happold | engineering | GB |
+| Hilson Moran | mep_engineering | GB |
+| COWI | engineering | DK |
+| Royal HaskoningDHV | engineering | NL |
+| Drees & Sommer | project_management | DE |
+| Artelia | engineering | FR |
+| IDOM | engineering | ES |
+| Meinhardt | engineering | SG |
+| Beca | engineering | NZ |
+| SmithGroup | architecture_engineering | US |
+| Ware Malcomb | architecture | US |
+| LEO A DALY | architecture_engineering | US |
+| Sargent & Lundy | power_engineering | US |
+| RMF Engineering | mep_engineering | US |
+| Coffman Engineers | engineering | US |
+| Bala Consulting Engineers | mep_engineering | US |
+| Thornton Tomasetti | structural_engineering | US |
+| Walter P Moore | structural_engineering | US |
+| Cornerstone Commissioning | commissioning | US |
+| Worldwide Mission Critical | commissioning | US |
+| Primary Integration | commissioning | US |
+| LotusWorks | commissioning_operations | IE |
+| Uptime Institute | certification_advisory | US |
+| TUV SUD | testing_certification | DE |
+| TUV Rheinland | testing_certification | DE |
+| DNV | testing_certification | NO |
+| Intertek | testing_certification | GB |
+| SGS | testing_certification | CH |
+| Sachs Electric | electrical_contractor | US |
+| Morrow-Meadows | electrical_contractor | US |
+| Walker Engineering | electrical_contractor | US |
+| Interstates | electrical_contractor | US |
+| Corbins | electrical_contractor | US |
+| Cache Valley Electric | electrical_contractor | US |
+| Oregon Electric Group | electrical_contractor | US |
+| Inglett & Stubbs | electrical_contractor | US |
+| Aldridge Electric | electrical_contractor | US |
+| Henkels & McCoy | utility_contractor | US |
+| Wilson Electric | electrical_contractor | US |
+| H&MV Engineering | hv_electrical_contractor | IE |
+| Kentech | electrical_contractor | IE |
+| Phoenix ME | mep_contractor | GB |
+| Gratte Brothers | mep_contractor | GB |
+| Apollo Mechanical Contractors | mechanical_contractor | US |
+| MacDonald-Miller | mechanical_contractor | US |
+| Brandt | mep_contractor | US |
+| Baker Group | mechanical_contractor | US |
+| Lampson International | cranes | US |
+| TNT Crane & Rigging | cranes | US |
+| Edwards Moving & Rigging | heavy_haul | US |
+| Goldhofer | heavy_transport_equipment | DE |
+| DB Schenker | project_logistics | DE |
+| Anderson Trucking Service | heavy_haul | US |
+| Pkaza | dc_staffing | US |
+| Broadstaff | dc_staffing | US |
+| Blue Signal Search | dc_staffing | US |
+| Uptime Crew | dc_staffing_training | US |
+| Orion Talent | dc_staffing | US |
+| DataX Connect | dc_staffing | GB |
+| Datacenter People | dc_staffing | GB |
+| CNet Training | dc_training | GB |
+| BCS Data Center Operations | dc_operations | US |
+| Compu Dynamics | dc_services | US |
+| Instor | dc_fitout | US |
+| Tindall | precast_concrete | US |
+| Coreslab Structures | precast_concrete | US |
+| Ames Construction | sitework | US |
