@@ -30,7 +30,10 @@ test("classifyFeed detects rss / atom / json / html", () => {
   assert.equal(classifyFeed("application/atom+xml", ATOM), "atom");
   assert.equal(classifyFeed("application/json", '{"a":1}'), "json");
   assert.equal(classifyFeed("text/html", "<html><body>hi</body></html>"), null);
-  assert.equal(classifyFeed("application/json", "{broken"), null);
+  // A json content-type is trusted without parsing (bodies may be truncated
+  // multi-MB payloads); a body-sniffed JSON candidate must still parse.
+  assert.equal(classifyFeed("application/json", "{broken"), "json");
+  assert.equal(classifyFeed(null, "{broken"), null);
 });
 
 test("parseFeed extracts RSS items with CDATA + entities + tag stripping", () => {
