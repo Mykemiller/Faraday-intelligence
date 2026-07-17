@@ -48,6 +48,26 @@ repeated invocations resume where the last left off. The 15-min verify cron
 drains the initial 297-row sweep in a few hours and is a no-op once the
 `registered` pool is empty — unschedule jobid 133 after the sweep if desired.
 
+## Wave 2/3 additions
+
+- **JSON-API adapters** (`poller-json.ts`): named adapters for CISA KEV, NVD
+  CVE 2.0 (trailing-7-day window), Google Cloud status, NWS alerts; shape-
+  detected fallbacks for JSON Feed spec and statuspage.io summary payloads.
+  `classifyFeed` trusts a JSON content-type without parsing (bodies may be
+  truncated multi-MB documents); run mode caps JSON bodies at 15MB.
+- **Index-poll** (`poller-index.ts`): when RSS discovery exhausts, verify falls
+  back to heuristic article-link extraction from the index page HTML it already
+  holds; ≥8 qualifying links (article-ish path + ≥25-char link text + same
+  host + junk excluded) activates the source as `access_method='html'` +
+  `fetch_config.verify_kind='index'` (the access_method vocabulary is
+  CHECK-constrained; 'html' is the allowed value).
+  Run mode extracts fresh links each poll; items carry no published date
+  (discovery time anchors the timeline). Per-source tuning via
+  `fetch_config.index_poll = {include, exclude, min_text, min_items, same_host}`
+  — edit the row, no redeploy. To convert a stubborn source manually: set the
+  config, reset `status='registered'` + `fetch_config.verify_fail_count=0`,
+  and let the verify cron retry.
+
 ## Boundaries
 
 - Writes ONLY `source_registry` (its own `subsystem='poller'` rows),
