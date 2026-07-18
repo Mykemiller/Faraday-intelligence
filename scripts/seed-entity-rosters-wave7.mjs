@@ -45,6 +45,9 @@ for (const c of tableRows(R("WAVE7-DC-OPERATORS.md"))) add("op", c[0], "dc_opera
 try {
   for (const c of tableRows(R("WAVE7-DC-OPERATORS-DIRECTORY.md"))) add("op", c[0], "dc_operators", c[2]);
 } catch { /* directory-harvest doc is optional */ }
+try {
+  for (const c of tableRows(R("WAVE7-DC-OPERATORS-VERCEL.md"))) add("op", c[0], "dc_operators", c[2]);
+} catch { /* vercel-harvest doc is optional */ }
 for (const c of tableRows(R("WAVE7-PUBLIC-COMPANIES-TOPUP.md"))) add("pub", c[0], "public_companies", c[3]);
 for (const c of tableRows(R("WAVE7-STARTUPS-TOPUP.md"))) add("stp", c[0], "startups", c[2]);
 const si = sections(R("WAVE7-SUPPLY-INVESTORS-TOPUP.md"));
