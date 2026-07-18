@@ -1,0 +1,1521 @@
+{
+ "snapshot_date": "2026-07-18",
+ "source_table": "tbla7rtRY9AaeoWhu",
+ "note": "Snapshot taken immediately before table retirement (deletion) per Myke 2026-07-18.",
+ "total": 61,
+ "records": [
+  {
+   "id": "rec0HP1FL9bzUUGdq",
+   "createdTime": "2026-07-05T14:12:45.000Z",
+   "cellValuesByFieldId": {
+    "fldDjJailiG2IzSWW": "Sub-Domain ID: D3.4 | Parent: D3 \u2014 Grid & Regulatory\n\nCovers long-distance transmission expansion as the structural bottleneck on where and how fast data-center load can be served: FERC Order 1920 long-term regional transmission planning and cost allocation, interregional transfer capability, National Interest Electric Transmission Corridor (NIETC) designations, and major backbone projects (Grain Belt Express, SunZia, MISO LRTP). Transmission adequacy increasingly determines which interconnection-queue positions can actually deliver firm capacity, making FERC transmission policy a leading multi-year indicator of siting viability. Linked Themes: T-001 (Power Reckoning), T-007 (New Energy Stack). Cross-link: D3.1 (Interconnection Queue & Grid Access).",
+    "fldSKDjD2eKf6UKiu": {
+     "id": "sel4xouf2UOIm5vzy",
+     "name": "Active",
+     "color": "blueLight2"
+    },
+    "fldgbcIajoAHM1ASi": "Transmission Buildout & FERC Policy",
+    "fldxW6czAwi9CKwwR": {
+     "state": "error",
+     "errorType": "emptyDependency",
+     "value": null,
+     "isStale": false
+    }
+   }
+  },
+  {
+   "id": "rec1RGRp5pm9qTK4q",
+   "createdTime": "2026-04-12T13:46:28.000Z",
+   "cellValuesByFieldId": {
+    "fld1T0irjU2kWItCc": [
+     {
+      "id": "recadZCtRAFEnXFsq",
+      "name": "Coming Soon \u2014 DC Power Delivery at the Rack"
+     }
+    ],
+    "fldDjJailiG2IzSWW": "Sub-Domain ID: D2.4 | Parent: D2 \u2014 Power Architecture\n\nThe rack-level implementation of 800V DC power delivery: bus bar design, hot-swap power shelf architecture, GPU-native DC-DC converters, and the elimination of per-rack UPS and PDU conversion stages. Distinct from D2.1 (facility-wide 800V DC transition) in that this sub-domain covers the design choices inside the rack enclosure \u2014 where the NVIDIA NVLink and OCP Open Rack Wide specifications meet the power chain. Eaton's acquisitions of power electronics specialists and Vertiv's rack power portfolio expansion are the primary company signals. Linked Themes: T-002 (Rack Revolution), T-001 (Power Reckoning).",
+    "fldSKDjD2eKf6UKiu": {
+     "id": "sel4xouf2UOIm5vzy",
+     "name": "Active",
+     "color": "blueLight2"
+    },
+    "fldgbcIajoAHM1ASi": "DC Power Delivery at the Rack",
+    "fldxW6czAwi9CKwwR": {
+     "state": "error",
+     "errorType": "emptyDependency",
+     "value": null,
+     "isStale": false
+    }
+   }
+  },
+  {
+   "id": "rec1lUo31LCy2Bune",
+   "createdTime": "2026-04-19T15:13:57.000Z",
+   "cellValuesByFieldId": {
+    "fld1T0irjU2kWItCc": [
+     {
+      "id": "recUFxGS8LohTjlTX",
+      "name": "Coming Soon \u2014 Lender Insurance Requirements & Risk Transfer"
+     }
+    ],
+    "fldDjJailiG2IzSWW": "Sub-Domain ID: D21.4 | Parent: D21 \u2014 Insurance & Risk Markets\n\nConstruction all-risk, builders risk, surety bonds, title insurance for powered land, contractual risk allocation in DC leases. Lender-mandated coverage is a gating item for debt closes on DC construction and acquisition financing. Cross-link: D4 (capital markets).\n\nLinked Themes: T-001, T-004.",
+    "fldSKDjD2eKf6UKiu": {
+     "id": "sel4xouf2UOIm5vzy",
+     "name": "Active",
+     "color": "blueLight2"
+    },
+    "fldgbcIajoAHM1ASi": "Lender Insurance Requirements & Risk Transfer",
+    "fldxW6czAwi9CKwwR": {
+     "state": "error",
+     "errorType": "emptyDependency",
+     "value": null,
+     "isStale": false
+    }
+   }
+  },
+  {
+   "id": "rec1uNtL2gwUZ3djl",
+   "createdTime": "2026-04-19T15:13:57.000Z",
+   "cellValuesByFieldId": {
+    "fld1T0irjU2kWItCc": [
+     {
+      "id": "recHKh3LDlcDUbNgH",
+      "name": "Coming Soon \u2014 Major Outage Postmortems"
+     }
+    ],
+    "fldDjJailiG2IzSWW": "Sub-Domain ID: D23.1 | Parent: D23 \u2014 Outage Intelligence & Emergency Response\n\nAWS us-east-1-style events, hyperscaler outage RCAs, root cause patterns, customer-side impact tracking. The outage-learning loop is one of the few places where architectural mistakes become public knowledge before they become standard practice.\n\nLinked Themes: T-001, T-005.",
+    "fldSKDjD2eKf6UKiu": {
+     "id": "sel4xouf2UOIm5vzy",
+     "name": "Active",
+     "color": "blueLight2"
+    },
+    "fldgbcIajoAHM1ASi": "Major Outage Postmortems",
+    "fldxW6czAwi9CKwwR": {
+     "state": "error",
+     "errorType": "emptyDependency",
+     "value": null,
+     "isStale": false
+    }
+   }
+  },
+  {
+   "id": "rec2tzQuqzIloLUxf",
+   "createdTime": "2026-04-12T13:41:53.000Z",
+   "cellValuesByFieldId": {
+    "fld1T0irjU2kWItCc": [
+     {
+      "id": "recAgsWEv6wkpLUlF",
+      "name": "Coming Soon \u2014 GPU Utilization & Compute Scheduling Economics"
+     }
+    ],
+    "fldDjJailiG2IzSWW": "Sub-Domain ID: D9.2 | Parent: D9 \u2014 Orchestration Intelligence & Control Plane\n\nCovers GPU utilization economics: run:ai scheduling, GPU cluster efficiency benchmarks, multi-tenancy models for inference workloads, and the revenue vs. cost implications of utilization improvement. GPU utilization is the primary lever between a profitable AI infrastructure business and an unprofitable one at any given hardware cost basis. Linked Themes: T-005 (Inference Economy).",
+    "fldSKDjD2eKf6UKiu": {
+     "id": "sel4xouf2UOIm5vzy",
+     "name": "Active",
+     "color": "blueLight2"
+    },
+    "fldgbcIajoAHM1ASi": "GPU Utilization & Compute Scheduling Economics",
+    "fldxW6czAwi9CKwwR": {
+     "state": "error",
+     "errorType": "emptyDependency",
+     "value": null,
+     "isStale": false
+    }
+   }
+  },
+  {
+   "id": "rec4jG1OaKEQ7xawK",
+   "createdTime": "2026-04-19T15:13:57.000Z",
+   "cellValuesByFieldId": {
+    "fld1T0irjU2kWItCc": [
+     {
+      "id": "recN9Hfb0HagpOW15",
+      "name": "Coming Soon \u2014 EU Media Coverage"
+     }
+    ],
+    "fldDjJailiG2IzSWW": "Sub-Domain ID: D22.2 | Parent: D22 \u2014 Industry Media & Analyst Coverage\n\nDCD Europe, Mission Critical Magazine EU, and regional trade press across Germany, France, UK, Netherlands, Ireland, and the Nordics. EU DC journalism has become structurally more regulatory than U.S. coverage.\n\nLinked Themes: All themes (horizontal coverage).",
+    "fldSKDjD2eKf6UKiu": {
+     "id": "sel4xouf2UOIm5vzy",
+     "name": "Active",
+     "color": "blueLight2"
+    },
+    "fldgbcIajoAHM1ASi": "EU Media Coverage",
+    "fldxW6czAwi9CKwwR": {
+     "state": "error",
+     "errorType": "emptyDependency",
+     "value": null,
+     "isStale": false
+    }
+   }
+  },
+  {
+   "id": "rec6BlBTxx0ZpqK7e",
+   "createdTime": "2026-04-12T13:41:19.000Z",
+   "cellValuesByFieldId": {
+    "fld1T0irjU2kWItCc": [
+     {
+      "id": "recO5R9fa4ddn5ZyY",
+      "name": "Coming Soon \u2014 Hyperscaler Custom Silicon"
+     }
+    ],
+    "fldDjJailiG2IzSWW": "Sub-Domain ID: D5.2 | Parent: D5 \u2014 Hyperscaler Activity\n\nCovers hyperscaler-developed custom AI chips: AWS Trainium/Inferentia, Google TPU v5/v6, Meta MTIA, Apple Neural Engine, Microsoft Maia. Infrastructure focus: internal deployment substitution rate vs. NVIDIA purchases, rack power requirements, and the strategic implication of chip independence for co-location vendors and GPU infrastructure investors. Linked Themes: T-005 (Inference Economy).",
+    "fldSKDjD2eKf6UKiu": {
+     "id": "sel4xouf2UOIm5vzy",
+     "name": "Active",
+     "color": "blueLight2"
+    },
+    "fldgbcIajoAHM1ASi": "Hyperscaler Custom Silicon",
+    "fldxW6czAwi9CKwwR": {
+     "state": "error",
+     "errorType": "emptyDependency",
+     "value": null,
+     "isStale": false
+    }
+   }
+  },
+  {
+   "id": "recATlFPn4nEhoLYC",
+   "createdTime": "2026-04-19T15:14:27.000Z",
+   "cellValuesByFieldId": {
+    "fld1T0irjU2kWItCc": [
+     {
+      "id": "rech0PZzpCmQnQ6sm",
+      "name": "Coming Soon \u2014 Security Operations & Incident Response"
+     }
+    ],
+    "fldDjJailiG2IzSWW": "Sub-Domain ID: D16.6 | Parent: D16 \u2014 Cyber & Physical Security and Resilience\n\nSOC operations, incident response practice, tabletop exercises, breach disclosure, forensic capability. The operational discipline that turns alerts into action. Boundary rule: incident-as-outage-event lives at D23.3; incident-as-practice lives here. Candidate status \u2014 seed pending formal review.\n\nLinked Themes: T-006.",
+    "fldSKDjD2eKf6UKiu": {
+     "id": "selN07gJ32yqRDQ0I",
+     "name": "Candidate",
+     "color": "blueLight2"
+    },
+    "fldgbcIajoAHM1ASi": "Security Operations & Incident Response",
+    "fldxW6czAwi9CKwwR": {
+     "state": "error",
+     "errorType": "emptyDependency",
+     "value": null,
+     "isStale": false
+    }
+   }
+  },
+  {
+   "id": "recBaXcaWWckssbW2",
+   "createdTime": "2026-04-12T13:40:43.000Z",
+   "cellValuesByFieldId": {
+    "fld1T0irjU2kWItCc": [
+     {
+      "id": "rec9cPYpx7u31fkyL",
+      "name": "Coming Soon \u2014 Utility Rate Cases & PUC Proceedings"
+     }
+    ],
+    "fldDjJailiG2IzSWW": "Sub-Domain ID: D3.3 | Parent: D3 \u2014 Grid & Regulatory\n\nCovers public utility commission proceedings directly relevant to data center development: large-load rate classification cases, special rate class designs, ratepayer cost shift disputes, demand response obligation frameworks, and utility infrastructure cost recovery decisions. PUC outcomes in VA, TX, GA, PA, NY, OH are among the most consequential near-term regulatory variables for AI infrastructure economics. Linked Themes: T-001 (Power Reckoning), T-003 (Consent Crisis), T-007 (New Energy Stack).",
+    "fldSKDjD2eKf6UKiu": {
+     "id": "sel4xouf2UOIm5vzy",
+     "name": "Active",
+     "color": "blueLight2"
+    },
+    "fldgbcIajoAHM1ASi": "Utility Rate Cases & PUC Proceedings",
+    "fldxW6czAwi9CKwwR": {
+     "state": "error",
+     "errorType": "emptyDependency",
+     "value": null,
+     "isStale": false
+    }
+   }
+  },
+  {
+   "id": "recCPCuA07exGLEud",
+   "createdTime": "2026-04-12T13:40:43.000Z",
+   "cellValuesByFieldId": {
+    "fld1T0irjU2kWItCc": [
+     {
+      "id": "rec1IIKSa2cl80Ryj",
+      "name": "Coming Soon \u2014 Interconnection Queue & Grid Access"
+     }
+    ],
+    "fldDjJailiG2IzSWW": "Sub-Domain ID: D3.1 | Parent: D3 \u2014 Grid & Regulatory\n\nCovers ISO/RTO interconnection queues (PJM, MISO, ERCOT, CAISO, NYISO, SPP) as the primary constraint on data center development timelines. Tracks queue volume, average processing times, large-load study requirements, and the FERC Order 2023 reform implications. Queue position and study outcomes are the single most reliable leading indicator of campus delivery risk. Linked Themes: T-001 (Power Reckoning), T-003 (Consent Crisis).",
+    "fldSKDjD2eKf6UKiu": {
+     "id": "sel4xouf2UOIm5vzy",
+     "name": "Active",
+     "color": "blueLight2"
+    },
+    "fldgbcIajoAHM1ASi": "Interconnection Queue & Grid Access",
+    "fldxW6czAwi9CKwwR": {
+     "state": "error",
+     "errorType": "emptyDependency",
+     "value": null,
+     "isStale": false
+    }
+   }
+  },
+  {
+   "id": "recDAB4nI1VHwYmK0",
+   "createdTime": "2026-04-19T15:14:27.000Z",
+   "cellValuesByFieldId": {
+    "fld1T0irjU2kWItCc": [
+     {
+      "id": "reczo0CQYkTD9gZCc",
+      "name": "Coming Soon \u2014 Software Supply Chain & Vendor Risk"
+     }
+    ],
+    "fldDjJailiG2IzSWW": "Sub-Domain ID: D16.5 | Parent: D16 \u2014 Cyber & Physical Security and Resilience\n\nSolarWinds-class supply chain attacks, SBOM requirements, third-party risk management, firmware integrity, dependency auditing. Supply chain as the fastest-growing threat vector for DC operators. Candidate status \u2014 seed pending formal review.\n\nLinked Themes: T-006.",
+    "fldSKDjD2eKf6UKiu": {
+     "id": "selN07gJ32yqRDQ0I",
+     "name": "Candidate",
+     "color": "blueLight2"
+    },
+    "fldgbcIajoAHM1ASi": "Software Supply Chain & Vendor Risk",
+    "fldxW6czAwi9CKwwR": {
+     "state": "error",
+     "errorType": "emptyDependency",
+     "value": null,
+     "isStale": false
+    }
+   }
+  },
+  {
+   "id": "recDxb4E9JOaMY0Ex",
+   "createdTime": "2026-04-12T13:41:19.000Z",
+   "cellValuesByFieldId": {
+    "fld1T0irjU2kWItCc": [
+     {
+      "id": "recLRkt2BjSnFubrZ",
+      "name": "Coming Soon \u2014 Sovereign Wealth & Institutional Capital"
+     }
+    ],
+    "fldDjJailiG2IzSWW": "Sub-Domain ID: D4.3 | Parent: D4 \u2014 M&A & Capital Markets\n\nCovers sovereign wealth fund direct investment in AI infrastructure: ADIA, PIF (Saudi Arabia), GIC (Singapore), CPPIB (Canada), Temasek, and QIA (Qatar). Tracks commitment sizes, co-investment structures, preferred geographies, and the geopolitical motivations behind infrastructure capital flows. Linked Themes: T-004 (Capital Concentration), T-006 (Sovereign AI Race).",
+    "fldSKDjD2eKf6UKiu": {
+     "id": "sel4xouf2UOIm5vzy",
+     "name": "Active",
+     "color": "blueLight2"
+    },
+    "fldgbcIajoAHM1ASi": "Sovereign Wealth & Institutional Capital",
+    "fldxW6czAwi9CKwwR": {
+     "state": "error",
+     "errorType": "emptyDependency",
+     "value": null,
+     "isStale": false
+    }
+   }
+  },
+  {
+   "id": "recEf7clkXe6OriQq",
+   "createdTime": "2026-04-19T15:13:23.000Z",
+   "cellValuesByFieldId": {
+    "fld1T0irjU2kWItCc": [
+     {
+      "id": "rechzkIuM3mXejALo",
+      "name": "Coming Soon \u2014 Federal Tax Policy"
+     }
+    ],
+    "fldDjJailiG2IzSWW": "Sub-Domain ID: D19.2 | Parent: D19 \u2014 Tax, Incentives & Fiscal Policy\n\nIRA clean energy credits (45Y, 48E, 45X, 45V), CHIPS Act 48D, Section 174 R&D capitalization, bonus depreciation, Opportunity Zones. Federal tax policy is the structural backdrop that state and local incentives layer on top of.\n\nLinked Themes: T-004.",
+    "fldSKDjD2eKf6UKiu": {
+     "id": "sel4xouf2UOIm5vzy",
+     "name": "Active",
+     "color": "blueLight2"
+    },
+    "fldgbcIajoAHM1ASi": "Federal Tax Policy",
+    "fldxW6czAwi9CKwwR": {
+     "state": "error",
+     "errorType": "emptyDependency",
+     "value": null,
+     "isStale": false
+    }
+   }
+  },
+  {
+   "id": "recFfOsqwm5v3g3K2",
+   "createdTime": "2026-04-12T13:41:19.000Z",
+   "cellValuesByFieldId": {
+    "fld1T0irjU2kWItCc": [
+     {
+      "id": "recAZcjp6V1SUPxfC",
+      "name": "Coming Soon \u2014 DC REIT Performance & Valuation"
+     }
+    ],
+    "fldDjJailiG2IzSWW": "Sub-Domain ID: D4.2 | Parent: D4 \u2014 M&A & Capital Markets\n\nCovers publicly traded data center REITs (Equinix, Digital Realty, Iron Mountain) \u2014 earnings, NAV, leasing spreads, development pipeline, and debt market dynamics. Also tracks private platform valuations as a read-across. REIT performance is a leading indicator for private market deal pricing and LP appetite. Linked Themes: T-004 (Capital Concentration).",
+    "fldSKDjD2eKf6UKiu": {
+     "id": "sel4xouf2UOIm5vzy",
+     "name": "Active",
+     "color": "blueLight2"
+    },
+    "fldgbcIajoAHM1ASi": "DC REIT Performance & Valuation",
+    "fldxW6czAwi9CKwwR": {
+     "state": "error",
+     "errorType": "emptyDependency",
+     "value": null,
+     "isStale": false
+    }
+   }
+  },
+  {
+   "id": "recIa1wBLVMRzxKsG",
+   "createdTime": "2026-04-19T15:13:23.000Z",
+   "cellValuesByFieldId": {
+    "fld1T0irjU2kWItCc": [
+     {
+      "id": "rec9D8LpJbd26ldHX",
+      "name": "Coming Soon \u2014 Tax-Driven Deal Structuring"
+     }
+    ],
+    "fldDjJailiG2IzSWW": "Sub-Domain ID: D19.5 | Parent: D19 \u2014 Tax, Incentives & Fiscal Policy\n\nDC REIT tax treatment, like-kind exchanges, tax-efficient capital stack construction, M&A tax structures. Tax engineering is a material component of deal pricing and platform valuation. Cross-link: D4 (capital markets).\n\nLinked Themes: T-004.",
+    "fldSKDjD2eKf6UKiu": {
+     "id": "sel4xouf2UOIm5vzy",
+     "name": "Active",
+     "color": "blueLight2"
+    },
+    "fldgbcIajoAHM1ASi": "Tax-Driven Deal Structuring",
+    "fldxW6czAwi9CKwwR": {
+     "state": "error",
+     "errorType": "emptyDependency",
+     "value": null,
+     "isStale": false
+    }
+   }
+  },
+  {
+   "id": "recIt8ynZWu3jNrTx",
+   "createdTime": "2026-04-12T13:41:53.000Z",
+   "cellValuesByFieldId": {
+    "fld1T0irjU2kWItCc": [
+     {
+      "id": "recB3wgiENoojfAKP",
+      "name": "Coming Soon \u2014 Conference Intelligence & Speaking Circuit"
+     }
+    ],
+    "fldDjJailiG2IzSWW": "Sub-Domain ID: D8.2 | Parent: D8 \u2014 People & Signals\n\nCovers DCD Connect, GTC, OCP Summit, AFCOM, iMasons Member Summits, and similar. Tracks speaker lineups as company priority signals, panel topic evolution as market maturity indicators, and sponsor patterns as competitive intelligence. Conference intelligence is one of the most reliable real-time signals for where industry consensus is forming vs. fracturing. Linked Themes: All themes (cross-cutting).",
+    "fldSKDjD2eKf6UKiu": {
+     "id": "sel4xouf2UOIm5vzy",
+     "name": "Active",
+     "color": "blueLight2"
+    },
+    "fldgbcIajoAHM1ASi": "Conference Intelligence & Speaking Circuit",
+    "fldxW6czAwi9CKwwR": {
+     "state": "error",
+     "errorType": "emptyDependency",
+     "value": null,
+     "isStale": false
+    }
+   }
+  },
+  {
+   "id": "recJc94ptI044VGbc",
+   "createdTime": "2026-04-19T15:14:27.000Z",
+   "cellValuesByFieldId": {
+    "fld1T0irjU2kWItCc": [
+     {
+      "id": "recPXxTRVUmztOege",
+      "name": "Coming Soon \u2014 Physical Security & Access Control"
+     }
+    ],
+    "fldDjJailiG2IzSWW": "Sub-Domain ID: D16.3 | Parent: D16 \u2014 Cyber & Physical Security and Resilience\n\nBiometrics, video analytics, intrusion detection, drone defense, perimeter security, mantraps. Physical security as a distinct discipline from cyber \u2014 the facility envelope is its own threat surface. Candidate status \u2014 seed pending formal review.\n\nLinked Themes: T-001.",
+    "fldSKDjD2eKf6UKiu": {
+     "id": "selN07gJ32yqRDQ0I",
+     "name": "Candidate",
+     "color": "blueLight2"
+    },
+    "fldgbcIajoAHM1ASi": "Physical Security & Access Control",
+    "fldxW6czAwi9CKwwR": {
+     "state": "error",
+     "errorType": "emptyDependency",
+     "value": null,
+     "isStale": false
+    }
+   }
+  },
+  {
+   "id": "recKGafN1FHSNlzan",
+   "createdTime": "2026-04-12T13:40:43.000Z",
+   "cellValuesByFieldId": {
+    "fld1T0irjU2kWItCc": [
+     {
+      "id": "recdM2HJ8STEL5GKF",
+      "name": "Coming Soon \u2014 Behind-the-Meter Generation (BYOP/BYOG)"
+     }
+    ],
+    "fldDjJailiG2IzSWW": "Sub-Domain ID: D2.2 | Parent: D2 \u2014 Power Architecture\n\nCovers Bring Your Own Power (BYOP) and Bring Your Own Generation (BYOG) strategies where data center operators develop or contract dedicated generation assets rather than relying solely on grid interconnection. Includes nuclear SMR offtakes, gas peakers, large-scale solar+storage, fuel cells (Bloom Energy, EaaS), and the regulatory and permitting implications of BTM generation at hyperscale. Linked Themes: T-001 (Power Reckoning), T-007 (New Energy Stack).",
+    "fldSKDjD2eKf6UKiu": {
+     "id": "sel4xouf2UOIm5vzy",
+     "name": "Active",
+     "color": "blueLight2"
+    },
+    "fldgbcIajoAHM1ASi": "Behind-the-Meter Generation (BYOP/BYOG)",
+    "fldxW6czAwi9CKwwR": {
+     "state": "error",
+     "errorType": "emptyDependency",
+     "value": null,
+     "isStale": false
+    }
+   }
+  },
+  {
+   "id": "recLOGsvfpQV6jFF5",
+   "createdTime": "2026-04-12T13:41:53.000Z",
+   "cellValuesByFieldId": {
+    "fld1T0irjU2kWItCc": [
+     {
+      "id": "recvmvroRi5Meylsd",
+      "name": "Coming Soon \u2014 Carbon Accounting & Scope 1-3 Reporting"
+     }
+    ],
+    "fldDjJailiG2IzSWW": "Sub-Domain ID: D11.2 | Parent: D11 \u2014 Sustainability\n\nCovers GHG Protocol Scope 1, 2, and 3 emissions reporting for data centers: reporting frameworks (GRI, TCFD, CDP), embodied carbon in hardware, scope 3 supply chain disclosure, and the evolution of regulatory reporting requirements. The convergence of investor ESG mandates and regulatory disclosure obligations is making carbon accounting a first-order operational function. Linked Themes: T-003 (Consent Crisis).",
+    "fldSKDjD2eKf6UKiu": {
+     "id": "sel4xouf2UOIm5vzy",
+     "name": "Active",
+     "color": "blueLight2"
+    },
+    "fldgbcIajoAHM1ASi": "Carbon Accounting & Scope 1-3 Reporting",
+    "fldxW6czAwi9CKwwR": {
+     "state": "error",
+     "errorType": "emptyDependency",
+     "value": null,
+     "isStale": false
+    }
+   }
+  },
+  {
+   "id": "recMNSqDL9Gmim564",
+   "createdTime": "2026-04-12T13:41:53.000Z",
+   "cellValuesByFieldId": {
+    "fld1T0irjU2kWItCc": [
+     {
+      "id": "recD1QuT4VRyFrmDy",
+      "name": "Coming Soon \u2014 Clean Energy Procurement (PPA/REC/CFE)"
+     }
+    ],
+    "fldDjJailiG2IzSWW": "Sub-Domain ID: D11.1 | Parent: D11 \u2014 Sustainability\n\nCovers Power Purchase Agreements, Renewable Energy Certificates, Virtual PPAs, and 24/7 Carbon-Free Energy matching. Tracks hyperscaler clean energy procurement strategies, additionality debates, and the gap between annual REC matching and hourly CFE matching. Clean energy procurement is both a sustainability obligation and a long-term energy cost hedging strategy for operators. Linked Themes: T-007 (New Energy Stack).",
+    "fldSKDjD2eKf6UKiu": {
+     "id": "sel4xouf2UOIm5vzy",
+     "name": "Active",
+     "color": "blueLight2"
+    },
+    "fldgbcIajoAHM1ASi": "Clean Energy Procurement (PPA/REC/CFE)",
+    "fldxW6czAwi9CKwwR": {
+     "state": "error",
+     "errorType": "emptyDependency",
+     "value": null,
+     "isStale": false
+    }
+   }
+  },
+  {
+   "id": "recNXxeEAP7jDjqGn",
+   "createdTime": "2026-04-12T13:46:28.000Z",
+   "cellValuesByFieldId": {
+    "fld1T0irjU2kWItCc": [
+     {
+      "id": "recY5Qkqx7EtlIx0r",
+      "name": "Coming Soon \u2014 Integrated Infrastructure Vendor M&A"
+     }
+    ],
+    "fldDjJailiG2IzSWW": "Sub-Domain ID: D4.4 | Parent: D4 \u2014 M&A & Capital Markets\n\nCovers acquisition activity by major infrastructure vendors (Eaton, Vertiv, Schneider Electric, Siemens, ABB) targeting capabilities across thermal management, DC power electronics, and modular construction delivery. The convergence thesis in T-002 (The Rack Revolution) is visible in M&A before it is visible in product roadmaps \u2014 when Vertiv acquires a CDU specialist and a modular construction company in the same fiscal year, that is the signal. Tracks deal rationale, capability gaps being addressed, and the emerging integrated infrastructure stack each vendor is assembling. Linked Themes: T-002 (Rack Revolution), T-004 (Capital Concentration).",
+    "fldSKDjD2eKf6UKiu": {
+     "id": "sel4xouf2UOIm5vzy",
+     "name": "Active",
+     "color": "blueLight2"
+    },
+    "fldgbcIajoAHM1ASi": "Integrated Infrastructure Vendor M&A",
+    "fldxW6czAwi9CKwwR": {
+     "state": "error",
+     "errorType": "emptyDependency",
+     "value": null,
+     "isStale": false
+    }
+   }
+  },
+  {
+   "id": "recOjIYIPIR0Rc6hN",
+   "createdTime": "2026-04-12T13:41:53.000Z",
+   "cellValuesByFieldId": {
+    "fld1T0irjU2kWItCc": [
+     {
+      "id": "rec99QGHxgT75UjzY",
+      "name": "Coming Soon \u2014 Site Selection Criteria & Market Scoring"
+     }
+    ],
+    "fldDjJailiG2IzSWW": "Sub-Domain ID: D14.1 | Parent: D14 \u2014 Real Estate & Site Selection\n\nCovers the multi-factor site selection process: power access, zoning, water availability, fiber connectivity, climate risk, labor markets, and incentive programs. Tracks land banking strategies, MOU signals with utilities, powered shell economics, and the shift from incentive-driven to power-driven siting decisions. Linked Themes: T-001 (Power Reckoning), T-003 (Consent Crisis).",
+    "fldSKDjD2eKf6UKiu": {
+     "id": "sel4xouf2UOIm5vzy",
+     "name": "Active",
+     "color": "blueLight2"
+    },
+    "fldgbcIajoAHM1ASi": "Site Selection Criteria & Market Scoring",
+    "fldxW6czAwi9CKwwR": {
+     "state": "error",
+     "errorType": "emptyDependency",
+     "value": null,
+     "isStale": false
+    }
+   }
+  },
+  {
+   "id": "recPlf9ixl2HP9Rzf",
+   "createdTime": "2026-04-12T13:41:53.000Z",
+   "cellValuesByFieldId": {
+    "fld1T0irjU2kWItCc": [
+     {
+      "id": "recRtoFsptMWEGDcb",
+      "name": "Coming Soon \u2014 Chip Export Controls & BIS Regime"
+     }
+    ],
+    "fldDjJailiG2IzSWW": "Sub-Domain ID: D15.1 | Parent: D15 \u2014 Sovereign AI & Geopolitics\n\nCovers BIS export control rule changes (H100/H200/Blackwell restrictions), Entity List additions, CFIUS data center reviews, and the downstream impact on non-US hyperscaler capacity access. Export controls are the fastest-moving geopolitical variable affecting AI infrastructure market structure globally. Linked Themes: T-006 (Sovereign AI Race).",
+    "fldSKDjD2eKf6UKiu": {
+     "id": "sel4xouf2UOIm5vzy",
+     "name": "Active",
+     "color": "blueLight2"
+    },
+    "fldgbcIajoAHM1ASi": "Chip Export Controls & BIS Regime",
+    "fldxW6czAwi9CKwwR": {
+     "state": "error",
+     "errorType": "emptyDependency",
+     "value": null,
+     "isStale": false
+    }
+   }
+  },
+  {
+   "id": "recQmeUy9qT2dVCfU",
+   "createdTime": "2026-04-19T15:13:23.000Z",
+   "cellValuesByFieldId": {
+    "fld1T0irjU2kWItCc": [
+     {
+      "id": "recPvFAwC6mnx5rEN",
+      "name": "Coming Soon \u2014 Tax Incentive Backlash & Clawback"
+     }
+    ],
+    "fldDjJailiG2IzSWW": "Sub-Domain ID: D19.4 | Parent: D19 \u2014 Tax, Incentives & Fiscal Policy\n\nGood Jobs First incentive tallies, state clawback legislation, community tax equity arguments, CBA tax offset negotiations. The political economy of data center tax breaks is shifting from automatic to contested. Cross-links: D13 (community relations), D18 (opposition register).\n\nLinked Themes: T-003.",
+    "fldSKDjD2eKf6UKiu": {
+     "id": "sel4xouf2UOIm5vzy",
+     "name": "Active",
+     "color": "blueLight2"
+    },
+    "fldgbcIajoAHM1ASi": "Tax Incentive Backlash & Clawback",
+    "fldxW6czAwi9CKwwR": {
+     "state": "error",
+     "errorType": "emptyDependency",
+     "value": null,
+     "isStale": false
+    }
+   }
+  },
+  {
+   "id": "recRlua8iub66Xa7T",
+   "createdTime": "2026-04-19T15:13:57.000Z",
+   "cellValuesByFieldId": {
+    "fld1T0irjU2kWItCc": [
+     {
+      "id": "rec37a3yX0FHOP9DF",
+      "name": "Coming Soon \u2014 Business Continuity & Disaster Recovery Practice"
+     }
+    ],
+    "fldDjJailiG2IzSWW": "Sub-Domain ID: D23.4 | Parent: D23 \u2014 Outage Intelligence & Emergency Response\n\nDR site strategy, multi-region failover, runbook evolution, regulatory DR requirements. The evolution from backup to continuous multi-region architecture as a baseline expectation for AI-class workloads.\n\nLinked Themes: T-001.",
+    "fldSKDjD2eKf6UKiu": {
+     "id": "sel4xouf2UOIm5vzy",
+     "name": "Active",
+     "color": "blueLight2"
+    },
+    "fldgbcIajoAHM1ASi": "Business Continuity & Disaster Recovery Practice",
+    "fldxW6czAwi9CKwwR": {
+     "state": "error",
+     "errorType": "emptyDependency",
+     "value": null,
+     "isStale": false
+    }
+   }
+  },
+  {
+   "id": "recT1aPlMPxmsveHC",
+   "createdTime": "2026-04-19T15:14:27.000Z",
+   "cellValuesByFieldId": {
+    "fld1T0irjU2kWItCc": [
+     {
+      "id": "rec9MpPnjS2YO9SaD",
+      "name": "Coming Soon \u2014 OT / ICS / SCADA Cybersecurity"
+     }
+    ],
+    "fldDjJailiG2IzSWW": "Sub-Domain ID: D16.2 | Parent: D16 \u2014 Cyber & Physical Security and Resilience\n\nOperational technology cyber \u2014 BMS, DCIM, power distribution controls, cooling system SCADA. CISA ICS advisories, OT network segmentation, vendor risk. Boundary rule: D16 owns threat/practice; D20 owns facility ops tooling itself. Candidate status \u2014 seed pending formal review.\n\nLinked Themes: T-001, T-006.",
+    "fldSKDjD2eKf6UKiu": {
+     "id": "selN07gJ32yqRDQ0I",
+     "name": "Candidate",
+     "color": "blueLight2"
+    },
+    "fldgbcIajoAHM1ASi": "OT / ICS / SCADA Cybersecurity",
+    "fldxW6czAwi9CKwwR": {
+     "state": "error",
+     "errorType": "emptyDependency",
+     "value": null,
+     "isStale": false
+    }
+   }
+  },
+  {
+   "id": "recUh4KkgM3VSe2hw",
+   "createdTime": "2026-04-12T13:40:43.000Z",
+   "cellValuesByFieldId": {
+    "fld1T0irjU2kWItCc": [
+     {
+      "id": "recPFR2l0d6KoMGQw",
+      "name": "Coming Soon \u2014 GPU Architecture & Roadmap"
+     }
+    ],
+    "fldDjJailiG2IzSWW": "Sub-Domain ID: D1.1 | Parent: D1 \u2014 Chips & Density\n\nCovers NVIDIA GPU generational transitions (H100 \u2192 B200 \u2192 GB300 \u2192 Vera Rubin \u2192 Feynman), competing silicon (AMD MI-series, Google TPU, AWS Trainium/Inferentia, Meta MTIA), and custom ASIC development. The primary lens is infrastructure impact: power draw, rack density requirements, memory bandwidth, and thermal envelope per generation. Linked Themes: T-002 (Thermal Reckoning), T-005 (Inference Economy).",
+    "fldSKDjD2eKf6UKiu": {
+     "id": "sel4xouf2UOIm5vzy",
+     "name": "Active",
+     "color": "blueLight2"
+    },
+    "fldgbcIajoAHM1ASi": "GPU Architecture & Roadmap",
+    "fldxW6czAwi9CKwwR": {
+     "state": "error",
+     "errorType": "emptyDependency",
+     "value": null,
+     "isStale": false
+    }
+   }
+  },
+  {
+   "id": "recUloAhqTV0XXZ4P",
+   "createdTime": "2026-04-12T13:41:19.000Z",
+   "cellValuesByFieldId": {
+    "fld1T0irjU2kWItCc": [
+     {
+      "id": "rece4UsrvoSsSZ4Je",
+      "name": "Coming Soon \u2014 Executive Movement & C-Suite Intelligence"
+     }
+    ],
+    "fldDjJailiG2IzSWW": "Sub-Domain ID: D8.1 | Parent: D8 \u2014 People & Signals\n\nTracks C-suite and VP-level moves across operators, hyperscalers, PE platforms, and technology vendors. Covers appointments, departures, promotions, and advisory roles. Executive movement is a leading indicator of platform-level strategic pivots, M&A activity, and competitive positioning changes. Primary sources: LinkedIn, proxy filings, press releases. Feeds AUTO-046 (Executive Role Change Detector). Linked Themes: T-004 (Capital Concentration).",
+    "fldSKDjD2eKf6UKiu": {
+     "id": "sel4xouf2UOIm5vzy",
+     "name": "Active",
+     "color": "blueLight2"
+    },
+    "fldgbcIajoAHM1ASi": "Executive Movement & C-Suite Intelligence",
+    "fldxW6czAwi9CKwwR": {
+     "state": "error",
+     "errorType": "emptyDependency",
+     "value": null,
+     "isStale": false
+    }
+   }
+  },
+  {
+   "id": "recVUq9ADEYbRAXU9",
+   "createdTime": "2026-04-19T15:13:57.000Z",
+   "cellValuesByFieldId": {
+    "fld1T0irjU2kWItCc": [
+     {
+      "id": "recQcvl1WnnsSRFNR",
+      "name": "Coming Soon \u2014 U.S. Media Coverage"
+     }
+    ],
+    "fldDjJailiG2IzSWW": "Sub-Domain ID: D22.1 | Parent: D22 \u2014 Industry Media & Analyst Coverage\n\nData Center Dynamics US, Data Center Knowledge, Bisnow, and trade press. General business media DC beats at WSJ, Bloomberg, NYT, FT. U.S. media is the primary lens through which the DC story gets constructed for capital markets and policy audiences.\n\nLinked Themes: All themes (horizontal coverage).",
+    "fldSKDjD2eKf6UKiu": {
+     "id": "sel4xouf2UOIm5vzy",
+     "name": "Active",
+     "color": "blueLight2"
+    },
+    "fldgbcIajoAHM1ASi": "U.S. Media Coverage",
+    "fldxW6czAwi9CKwwR": {
+     "state": "error",
+     "errorType": "emptyDependency",
+     "value": null,
+     "isStale": false
+    }
+   }
+  },
+  {
+   "id": "recYJTK2va2fY1hRG",
+   "createdTime": "2026-04-12T13:41:19.000Z",
+   "cellValuesByFieldId": {
+    "fld1T0irjU2kWItCc": [
+     {
+      "id": "recvhHizrXlqCI9hs",
+      "name": "Coming Soon \u2014 Direct-to-Chip Liquid Cooling (DLC)"
+     }
+    ],
+    "fldDjJailiG2IzSWW": "Sub-Domain ID: D7.1 | Parent: D7 \u2014 Cooling & Water Technology\n\nCovers cold plate and direct-to-chip liquid cooling systems for GPU and CPU packages: Vertiv CDU, CoolIT, Motivair, JetCool, Asetek. Tracks deployment economics, GPU compatibility (NVIDIA GB300 NVL72 thermal specs), and CDU market share dynamics. DLC is the fastest-growing cooling segment by deployment volume for AI clusters. Linked Themes: T-002 (Thermal Reckoning).",
+    "fldSKDjD2eKf6UKiu": {
+     "id": "sel4xouf2UOIm5vzy",
+     "name": "Active",
+     "color": "blueLight2"
+    },
+    "fldgbcIajoAHM1ASi": "Direct-to-Chip Liquid Cooling (DLC)",
+    "fldxW6czAwi9CKwwR": {
+     "state": "error",
+     "errorType": "emptyDependency",
+     "value": null,
+     "isStale": false
+    }
+   }
+  },
+  {
+   "id": "recawCc8vaH0ZuQSF",
+   "createdTime": "2026-04-12T13:41:19.000Z",
+   "cellValuesByFieldId": {
+    "fld1T0irjU2kWItCc": [
+     {
+      "id": "recdD4tJ1L1o5HPit",
+      "name": "Coming Soon \u2014 Sovereign AI Programs & National Compute"
+     }
+    ],
+    "fldDjJailiG2IzSWW": "Sub-Domain ID: D6.2 | Parent: D6 \u2014 New Entrants\n\nCovers government-backed and state-adjacent AI infrastructure programs: Saudi Arabia\u2019s Humain, UAE\u2019s G42, India\u2019s National AI Mission, EU AI Gigafactory program, Japan\u2019s NEDO compute initiative, and similar. Distinct from D15 in that the focus here is the operator/new entrant dimension \u2014 who is building and operating the infrastructure, not the geopolitical/export control overlay. Linked Themes: T-006 (Sovereign AI Race).",
+    "fldSKDjD2eKf6UKiu": {
+     "id": "sel4xouf2UOIm5vzy",
+     "name": "Active",
+     "color": "blueLight2"
+    },
+    "fldgbcIajoAHM1ASi": "Sovereign AI Programs & National Compute",
+    "fldxW6czAwi9CKwwR": {
+     "state": "error",
+     "errorType": "emptyDependency",
+     "value": null,
+     "isStale": false
+    }
+   }
+  },
+  {
+   "id": "recb7nHxwqLD2k2WH",
+   "createdTime": "2026-04-19T15:13:23.000Z",
+   "cellValuesByFieldId": {
+    "fld1T0irjU2kWItCc": [
+     {
+      "id": "recmQEXqSnsiiZYyP",
+      "name": "Coming Soon \u2014 Climate & Parametric Risk Products"
+     }
+    ],
+    "fldDjJailiG2IzSWW": "Sub-Domain ID: D21.3 | Parent: D21 \u2014 Insurance & Risk Markets\n\nWeather parametric triggers, flood/wildfire/hurricane coverage, climate transition risk, insurability-zone mapping. Parametric products are how capital markets are pricing climate-driven DC siting risk. Cross-links: D11.3 (water), D11.5 (sustainability regulation).\n\nLinked Themes: T-003.",
+    "fldSKDjD2eKf6UKiu": {
+     "id": "sel4xouf2UOIm5vzy",
+     "name": "Active",
+     "color": "blueLight2"
+    },
+    "fldgbcIajoAHM1ASi": "Climate & Parametric Risk Products",
+    "fldxW6czAwi9CKwwR": {
+     "state": "error",
+     "errorType": "emptyDependency",
+     "value": null,
+     "isStale": false
+    }
+   }
+  },
+  {
+   "id": "recbbQSHdkqg2dwsR",
+   "createdTime": "2026-04-12T13:41:53.000Z",
+   "cellValuesByFieldId": {
+    "fld1T0irjU2kWItCc": [
+     {
+      "id": "recpm9XzmWC5mwefS",
+      "name": "Coming Soon \u2014 Long-Lead Equipment & Supply Chain"
+     }
+    ],
+    "fldDjJailiG2IzSWW": "Sub-Domain ID: D10.1 | Parent: D10 \u2014 Construction\n\nCovers transformer (T&D), switchgear, generator, chiller, and CDU lead times as the primary construction bottleneck. Tracks major manufacturers (ABB, Hitachi, Siemens, Eaton, Caterpillar), delivery timeline trends, order backlogs, and the supply chain implications of simultaneous global buildout. Long-lead equipment procurement decisions are now being made 3\u20135 years in advance at hyperscale. Linked Themes: T-001 (Power Reckoning).",
+    "fldSKDjD2eKf6UKiu": {
+     "id": "sel4xouf2UOIm5vzy",
+     "name": "Active",
+     "color": "blueLight2"
+    },
+    "fldgbcIajoAHM1ASi": "Long-Lead Equipment & Supply Chain",
+    "fldxW6czAwi9CKwwR": {
+     "state": "error",
+     "errorType": "emptyDependency",
+     "value": null,
+     "isStale": false
+    }
+   }
+  },
+  {
+   "id": "recePGUqFMiYvmypw",
+   "createdTime": "2026-04-19T15:13:57.000Z",
+   "cellValuesByFieldId": {
+    "fld1T0irjU2kWItCc": [
+     {
+      "id": "recrgnPkToTIXcHzT",
+      "name": "Coming Soon \u2014 APAC / LATAM / MENA Media Coverage"
+     }
+    ],
+    "fldDjJailiG2IzSWW": "Sub-Domain ID: D22.3 | Parent: D22 \u2014 Industry Media & Analyst Coverage\n\nDCD APAC and regional press across Japan, Korea, Singapore, India, Australia, China. LATAM (Brazil, Mexico, Chile). MENA (UAE, Saudi). Africa (Johannesburg). Future split into D22.5 APAC if volume justifies it (OQ-CL-08).\n\nLinked Themes: All themes (horizontal coverage).",
+    "fldSKDjD2eKf6UKiu": {
+     "id": "sel4xouf2UOIm5vzy",
+     "name": "Active",
+     "color": "blueLight2"
+    },
+    "fldgbcIajoAHM1ASi": "APAC / LATAM / MENA Media Coverage",
+    "fldxW6czAwi9CKwwR": {
+     "state": "error",
+     "errorType": "emptyDependency",
+     "value": null,
+     "isStale": false
+    }
+   }
+  },
+  {
+   "id": "recexci3JhqPm8NEn",
+   "createdTime": "2026-04-19T15:13:23.000Z",
+   "cellValuesByFieldId": {
+    "fld1T0irjU2kWItCc": [
+     {
+      "id": "recsSmMe3WvfS6pgK",
+      "name": "Coming Soon \u2014 Data Center Property & Casualty Insurance"
+     }
+    ],
+    "fldDjJailiG2IzSWW": "Sub-Domain ID: D21.1 | Parent: D21 \u2014 Insurance & Risk Markets\n\nLarge-format property coverage, business interruption, FM Global and peers, equipment breakdown, fire, flood. The insurability of multi-hundred-megawatt facilities is becoming a sourcing constraint distinct from availability of capital.\n\nLinked Themes: T-001.",
+    "fldSKDjD2eKf6UKiu": {
+     "id": "sel4xouf2UOIm5vzy",
+     "name": "Active",
+     "color": "blueLight2"
+    },
+    "fldgbcIajoAHM1ASi": "Data Center Property & Casualty Insurance",
+    "fldxW6czAwi9CKwwR": {
+     "state": "error",
+     "errorType": "emptyDependency",
+     "value": null,
+     "isStale": false
+    }
+   }
+  },
+  {
+   "id": "recfM2SKYin3k2KG3",
+   "createdTime": "2026-04-12T13:40:43.000Z",
+   "cellValuesByFieldId": {
+    "fld1T0irjU2kWItCc": [
+     {
+      "id": "recrMxsTBqM8JN47s",
+      "name": "Coming Soon \u2014 Competing Silicon & Alternative Accelerators"
+     }
+    ],
+    "fldDjJailiG2IzSWW": "Sub-Domain ID: D1.3 | Parent: D1 \u2014 Chips & Density\n\nCovers non-NVIDIA AI accelerators with material infrastructure implications: AMD MI300X/MI350/MI400 series, Google TPU v5/v6, AWS Trainium2/Inferentia3, Meta MTIA, and custom ASICs from Cerebras, Groq, Tenstorrent, Etched. Infrastructure focus: rack power requirements, memory architecture, cooling compatibility, and deployment economics vs. NVIDIA baseline. Linked Themes: T-005 (Inference Economy).",
+    "fldSKDjD2eKf6UKiu": {
+     "id": "sel4xouf2UOIm5vzy",
+     "name": "Active",
+     "color": "blueLight2"
+    },
+    "fldgbcIajoAHM1ASi": "Competing Silicon & Alternative Accelerators",
+    "fldxW6czAwi9CKwwR": {
+     "state": "error",
+     "errorType": "emptyDependency",
+     "value": null,
+     "isStale": false
+    }
+   }
+  },
+  {
+   "id": "recfRdthRAYjHN10f",
+   "createdTime": "2026-04-12T13:41:19.000Z",
+   "cellValuesByFieldId": {
+    "fld1T0irjU2kWItCc": [
+     {
+      "id": "reczN3Nl7DuQk7xBD",
+      "name": "Coming Soon \u2014 Big 5 Capex & Campus Announcements"
+     }
+    ],
+    "fldDjJailiG2IzSWW": "Sub-Domain ID: D5.1 | Parent: D5 \u2014 Hyperscaler Activity\n\nCovers quarterly capex guidance, actuals, and revisions from AWS, Azure, Google, Meta, and Oracle. Tracks campus announcements (location, MW scale, power source, COD timeline), Stargate and equivalent coalition programs, and the delta between announced and delivered capacity. The primary demand signal for the entire AI infrastructure market. Linked Themes: T-001 (Power Reckoning), T-004 (Capital Concentration).",
+    "fldSKDjD2eKf6UKiu": {
+     "id": "sel4xouf2UOIm5vzy",
+     "name": "Active",
+     "color": "blueLight2"
+    },
+    "fldgbcIajoAHM1ASi": "Big 5 Capex & Campus Announcements",
+    "fldxW6czAwi9CKwwR": {
+     "state": "error",
+     "errorType": "emptyDependency",
+     "value": null,
+     "isStale": false
+    }
+   }
+  },
+  {
+   "id": "recfVsFxpQBDnu36t",
+   "createdTime": "2026-04-12T13:40:43.000Z",
+   "cellValuesByFieldId": {
+    "fld1T0irjU2kWItCc": [
+     {
+      "id": "rec1GfBAAln6ZSW0q",
+      "name": "Coming Soon \u2014 Rack Density & Power Density Progression"
+     }
+    ],
+    "fldDjJailiG2IzSWW": "Sub-Domain ID: D1.2 | Parent: D1 \u2014 Chips & Density\n\nTracks the density roadmap from legacy 10 kW/rack through 30 kW, 80 kW, and 120 kW+ configurations. Covers OCP Open Rack Wide (ORW) standards, the Density Dividend (Jevons Paradox applied to AI compute), facility design implications, and the forcing function relationship between rack density and cooling technology selection. Linked Themes: T-001 (Power Reckoning), T-002 (Thermal Reckoning).",
+    "fldSKDjD2eKf6UKiu": {
+     "id": "sel4xouf2UOIm5vzy",
+     "name": "Active",
+     "color": "blueLight2"
+    },
+    "fldgbcIajoAHM1ASi": "Rack Density & Power Density Progression",
+    "fldxW6czAwi9CKwwR": {
+     "state": "error",
+     "errorType": "emptyDependency",
+     "value": null,
+     "isStale": false
+    }
+   }
+  },
+  {
+   "id": "recgTjPFPuL7Eo6rh",
+   "createdTime": "2026-04-12T13:41:19.000Z",
+   "cellValuesByFieldId": {
+    "fld1T0irjU2kWItCc": [
+     {
+      "id": "recYJk9Xt6vkzOiuh",
+      "name": "Coming Soon \u2014 Neocloud Infrastructure"
+     }
+    ],
+    "fldDjJailiG2IzSWW": "Sub-Domain ID: D6.1 | Parent: D6 \u2014 New Entrants\n\nCovers GPU-as-a-service and cloud compute platforms built around rented or owned AI accelerator clusters rather than traditional IaaS: CoreWeave, Nebius, Lambda, Nscale, Crusoe, and emerging platforms. Tracks funding, capacity commitments, hyperscaler customer relationships, and the competitive positioning vs. Big 5 cloud. Linked Themes: T-004 (Capital Concentration), T-005 (Inference Economy).",
+    "fldSKDjD2eKf6UKiu": {
+     "id": "sel4xouf2UOIm5vzy",
+     "name": "Active",
+     "color": "blueLight2"
+    },
+    "fldgbcIajoAHM1ASi": "Neocloud Infrastructure",
+    "fldxW6czAwi9CKwwR": {
+     "state": "error",
+     "errorType": "emptyDependency",
+     "value": null,
+     "isStale": false
+    }
+   }
+  },
+  {
+   "id": "rechsTzEUgcKpGA7m",
+   "createdTime": "2026-04-19T15:13:23.000Z",
+   "cellValuesByFieldId": {
+    "fld1T0irjU2kWItCc": [
+     {
+      "id": "recMPs1LIfV8SPJZ1",
+      "name": "Coming Soon \u2014 International Tax & Transfer Pricing"
+     }
+    ],
+    "fldDjJailiG2IzSWW": "Sub-Domain ID: D19.3 | Parent: D19 \u2014 Tax, Incentives & Fiscal Policy\n\nIreland 12.5%, Singapore and UAE regimes, EU state aid rules, OECD Pillar Two global minimum tax, India GST on DC services. Governs cross-border data center structures and where international capacity lands.\n\nLinked Themes: T-006, T-004.",
+    "fldSKDjD2eKf6UKiu": {
+     "id": "sel4xouf2UOIm5vzy",
+     "name": "Active",
+     "color": "blueLight2"
+    },
+    "fldgbcIajoAHM1ASi": "International Tax & Transfer Pricing",
+    "fldxW6czAwi9CKwwR": {
+     "state": "error",
+     "errorType": "emptyDependency",
+     "value": null,
+     "isStale": false
+    }
+   }
+  },
+  {
+   "id": "reci8DIAaWRUVKZcx",
+   "createdTime": "2026-04-12T13:40:43.000Z",
+   "cellValuesByFieldId": {
+    "fld1T0irjU2kWItCc": [
+     {
+      "id": "rec3Kpgg05IGncBf8",
+      "name": "Coming Soon \u2014 State Moratorium & Legislative Landscape"
+     }
+    ],
+    "fldDjJailiG2IzSWW": "Sub-Domain ID: D3.2 | Parent: D3 \u2014 Grid & Regulatory\n\nCovers the 2025\u20132026 state legislative wave: moratorium bills (14 states active, Maine LD 307 enacted), tax incentive rollbacks, water disclosure mandates, and large-load rate class legislation. Tracks bill status, partisan dynamics, and passage likelihood. Primary feed from MultiState Insider, Good Jobs First, DataCenterBans.com, and Data Center Watch. Linked Themes: T-001 (Power Reckoning), T-003 (Consent Crisis).",
+    "fldSKDjD2eKf6UKiu": {
+     "id": "sel4xouf2UOIm5vzy",
+     "name": "Active",
+     "color": "blueLight2"
+    },
+    "fldgbcIajoAHM1ASi": "State Moratorium & Legislative Landscape",
+    "fldxW6czAwi9CKwwR": {
+     "state": "error",
+     "errorType": "emptyDependency",
+     "value": null,
+     "isStale": false
+    }
+   }
+  },
+  {
+   "id": "recjF4GOmk1Jnszwo",
+   "createdTime": "2026-04-12T13:41:19.000Z",
+   "cellValuesByFieldId": {
+    "fld1T0irjU2kWItCc": [
+     {
+      "id": "recHF4ZZO9KGT3GTS",
+      "name": "Coming Soon \u2014 Water Use & Waterless Cooling Strategies"
+     }
+    ],
+    "fldDjJailiG2IzSWW": "Sub-Domain ID: D7.3 | Parent: D7 \u2014 Cooling & Water Technology\n\nCovers WUE (Water Usage Effectiveness) metrics, evaporative cooling alternatives, closed-loop adiabatic systems, waterless cooling technologies (air economization, rear-door heat exchangers), and water purchase agreements. Increasingly scrutinized as AI cluster deployments strain municipal and watershed water resources. Covers ZutaCore and the Carrier Global incumbent link as a case study in strategic investment tracking. Linked Themes: T-002 (Thermal Reckoning), T-003 (Consent Crisis).",
+    "fldSKDjD2eKf6UKiu": {
+     "id": "sel4xouf2UOIm5vzy",
+     "name": "Active",
+     "color": "blueLight2"
+    },
+    "fldgbcIajoAHM1ASi": "Water Use & Waterless Cooling Strategies",
+    "fldxW6czAwi9CKwwR": {
+     "state": "error",
+     "errorType": "emptyDependency",
+     "value": null,
+     "isStale": false
+    }
+   }
+  },
+  {
+   "id": "recjHuB7gHtUz2wuD",
+   "createdTime": "2026-04-19T15:13:23.000Z",
+   "cellValuesByFieldId": {
+    "fld1T0irjU2kWItCc": [
+     {
+      "id": "recLv8DO9Y1NZqUg8",
+      "name": "Coming Soon \u2014 State & Local Tax Incentives"
+     }
+    ],
+    "fldDjJailiG2IzSWW": "Sub-Domain ID: D19.1 | Parent: D19 \u2014 Tax, Incentives & Fiscal Policy\n\nProperty tax abatements (VA, TX, GA, AZ), sales tax exemptions on IT equipment, gross receipts tax treatment, PILOTs, TIF districts, and enterprise zone designations. State-by-state tax regime variation is a primary site selection input. Cross-links: D3 (regulatory), D13 (community relations CBA tax equity), D14 (site selection).\n\nLinked Themes: T-003, T-004.",
+    "fldSKDjD2eKf6UKiu": {
+     "id": "sel4xouf2UOIm5vzy",
+     "name": "Active",
+     "color": "blueLight2"
+    },
+    "fldgbcIajoAHM1ASi": "State & Local Tax Incentives",
+    "fldxW6czAwi9CKwwR": {
+     "state": "error",
+     "errorType": "emptyDependency",
+     "value": null,
+     "isStale": false
+    }
+   }
+  },
+  {
+   "id": "recjQa5oD8Sr1AAMl",
+   "createdTime": "2026-04-12T13:46:28.000Z",
+   "cellValuesByFieldId": {
+    "fld1T0irjU2kWItCc": [
+     {
+      "id": "recbUxucXlfAyAsa5",
+      "name": "Coming Soon \u2014 Modular & Prefabricated Data Center Delivery"
+     }
+    ],
+    "fldDjJailiG2IzSWW": "Sub-Domain ID: D10.3 | Parent: D10 \u2014 Construction\n\nCovers the shift from bespoke, stick-built data center construction to factory-prefabricated modular delivery: skid-based power modules, containerized cooling units, prefabricated electrical switchgear assemblies, and full Prefabricated Modular Data Centers (PMDCs). Tracks vendor landscape (Vertiv, Schneider, Delta, BladeRoom, Compass, IO Data Centers), timeline compression economics vs. stick-built, quality control advantages, and the limits of modular at extreme density (120+ kW/rack). The modular model is the construction methodology enabler for the 800V DC and DLC transitions \u2014 factory integration of MEP systems is significantly easier than field installation. Linked Themes: T-002 (Rack Revolution), T-001 (Power Reckoning).",
+    "fldSKDjD2eKf6UKiu": {
+     "id": "sel4xouf2UOIm5vzy",
+     "name": "Active",
+     "color": "blueLight2"
+    },
+    "fldgbcIajoAHM1ASi": "Modular & Prefabricated Data Center Delivery",
+    "fldxW6czAwi9CKwwR": {
+     "state": "error",
+     "errorType": "emptyDependency",
+     "value": null,
+     "isStale": false
+    }
+   }
+  },
+  {
+   "id": "reckVN8uXEXSbrBFg",
+   "createdTime": "2026-04-19T15:14:27.000Z",
+   "cellValuesByFieldId": {
+    "fld1T0irjU2kWItCc": [
+     {
+      "id": "recEowstrxIqAAPBd",
+      "name": "Coming Soon \u2014 Enterprise IT Cybersecurity & Cloud Security"
+     }
+    ],
+    "fldDjJailiG2IzSWW": "Sub-Domain ID: D16.1 | Parent: D16 \u2014 Cyber & Physical Security and Resilience\n\nEnterprise IT cyber coverage at DC operators and hyperscalers: identity, network segmentation, cloud workload protection, zero-trust architecture. Candidate status \u2014 seed composition to be finalized during D16 formal review (awaiting Myke sign-off).\n\nLinked Themes: T-006.",
+    "fldSKDjD2eKf6UKiu": {
+     "id": "selN07gJ32yqRDQ0I",
+     "name": "Candidate",
+     "color": "blueLight2"
+    },
+    "fldgbcIajoAHM1ASi": "Enterprise IT Cybersecurity & Cloud Security",
+    "fldxW6czAwi9CKwwR": {
+     "state": "error",
+     "errorType": "emptyDependency",
+     "value": null,
+     "isStale": false
+    }
+   }
+  },
+  {
+   "id": "recl6DEghJyRDyAtA",
+   "createdTime": "2026-04-19T15:13:57.000Z",
+   "cellValuesByFieldId": {
+    "fld1T0irjU2kWItCc": [
+     {
+      "id": "reczgHQY48YnjQNP5",
+      "name": "Coming Soon \u2014 Cyber Incidents Targeting DC Infrastructure"
+     }
+    ],
+    "fldDjJailiG2IzSWW": "Sub-Domain ID: D23.3 | Parent: D23 \u2014 Outage Intelligence & Emergency Response\n\nRansomware on DC operators, supply chain attacks, state-actor DC targeting, incident response practice. Cyber-incident-as-outage-event \u2014 the threat itself at D16; this tracks the operational consequence. Cross-link: D16.\n\nLinked Themes: T-006.",
+    "fldSKDjD2eKf6UKiu": {
+     "id": "sel4xouf2UOIm5vzy",
+     "name": "Active",
+     "color": "blueLight2"
+    },
+    "fldgbcIajoAHM1ASi": "Cyber Incidents Targeting DC Infrastructure",
+    "fldxW6czAwi9CKwwR": {
+     "state": "error",
+     "errorType": "emptyDependency",
+     "value": null,
+     "isStale": false
+    }
+   }
+  },
+  {
+   "id": "reclHpYuvqMCbeMvp",
+   "createdTime": "2026-04-19T15:13:23.000Z",
+   "cellValuesByFieldId": {
+    "fld1T0irjU2kWItCc": [
+     {
+      "id": "rectEw6Oz5qAMBRW0",
+      "name": "Coming Soon \u2014 Facility DCIM & Digital Twin"
+     }
+    ],
+    "fldDjJailiG2IzSWW": "Sub-Domain ID: D20.2 | Parent: D20 \u2014 Facility IT & Operational Technology\n\nNlyte, Sunbird, Schneider EcoStruxure DC, NVIDIA Omniverse for DCs, Cadence Reality DC. Facility-level DCIM distinct from compute-side orchestration at D9.1 \u2014 this tracks power, thermal, and capacity management at the cabinet and room level.\n\nLinked Themes: T-001, T-002.",
+    "fldSKDjD2eKf6UKiu": {
+     "id": "sel4xouf2UOIm5vzy",
+     "name": "Active",
+     "color": "blueLight2"
+    },
+    "fldgbcIajoAHM1ASi": "Facility DCIM & Digital Twin",
+    "fldxW6czAwi9CKwwR": {
+     "state": "error",
+     "errorType": "emptyDependency",
+     "value": null,
+     "isStale": false
+    }
+   }
+  },
+  {
+   "id": "reclLpF0jB6S9Xhfc",
+   "createdTime": "2026-04-12T13:41:53.000Z",
+   "cellValuesByFieldId": {
+    "fld1T0irjU2kWItCc": [
+     {
+      "id": "recT14J8c08eBXoK8",
+      "name": "Coming Soon \u2014 Project Opposition Register"
+     }
+    ],
+    "fldDjJailiG2IzSWW": "Sub-Domain ID: D18.1 | Parent: D18 \u2014 Community Opposition & Regulatory Risk\n\nCovers project-level tracking: developer, location, MW scale, opposition group(s), project status (Blocked/Delayed/Advanced), dollar value at risk, CBA status, and moratorium exposure. Sources: Data Center Watch, datacenterwatch.org report, local news. Feeds Community Opposition Registry table and AUTO-049. The project register is Faraday\u2019s primary differentiating intelligence asset for D18. Linked Themes: T-003 (Consent Crisis).",
+    "fldSKDjD2eKf6UKiu": {
+     "id": "sel4xouf2UOIm5vzy",
+     "name": "Active",
+     "color": "blueLight2"
+    },
+    "fldgbcIajoAHM1ASi": "Project Opposition Register",
+    "fldxW6czAwi9CKwwR": {
+     "state": "error",
+     "errorType": "emptyDependency",
+     "value": null,
+     "isStale": false
+    }
+   }
+  },
+  {
+   "id": "reclfpKWUPNEBBjJy",
+   "createdTime": "2026-04-12T13:40:43.000Z",
+   "cellValuesByFieldId": {
+    "fld1T0irjU2kWItCc": [
+     {
+      "id": "recFL4XZqyNxj8Q0X",
+      "name": "Coming Soon \u2014 800V DC Power Distribution"
+     }
+    ],
+    "fldDjJailiG2IzSWW": "Sub-Domain ID: D2.1 | Parent: D2 \u2014 Power Architecture\n\nCovers the transition from 415V AC to 800V DC power distribution within data center facilities. Includes physics and economics of the transition, NFPA code gap timeline, AC-to-DC retrofit risk matrix (the 4\u00d74), OCP 800V DC standards, and the market for DC-native power infrastructure vendors. The single most significant structural change in data center power design in a generation. Linked Themes: T-001 (Power Reckoning), T-007 (New Energy Stack).",
+    "fldSKDjD2eKf6UKiu": {
+     "id": "sel4xouf2UOIm5vzy",
+     "name": "Active",
+     "color": "blueLight2"
+    },
+    "fldgbcIajoAHM1ASi": "800V DC Power Distribution",
+    "fldxW6czAwi9CKwwR": {
+     "state": "error",
+     "errorType": "emptyDependency",
+     "value": null,
+     "isStale": false
+    }
+   }
+  },
+  {
+   "id": "recmAANSSclDJSbyZ",
+   "createdTime": "2026-04-12T13:41:19.000Z",
+   "cellValuesByFieldId": {
+    "fld1T0irjU2kWItCc": [
+     {
+      "id": "recUVS0s8F5q1D0ld",
+      "name": "Coming Soon \u2014 Immersion Cooling"
+     }
+    ],
+    "fldDjJailiG2IzSWW": "Sub-Domain ID: D7.2 | Parent: D7 \u2014 Cooling & Water Technology\n\nCovers single-phase and two-phase immersion cooling systems: Submer, Iceotope, LiquidStack, Green Revolution Cooling, Asperitas. Tracks total cost of ownership vs. DLC, fluid chemistry and safety standards, facility design requirements, and the use case boundary (immersion vs. DLC) as rack densities increase. Linked Themes: T-002 (Thermal Reckoning).",
+    "fldSKDjD2eKf6UKiu": {
+     "id": "sel4xouf2UOIm5vzy",
+     "name": "Active",
+     "color": "blueLight2"
+    },
+    "fldgbcIajoAHM1ASi": "Immersion Cooling",
+    "fldxW6czAwi9CKwwR": {
+     "state": "error",
+     "errorType": "emptyDependency",
+     "value": null,
+     "isStale": false
+    }
+   }
+  },
+  {
+   "id": "recpNJG7MzMAhNG8e",
+   "createdTime": "2026-04-12T13:41:53.000Z",
+   "cellValuesByFieldId": {
+    "fld1T0irjU2kWItCc": [
+     {
+      "id": "recFSkadIniiu1Sof",
+      "name": "Coming Soon \u2014 GC/EPC Capacity & Construction Execution"
+     }
+    ],
+    "fldDjJailiG2IzSWW": "Sub-Domain ID: D10.2 | Parent: D10 \u2014 Construction\n\nCovers GC/EPC capacity constraints, modular and offsite construction adoption, commissioning throughput, and contracting model evolution (design-build, CM-at-risk). Tracks Mortenson, Turner, DPR, and emerging specialist contractors. Construction execution is now a strategic differentiator \u2014 operators who can reliably deliver on schedule command a leasing premium. Linked Themes: T-001 (Power Reckoning).",
+    "fldSKDjD2eKf6UKiu": {
+     "id": "sel4xouf2UOIm5vzy",
+     "name": "Active",
+     "color": "blueLight2"
+    },
+    "fldgbcIajoAHM1ASi": "GC/EPC Capacity & Construction Execution",
+    "fldxW6czAwi9CKwwR": {
+     "state": "error",
+     "errorType": "emptyDependency",
+     "value": null,
+     "isStale": false
+    }
+   }
+  },
+  {
+   "id": "recrfCKVfK3LojlQG",
+   "createdTime": "2026-07-05T14:12:45.000Z",
+   "cellValuesByFieldId": {
+    "fldDjJailiG2IzSWW": "Sub-Domain ID: D3.5 | Parent: D3 \u2014 Grid & Regulatory\n\nCovers the fast-emerging regulatory frontier of how very large data-center loads connect and contract for power: novel large-load tariff designs, bring-your-own-generation (BYOG) interconnection rules, behind-the-meter co-location of data centers with generation, and the FERC/PJM Talen\u2013Amazon Susquehanna co-location ruling that reset the rules for grid-adjacent siting. Also tracks minimum-take and curtailment obligations, special contracts, and the ratepayer cost-allocation disputes they trigger \u2014 the terms that determine whether co-located and large-load projects are economic. Linked Themes: T-001 (Power Reckoning), T-007 (New Energy Stack). Cross-links: D2.2 (Behind-the-Meter Generation / BYOP-BYOG), D5.1 (Big 5 Capex & Campus Announcements).",
+    "fldSKDjD2eKf6UKiu": {
+     "id": "sel4xouf2UOIm5vzy",
+     "name": "Active",
+     "color": "blueLight2"
+    },
+    "fldgbcIajoAHM1ASi": "Large-Load Tariff Design & Co-Location Rules",
+    "fldxW6czAwi9CKwwR": {
+     "state": "error",
+     "errorType": "emptyDependency",
+     "value": null,
+     "isStale": false
+    }
+   }
+  },
+  {
+   "id": "recrm6B6Sw4NWES7E",
+   "createdTime": "2026-04-12T14:05:36.000Z",
+   "cellValuesByFieldId": {
+    "fld1T0irjU2kWItCc": [
+     {
+      "id": "rec7ZhcY2zRbpfzPx",
+      "name": "Coming Soon \u2014 Jurisdiction Posture Intelligence (JPS)"
+     }
+    ],
+    "fldDjJailiG2IzSWW": "Sub-Domain ID: D18.2 | Parent: D18 \u2014 Community Opposition & Regulatory Risk\n\nThe Faraday Jurisdiction Posture Score (JPS) is a proprietary 0\u2013100 composite score tracking each jurisdiction's posture toward data center development across five dimensions: (D1) Development Track Record, (D2) Political & Governing Body Posture, (D3) Community & Opposition Dynamics, (D4) Utility & Infrastructure Posture, (D5) Regulatory & Legislative Environment. The unit of analysis is the jurisdiction with zoning authority \u2014 County, Township, City, Municipality, or Borough \u2014 not necessarily the state. Posture Labels: Champion (75\u2013100) / Favorable (55\u201374) / Neutral (35\u201354) / Cautious (15\u201334) / Hostile (0\u201314). Momentum tracks directional change: Accelerating / Stable / Decelerating / Inflection. JPS override is permitted with mandatory written rationale. Seed set: 10 US jurisdictions scored as of April 2026, anchored by documented project outcomes. Data table: Jurisdiction Posture Registry (tblAZB4CjCBGHREKi). This is Faraday\u2019s most differentiated D18 intelligence asset \u2014 it converts reactive opposition tracking into predictive site selection intelligence. Linked Themes: T-003 (Consent Crisis).",
+    "fldSKDjD2eKf6UKiu": {
+     "id": "sel4xouf2UOIm5vzy",
+     "name": "Active",
+     "color": "blueLight2"
+    },
+    "fldgbcIajoAHM1ASi": "Jurisdiction Posture Intelligence (JPS)",
+    "fldxW6czAwi9CKwwR": {
+     "state": "error",
+     "errorType": "emptyDependency",
+     "value": null,
+     "isStale": false
+    }
+   }
+  },
+  {
+   "id": "recsuZ0o8UcugfFFo",
+   "createdTime": "2026-04-19T15:13:23.000Z",
+   "cellValuesByFieldId": {
+    "fld1T0irjU2kWItCc": [
+     {
+      "id": "recowzfyejfKb9NzY",
+      "name": "Coming Soon \u2014 Building Management Systems & HVAC Control"
+     }
+    ],
+    "fldDjJailiG2IzSWW": "Sub-Domain ID: D20.1 | Parent: D20 \u2014 Facility IT & Operational Technology\n\nSiemens Desigo, Johnson Controls Metasys, Honeywell, Schneider EcoStruxure Building. BMS as facility operations layer \u2014 the tooling that runs HVAC, power distribution monitoring, and environmental control at the building level.\n\nLinked Themes: T-001, T-002.",
+    "fldSKDjD2eKf6UKiu": {
+     "id": "sel4xouf2UOIm5vzy",
+     "name": "Active",
+     "color": "blueLight2"
+    },
+    "fldgbcIajoAHM1ASi": "Building Management Systems & HVAC Control",
+    "fldxW6czAwi9CKwwR": {
+     "state": "error",
+     "errorType": "emptyDependency",
+     "value": null,
+     "isStale": false
+    }
+   }
+  },
+  {
+   "id": "recsxIbnP3cXUdIpP",
+   "createdTime": "2026-04-12T13:40:43.000Z",
+   "cellValuesByFieldId": {
+    "fld1T0irjU2kWItCc": [
+     {
+      "id": "recHAAJ0BHYL0y8UJ",
+      "name": "Coming Soon \u2014 PE & Infrastructure Fund Activity"
+     }
+    ],
+    "fldDjJailiG2IzSWW": "Sub-Domain ID: D4.1 | Parent: D4 \u2014 M&A & Capital Markets\n\nCovers private equity and infrastructure fund deployment into data center platforms: acquisitions, platform builds, minority stakes, and exits. Primary tracked entities: Blackstone, DigitalBridge, KKR, Brookfield, Blue Owl, Ares, TPG, Macquarie, Goldman Sachs Alternatives. Focus on deal structure (club deals, sale-leaseback, build-to-suit), return expectations, and hold period dynamics. Linked Themes: T-004 (Capital Concentration).",
+    "fldSKDjD2eKf6UKiu": {
+     "id": "sel4xouf2UOIm5vzy",
+     "name": "Active",
+     "color": "blueLight2"
+    },
+    "fldgbcIajoAHM1ASi": "PE & Infrastructure Fund Activity",
+    "fldxW6czAwi9CKwwR": {
+     "state": "error",
+     "errorType": "emptyDependency",
+     "value": null,
+     "isStale": false
+    }
+   }
+  },
+  {
+   "id": "rectQhkwXQWJVEqeb",
+   "createdTime": "2026-04-19T15:13:57.000Z",
+   "cellValuesByFieldId": {
+    "fld1T0irjU2kWItCc": [
+     {
+      "id": "recKjvf96fa4Wr0Ol",
+      "name": "Coming Soon \u2014 Grid Events & Physical Disasters"
+     }
+    ],
+    "fldDjJailiG2IzSWW": "Sub-Domain ID: D23.2 | Parent: D23 \u2014 Outage Intelligence & Emergency Response\n\nExtreme weather impact on DCs, grid failures affecting campuses, ERCOT-style winter storm events, wildfire evacuations. Cross-links: D3.1 (interconnection), D11.3 (water).\n\nLinked Themes: T-001, T-003.",
+    "fldSKDjD2eKf6UKiu": {
+     "id": "sel4xouf2UOIm5vzy",
+     "name": "Active",
+     "color": "blueLight2"
+    },
+    "fldgbcIajoAHM1ASi": "Grid Events & Physical Disasters",
+    "fldxW6czAwi9CKwwR": {
+     "state": "error",
+     "errorType": "emptyDependency",
+     "value": null,
+     "isStale": false
+    }
+   }
+  },
+  {
+   "id": "rectcK7b3JU2593x1",
+   "createdTime": "2026-04-19T15:13:57.000Z",
+   "cellValuesByFieldId": {
+    "fld1T0irjU2kWItCc": [
+     {
+      "id": "recTQ5R8oSA21v3kE",
+      "name": "Coming Soon \u2014 Industry Analysts"
+     }
+    ],
+    "fldDjJailiG2IzSWW": "Sub-Domain ID: D22.4 | Parent: D22 \u2014 Industry Media & Analyst Coverage\n\nGartner, IDC, Synergy Research, Dell'Oro, 451 Research / S&P Global, Omdia, TBR. CRE analysts: Cushman & Wakefield DC, JLL DC, Newmark, Structure Research. Analyst reports and rankings shape enterprise buying narratives and platform valuations.\n\nLinked Themes: All themes (horizontal coverage).",
+    "fldSKDjD2eKf6UKiu": {
+     "id": "sel4xouf2UOIm5vzy",
+     "name": "Active",
+     "color": "blueLight2"
+    },
+    "fldgbcIajoAHM1ASi": "Industry Analysts",
+    "fldxW6czAwi9CKwwR": {
+     "state": "error",
+     "errorType": "emptyDependency",
+     "value": null,
+     "isStale": false
+    }
+   }
+  },
+  {
+   "id": "recuZgX0nwxGt6p0f",
+   "createdTime": "2026-04-12T13:40:43.000Z",
+   "cellValuesByFieldId": {
+    "fld1T0irjU2kWItCc": [
+     {
+      "id": "recvqOZCrtJWuz6RC",
+      "name": "Coming Soon \u2014 UPS, Storage & Power Conditioning"
+     }
+    ],
+    "fldDjJailiG2IzSWW": "Sub-Domain ID: D2.3 | Parent: D2 \u2014 Power Architecture\n\nCovers uninterruptible power supply architecture evolution (VRLA to lithium-ion to flywheel), battery energy storage systems (BESS) for grid stabilization and demand response, and power conditioning equipment. Particular focus on lithium-ion adoption economics, fire suppression implications, and the role of UPS in BTM generation architectures. Linked Themes: T-007 (New Energy Stack).",
+    "fldSKDjD2eKf6UKiu": {
+     "id": "sel4xouf2UOIm5vzy",
+     "name": "Active",
+     "color": "blueLight2"
+    },
+    "fldgbcIajoAHM1ASi": "UPS, Storage & Power Conditioning",
+    "fldxW6czAwi9CKwwR": {
+     "state": "error",
+     "errorType": "emptyDependency",
+     "value": null,
+     "isStale": false
+    }
+   }
+  },
+  {
+   "id": "recv5FqNuGTW2yQ12",
+   "createdTime": "2026-04-19T15:14:27.000Z",
+   "cellValuesByFieldId": {
+    "fld1T0irjU2kWItCc": [
+     {
+      "id": "recjUBYMA1zZPZTch",
+      "name": "Coming Soon \u2014 State-Sponsored & Advanced Persistent Threats"
+     }
+    ],
+    "fldDjJailiG2IzSWW": "Sub-Domain ID: D16.4 | Parent: D16 \u2014 Cyber & Physical Security and Resilience\n\nAPT tracking (Mandiant, CrowdStrike), state-actor campaigns targeting DC infrastructure, attribution reporting, CISA KEV catalog, geopolitical threat modeling. Candidate status \u2014 seed pending formal review.\n\nLinked Themes: T-006.",
+    "fldSKDjD2eKf6UKiu": {
+     "id": "selN07gJ32yqRDQ0I",
+     "name": "Candidate",
+     "color": "blueLight2"
+    },
+    "fldgbcIajoAHM1ASi": "State-Sponsored & Advanced Persistent Threats",
+    "fldxW6czAwi9CKwwR": {
+     "state": "error",
+     "errorType": "emptyDependency",
+     "value": null,
+     "isStale": false
+    }
+   }
+  },
+  {
+   "id": "recwltnZDpRp9q8Da",
+   "createdTime": "2026-04-12T13:41:53.000Z",
+   "cellValuesByFieldId": {
+    "fld1T0irjU2kWItCc": [
+     {
+      "id": "recCe4V9lZ80mWIu4",
+      "name": "Coming Soon \u2014 AI Factory Orchestration & DCIM"
+     }
+    ],
+    "fldDjJailiG2IzSWW": "Sub-Domain ID: D9.1 | Parent: D9 \u2014 Orchestration Intelligence & Control Plane\n\nCovers the NVIDIA DSX AI Factory reference architecture, NVL72/NVL144 cluster management, DCIM platform evolution (Nlyte, Schneider EcoStruxure, Vertiv), and software-defined power and cooling management. Infrastructure focus: how orchestration decisions determine sustained power draw, cooling activation patterns, and facility capex requirements. Linked Themes: T-005 (Inference Economy).",
+    "fldSKDjD2eKf6UKiu": {
+     "id": "sel4xouf2UOIm5vzy",
+     "name": "Active",
+     "color": "blueLight2"
+    },
+    "fldgbcIajoAHM1ASi": "AI Factory Orchestration & DCIM",
+    "fldxW6czAwi9CKwwR": {
+     "state": "error",
+     "errorType": "emptyDependency",
+     "value": null,
+     "isStale": false
+    }
+   }
+  },
+  {
+   "id": "recyFp156U2ftCq3F",
+   "createdTime": "2026-04-19T15:13:23.000Z",
+   "cellValuesByFieldId": {
+    "fld1T0irjU2kWItCc": [
+     {
+      "id": "recnkRlll9vRvkJ8s",
+      "name": "Coming Soon \u2014 Cyber Insurance & Tech E&O"
+     }
+    ],
+    "fldDjJailiG2IzSWW": "Sub-Domain ID: D21.2 | Parent: D21 \u2014 Insurance & Risk Markets\n\nStandalone cyber coverage, ransomware exclusions, AI-liability coverage, state-actor exclusion debates. Home for cyber-as-insurance-product; the threat itself lives at D16. Cross-link: D16.\n\nLinked Themes: T-004, T-006.",
+    "fldSKDjD2eKf6UKiu": {
+     "id": "sel4xouf2UOIm5vzy",
+     "name": "Active",
+     "color": "blueLight2"
+    },
+    "fldgbcIajoAHM1ASi": "Cyber Insurance & Tech E&O",
+    "fldxW6czAwi9CKwwR": {
+     "state": "error",
+     "errorType": "emptyDependency",
+     "value": null,
+     "isStale": false
+    }
+   }
+  }
+ ]
+}
