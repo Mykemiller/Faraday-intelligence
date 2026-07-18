@@ -1,6 +1,10 @@
 -- ============================================================================
--- idf4_registry_sync_domains_subdomains  (DRAFT — DO NOT APPLY without Myke go)
+-- idf4_registry_sync_domains_subdomains
 -- CC-IDF-OPEN3 Item 3 · FAR-199 · 2026-07-18
+-- APPLIED 2026-07-18 to ycadmmngkdhvpcsrcuaq on Myke's go (all three CC-IDF-OPEN3
+-- gates approved), including Section 2 as written: D18.2 restored to canon (JPS
+-- awaits a new canon code, D18.4 proposed) and D2.2 restored to the BTM name.
+-- Recorded in supabase_migrations as idf4_registry_sync_domains_subdomains.
 -- ----------------------------------------------------------------------------
 -- Context: the Coverage Matrix page (Notion 38889a0c…) still claims
 -- faraday_domains=16 / faraday_subdomains=4. That claim is stale: migrations
