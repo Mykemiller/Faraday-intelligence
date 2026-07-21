@@ -1,0 +1,63 @@
+// ── LANE A — IDF 4.0 ACTIVATE (CC-IDF4-ACTIVATE-1.0, 2026-07-21) ─────────────
+// Insert this block into supabase/functions/faraday-crawl/coverage-bridge.ts
+// immediately before `export function mergeApproved`, then in index.ts add
+// LANE_A_ACTIVATION to the import and wrap it as the 4th mergeApproved(...) arg.
+// The 26 [crawler] D#.# whitespace sub-domain routines (from WHITESPACE_SCAFFOLDS)
+// rostered into the live fleet after each passed its bounded (cap-4) healthy-run
+// test gate. AUTO-138 is the D7.2 immersion crawler; its prior 'runaway' health
+// rows were a mislabel by ingest-sdwis-baseline / ingest-bls-labor writing
+// auto_id='AUTO-138' (that bulk backfill already completed; real crawler cap-4).
+export const LANE_A_ACTIVATION: AutoDef[] = [
+  { auto_id: "AUTO-138", source_type: "web_news", ifs_domains: ["D7.2"],
+    queries: ["immersion cooling Submer Iceotope LiquidStack 2026", "two-phase immersion data center TCO", "immersion vs DLC data center deployment 2026"] },
+  { auto_id: "AUTO-139", source_type: "web_news", ifs_domains: ["D7.3"],
+    queries: ["data center water use WUE waterless cooling 2026", "data center water stress drought siting", "evaporative cooling alternative data center 2026"] },
+  { auto_id: "AUTO-141", source_type: "web_news", ifs_domains: ["D9.1"],
+    queries: ["NVIDIA DSX NVL72 AI factory orchestration DCIM 2026", "AI factory cluster management software 2026", "data center orchestration control plane announcement"] },
+  { auto_id: "AUTO-142", source_type: "web_news", ifs_domains: ["D9.2"],
+    queries: ["run:ai GPU utilization scheduling multi-tenancy 2026", "GPU compute scheduling economics benchmark", "GPU utilization optimization data center 2026"] },
+  { auto_id: "AUTO-143", source_type: "web_news", ifs_domains: ["D9.3"],
+    queries: ["vLLM TensorRT-LLM Triton inference serving model routing 2026", "KV cache management inference control plane", "model router token economics scheduling 2026"] },
+  { auto_id: "AUTO-144", source_type: "web_news", ifs_domains: ["D9.4"],
+    queries: ["power-aware workload orchestration carbon-aware compute 2026", "grid-responsive scheduling demand response data center software", "carbon aware compute scheduling 2026"] },
+  { auto_id: "AUTO-145", source_type: "web_news", ifs_domains: ["D1.1"],
+    queries: ["NVIDIA Blackwell Vera Rubin Feynman roadmap 2026", "NVIDIA GPU generational transition infrastructure impact", "NVIDIA datacenter GPU roadmap announcement 2026"] },
+  { auto_id: "AUTO-146", source_type: "web_news", ifs_domains: ["D1.2"],
+    queries: ["rack power density 120kW OCP ORW 2026", "kW per rack roadmap data center design", "high density rack data center facility forcing function 2026"] },
+  { auto_id: "AUTO-147", source_type: "web_news", ifs_domains: ["D1.3"],
+    queries: ["AMD Instinct MI Intel Gaudi merchant accelerator 2026", "merchant inference silicon architecture 2026", "AMD Intel data center GPU competition 2026"] },
+  { auto_id: "AUTO-148", source_type: "web_news", ifs_domains: ["D1.6"],
+    queries: ["NVIDIA GPU allocation hyperscaler neocloud sovereign 2026", "GPU secondary market allocation leading indicator", "chip allocation supply politics data center 2026"] },
+  { auto_id: "AUTO-149", source_type: "web_news", ifs_domains: ["D2.1"],
+    queries: ["800V DC power distribution data center 2026", "415V AC to 800V DC data center NFPA OCP", "facility to rack DC power architecture 2026"] },
+  { auto_id: "AUTO-150", source_type: "web_news", ifs_domains: ["D2.2"],
+    queries: ["behind the meter data center economics decision framework 2026", "BTM data center power asset mix", "behind the meter generation data center 2026"] },
+  { auto_id: "AUTO-151", source_type: "web_news", ifs_domains: ["D2.3"],
+    queries: ["data center UPS BESS lithium-ion power conditioning 2026", "data center energy storage UPS evolution", "battery energy storage data center 2026"] },
+  { auto_id: "AUTO-152", source_type: "web_news", ifs_domains: ["D2.4"],
+    queries: ["in-rack DC power delivery bus bar hot swap shelf 2026", "GPU-native DC-DC converter rack power", "inside rack power delivery data center 2026"] },
+  { auto_id: "AUTO-153", source_type: "web_news", ifs_domains: ["D2.9"],
+    queries: ["data center microgrid islanding switchgear black start 2026", "island mode paralleling data center power", "microgrid integration data center 2026"] },
+  { auto_id: "AUTO-154", source_type: "web_news", ifs_domains: ["D10.1"],
+    queries: ["transformer switchgear generator lead time data center 2026", "long lead equipment ABB Hitachi Eaton data center", "data center equipment supply chain constraint 2026"] },
+  { auto_id: "AUTO-155", source_type: "web_news", ifs_domains: ["D10.2"],
+    queries: ["data center GC EPC Mortenson Turner DPR capacity 2026", "stick built data center execution contractor", "data center general contractor backlog 2026"] },
+  { auto_id: "AUTO-156", source_type: "web_news", ifs_domains: ["D10.3"],
+    queries: ["prefabricated modular data center PMDC skid 2026", "containerized cooling power module Vertiv Schneider BladeRoom", "modular data center delivery 2026"] },
+  { auto_id: "AUTO-157", source_type: "web_news", ifs_domains: ["D10.5"],
+    queries: ["data center construction cost per MW inflation 2026", "data center materials labor cost curve regional", "construction cost escalation data center 2026"] },
+  { auto_id: "AUTO-159", source_type: "financial", ifs_domains: ["D4.5"],
+    queries: ["data center ABS securitization private credit Apollo Ares 2026", "hyperscaler bond issuance lease-backed structure", "data center project finance private credit 2026"] },
+  { auto_id: "AUTO-160", source_type: "web_news", ifs_domains: ["D6.3"],
+    queries: ["OpenAI Stargate Anthropic xAI Colossus infrastructure buyer 2026", "AI lab capacity owner data center principal", "model developer infrastructure consortium 2026"] },
+  { auto_id: "AUTO-161", source_type: "regulatory", ifs_domains: ["D11.1"],
+    queries: ["24/7 carbon free energy matching additionality data center 2026", "clean energy procurement REC CFE corporate reporting", "data center renewable procurement disclosure 2026"] },
+  { auto_id: "AUTO-162", source_type: "regulatory", ifs_domains: ["D11.2"],
+    queries: ["data center carbon accounting GHG protocol scope 1 2 3 2026", "TCFD CDP data center operational emissions", "data center carbon disclosure 2026"] },
+  { auto_id: "AUTO-163", source_type: "web_news", ifs_domains: ["D11.6"],
+    queries: ["embodied carbon low carbon concrete Sublime Brimstone data center 2026", "green steel recycled copper data center materials", "embodied carbon materials data center 2026"] },
+  { auto_id: "AUTO-167", source_type: "web_news", ifs_domains: ["D14.7"],
+    queries: ["build to suit powered shell own vs lease data center campus 2026", "campus portfolio strategy data center build model", "powered shell takedown data center 2026"] },
+  { auto_id: "AUTO-172", source_type: "social", ifs_domains: ["D8.3"],
+    queries: ["data center hiring velocity cooling power specialist scarcity 2026", "operator talent migration data center engineering", "specialized hiring signal data center 2026"] },
+];
