@@ -20,6 +20,22 @@ from here (Ask Faraday, waitlist/subscribe, lexicon).
 
 ## Changelog
 
+### CC-DCHUB-INTEL-0.1 — 2026-07-22 (DC Hub facility intelligence layer — DRAFT)
+- **New data-plane read-model for DC Hub facilities**, consumed by all storefronts.
+  `dc_facilities` cache (content-addressed, RLS-on, CC-BY-4.0 attribution preserved)
+  + `dc_facility_unmapped_operators`; anon read contract = `dc_facilities_public`
+  view + RPCs `dc_facility_get` / `dc_facilities_for_company` / `dc_facilities_search`
+  (keyset on `(total_power_mw desc, facility_id desc)`). Migration
+  `0016_dc_hub_facility_intel.sql` (**DRAFT — un-applied**).
+- **`dc-hub-sync` edge function** (source-poller conventions: fcron/service-role auth,
+  content-hash skip-unchanged, `automation_health_log`; pure module in `sync-pure.ts`,
+  tested in `test/dc-hub-sync.test.mjs`). Operator → `tracking_companies` by exact
+  normalized-name match; misses logged, never guessed. **Un-deployed / not cron-wired.**
+- **Deploy-gated** on: `DC_HUB_API_KEY` = Myke's DC Hub *account* key (the free key
+  minted in-session was the wrong account, discarded); live validation of the DC Hub
+  REST field shape (`normalizeFacility` is defensive but PROVISIONAL); an AUTO id +
+  crawler in the Airtable Automation Registry. Design + gates: `docs/dc-hub-intelligence/`.
+
 ### CC-IDF4-ACTIVATE-1.0 — 2026-07-21 (Lane A sub-domain crawler activation)
 - **26 `[crawler]` D#.# sub-domain routines activated** (AUTO-138,139,141–157,159–163,167,172):
   rostered into `faraday-crawl` via a new `LANE_A_ACTIVATION` array in `coverage-bridge.ts`;
