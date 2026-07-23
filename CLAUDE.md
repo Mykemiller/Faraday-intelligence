@@ -20,6 +20,25 @@ from here (Ask Faraday, waitlist/subscribe, lexicon).
 
 ## Changelog
 
+### CC-SCOOP-SUBSTATION-COMMISSION-DATES-1.0 — 2026-07-23 (FAR-379 substation-vintage scoop)
+- **New reference layer sourcing substation `commissioned_year`** from PUC dockets (FAR-353)
+  + ISO/RTO transmission plans, resolved against the HIFLD `substations` spine (FAR-372).
+  Migration `0017_far379_grid_buildout_projects.sql` (**applied**): `grid_buildout_projects`
+  (land-rich, service-role RLS, content-hash idempotency), `far379_norm()` + functional index,
+  additive audit cols on `substation_source_mentions`, `far379_resolve_and_grade()` (exact
+  name + county gate, voltage tiebreaker; writes `commissioned_year` only on ≥0.90 **actual**-date
+  matches), and 4 `jw_data_source_registry` rows.
+- **Adapters** (source-poller conventions, pure module + Deno-style tests run under Node):
+  `grid-buildout-sync` (ERCOT TPIT; MISO/PJM phase-2) and `puc-substation-extract`
+  (D1-refined: `docket_title` pre-filter → PDF fetch). `npm test` green (43 tests).
+- **I-gate reported + D1–D7 signed off before DDL.** Key findings: `puc_filings.raw_text` is a
+  title-only index (→ D1 keys off `docket_title` + PDF fetch); only 23% of the 75,327 substations
+  carry a real name (rest are HIFLD placeholders); PUC corpus is application-stage (0 gradable today).
+- **Real end-to-end run:** 21 `grid_buildout_projects`, 41 mentions, **2 substations graded**
+  (Cottonwood 2013, San Miguel 2024 → `substation_age_grade` A) with the projected/approved cohort
+  correctly held as `resolved_no_grade`. **Zero JPAS/JPS/JDS writes.** Design + gates + rollback:
+  `docs/far379-substation-commission/`. **Adapters un-deployed / not cron-wired** (deploy gates in docs).
+
 ### CC-DCHUB-INTEL-0.1 — 2026-07-22 (DC Hub facility intelligence layer — DRAFT)
 - **New data-plane read-model for DC Hub facilities**, consumed by all storefronts.
   `dc_facilities` cache (content-addressed, RLS-on, CC-BY-4.0 attribution preserved)
