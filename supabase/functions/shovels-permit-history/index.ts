@@ -23,7 +23,7 @@
 //   3. MAX_RECORDS budget cap enforced below so a runaway crawl cannot overspend.
 
 import { createClient } from "npm:@supabase/supabase-js@2";
-import { contentBasis, normalize, RawPermit, SHOVELS_FILTER } from "./pure.ts";
+import { normalize, RawPermit, SHOVELS_FILTER } from "./pure.ts";
 
 const CRAWLER_ID = "shovels-permit-history_v0.1";
 const AUTO_ID = Deno.env.get("SHOVELS_RSC_AUTO_ID") ?? "AUTO-RSC05-UNREGISTERED";
@@ -60,24 +60,21 @@ async function logHealth(status: string, found: number, extra: Record<string, un
   });
 }
 
-/** Tier-1 = counties where a data center could land: idle gen OR substation presence. */
+/** Tier-1 (~517 counties): scored counties carrying idle-but-interconnected
+ *  generation — via the rsc_tier1_counties() RPC (migration 0019). Tier-2: all
+ *  scored counties, ranked by market importance. geo_id == county FIPS; production
+ *  caches a fips→Shovels-geo_id map. */
 async function targetCounties(tier: 1 | 2): Promise<{ county_fips: string; geo_id: string }[]> {
-  // geo_id resolution: Shovels county geo_id is derivable from county FIPS via their
-  // /geo lookup; production caches a fips→geo_id map. Left as a lookup join here.
-  const sql = tier === 1
-    ? `with relevant as (
-         select distinct trim(county_fips) fips from eia_generator_inventory where status in ('SB','OS','OA')
-         union select distinct unnest(containing_county_fips) from jurisdictions where level='county')
-       select j.fips_code as county_fips
-       from jurisdictions j
-       where j.level='county' and j.current_score is not null and j.fips_code in (select fips from relevant)
-       order by j.market_tier_importance desc nulls last`
-    : `select fips_code as county_fips from jurisdictions
-       where level='county' and current_score is not null order by market_tier_importance desc nulls last`;
-  const { data, error } = await supabase.rpc("exec_sql_readonly", { q: sql }).select?.() ?? { data: null, error: null };
-  // Fallback: if no readonly RPC, callers pass county_fips explicitly (validation mode).
-  if (error || !data) return [];
-  return (data as { county_fips: string }[]).map((r) => ({ county_fips: r.county_fips, geo_id: r.county_fips }));
+  if (tier === 1) {
+    const { data, error } = await supabase.rpc("rsc_tier1_counties");
+    if (error || !data) return [];
+    return (data as { county_fips: string }[]).map((r) => ({ county_fips: r.county_fips, geo_id: r.county_fips }));
+  }
+  const { data } = await supabase.from("jurisdictions")
+    .select("fips_code").eq("level", "county").not("current_score", "is", null)
+    .order("market_tier_importance", { ascending: false });
+  if (!data) return [];
+  return (data as { fips_code: string }[]).map((r) => ({ county_fips: r.fips_code, geo_id: r.fips_code }));
 }
 
 async function upsert(rows: ReturnType<typeof normalize>[]) {
