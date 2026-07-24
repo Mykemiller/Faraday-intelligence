@@ -11,10 +11,14 @@
 // On failure: sends a short "digest failed" notice + logs a health-log row.
 // Read-only against Jira + GitHub — no writes/transitions from this job.
 //
-// CC-FAR-OPS-RESTORE-1.0 (2026-07-24): FROM_EMAIL repointed off the apex
-// faraday-intelligence.ai (Google Workspace corporate mail; lost Resend
-// verification 2026-07-23) onto the verified transactional subdomain
-// send.faraday-intelligence.ai.
+// CC-FAR-OPS-RESTORE-1.1 (2026-07-24): FROM_EMAIL restored to the apex
+// faraday-intelligence.ai. The apex is the verified Resend sending domain. The
+// send.faraday-intelligence.ai subdomain is NOT a registered Resend domain — it
+// only carries the Return-Path MX (feedback-smtp.us-east-1.amazonses.com) and
+// SPF (v=spf1 include:amazonses.com ~all) records for the apex. 1.0's Fix 2
+// repointed FROM_EMAIL onto that subdomain, which 403'd every send ("domain is
+// not verified"); 1.1 reverts that. Resend does not inherit verification from a
+// parent domain, so a subdomain FROM cannot ride on the apex's verification.
 
 import "jsr:@supabase/functions-js/edge-runtime.d.ts";
 import { createClient, SupabaseClient } from "https://esm.sh/@supabase/supabase-js@2";
@@ -23,7 +27,7 @@ import { createClient, SupabaseClient } from "https://esm.sh/@supabase/supabase-
 const AUTO_ID = "AUTO-050";
 const CRAWLER_ID = "faraday-todo-daily_v1.0";
 const TO_EMAIL = "mykemiller@gmail.com";
-const FROM_EMAIL = "challenge@send.faraday-intelligence.ai";
+const FROM_EMAIL = "challenge@faraday-intelligence.ai";
 const JIRA_CLOUD_ID = "2cdbb127-783f-4329-bec5-26223393fcfe";
 const JIRA_BASE = `https://api.atlassian.com/ex/jira/${JIRA_CLOUD_ID}/rest/api/3`;
 const GITHUB_ORG = "mykemiller";

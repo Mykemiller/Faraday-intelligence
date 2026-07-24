@@ -5,13 +5,17 @@
 // Auth: verify_jwt = true — the cron caller passes the project's anon JWT, which
 // blocks anonymous internet callers. All data access uses the service role.
 //
-// CC-FAR-OPS-RESTORE-1.0 (2026-07-24):
-//   (1) FROM repointed off the apex faraday-intelligence.ai (Google Workspace
-//       corporate mail; lost Resend verification 2026-07-23) onto the verified
-//       transactional subdomain send.faraday-intelligence.ai.
-//   (2) On send failure this function now writes an automation_health_log row
-//       before returning 502 — previously it returned 502 and persisted nothing,
-//       so the 2026-07-23 outage left no forensic record on this function at all.
+// CC-FAR-OPS-RESTORE-1.1 (2026-07-24): FROM restored to the apex
+//   faraday-intelligence.ai. The apex is the verified Resend sending domain.
+//   The send.faraday-intelligence.ai subdomain is NOT a registered Resend
+//   domain — it only carries the Return-Path MX (feedback-smtp.us-east-1.
+//   amazonses.com) and SPF (v=spf1 include:amazonses.com ~all) records for the
+//   apex. 1.0's Fix 2 repointed FROM onto that subdomain, which 403'd every
+//   send ("domain is not verified"); 1.1 reverts that. Resend does not inherit
+//   verification from a parent domain, so a subdomain FROM cannot ride on the
+//   apex's verification.
+//   The send-failure health-log block below (added in 1.0 Fix 2) is retained —
+//   it is what recorded the 2026-07-24 13:00 outage on this function.
 // CC-FAR-OPS-RESTORE-1.0 follow-up (2026-07-24): registered in the Automation
 //       Registry as AUTO-203 ("Daily Faraday Ops Email"), replacing the interim
 //       AUTO-DAILYOPS-UNREGISTERED sentinel. (AUTO-051 was already the "Local
@@ -20,7 +24,7 @@ import "jsr:@supabase/functions-js/edge-runtime.d.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
 const TO = "mykemiller@gmail.com";
-const FROM = "Faraday Ops <ops@send.faraday-intelligence.ai>";
+const FROM = "Faraday Ops <ops@faraday-intelligence.ai>";
 const STALE_HOURS = 36; // crawler/automation registry is expected to run ~daily
 // Automation Registry: AUTO-203 "Daily Faraday Ops Email" (Active), registered
 // under CC-FAR-OPS-RESTORE-1.0 to replace the interim AUTO-DAILYOPS-UNREGISTERED
