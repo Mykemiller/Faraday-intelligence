@@ -12,19 +12,20 @@
 //   (2) On send failure this function now writes an automation_health_log row
 //       before returning 502 — previously it returned 502 and persisted nothing,
 //       so the 2026-07-23 outage left no forensic record on this function at all.
-//       auto_id is a placeholder sentinel: faraday-daily-ops is unregistered and
-//       AUTO-051 is already the "Local Government Data Center Action Crawler" in
-//       the Automation Registry (collision). Myke to assign a real AUTO-ID.
+// CC-FAR-OPS-RESTORE-1.0 follow-up (2026-07-24): registered in the Automation
+//       Registry as AUTO-203 ("Daily Faraday Ops Email"), replacing the interim
+//       AUTO-DAILYOPS-UNREGISTERED sentinel. (AUTO-051 was already the "Local
+//       Government Data Center Action Crawler".)
 import "jsr:@supabase/functions-js/edge-runtime.d.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
 const TO = "mykemiller@gmail.com";
 const FROM = "Faraday Ops <ops@send.faraday-intelligence.ai>";
 const STALE_HOURS = 36; // crawler/automation registry is expected to run ~daily
-// Unregistered sentinel — faraday-daily-ops has no Automation Registry grant and
-// AUTO-051 is taken. Mirrors the AUTO-EIARE-UNREGISTERED precedent. Governance:
-// Myke to assign a real AUTO-ID and swap this constant.
-const AUTO_ID = "AUTO-DAILYOPS-UNREGISTERED";
+// Automation Registry: AUTO-203 "Daily Faraday Ops Email" (Active), registered
+// under CC-FAR-OPS-RESTORE-1.0 to replace the interim AUTO-DAILYOPS-UNREGISTERED
+// sentinel (AUTO-051 was already taken by the Local Government DC Action Crawler).
+const AUTO_ID = "AUTO-203";
 const CRAWLER_ID = "faraday-daily-ops_v1.0";
 
 function json(body: unknown, status = 200): Response {
