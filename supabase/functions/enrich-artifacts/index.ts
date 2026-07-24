@@ -15,6 +15,16 @@
 // auth is the service-role key or the fcron house token compared by SHA-256
 // (census-backfill pattern).
 //
+// CC-FAR-OPS-RESTORE-1.1 (2026-07-24): CRAWLER_ID bumped AUTO-030_v2.1 →
+// AUTO-030_v2.2. The 1.0 Fix 3 — robust fenced-JSON stripping in
+// enrich-pure.parseEnrichmentText plus the <=5% per-item failure tolerance in
+// enrich-pure.batchRunSucceeded (replacing the old rule that flipped the whole
+// batch to failed on any single unparseable/errored item — the cause of 11
+// false-alarm runs in 14 days) — already shipped in this function, but the
+// crawler_id was still v2.1, so pre- and post-fix health-log runs were
+// indistinguishable. This bump draws that line. Parser- and threshold-side
+// only: no change to the enrichment prompt, model, or output schema.
+//
 // Flow (cron POSTs {mode:"auto"} every 10 min):
 //   poll:   for each enrich_batches row not completed → GET the batch; when
 //           ended, stream results JSONL and process up to PROCESS_MAX
@@ -38,7 +48,7 @@ import {
 } from "./enrich-pure.ts";
 
 const AUTO_ID = "AUTO-030";
-const CRAWLER_ID = "AUTO-030_v2.1";
+const CRAWLER_ID = "AUTO-030_v2.2";
 const EMBED_MODEL = "text-embedding-3-small";
 const SUBMIT_MAX = 1000;
 const MAX_OPEN_BATCHES = 4; // v21: one slow batch must not freeze the pipe
