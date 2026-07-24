@@ -29,6 +29,7 @@
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import {
   type ArtifactLike,
+  batchRunSucceeded,
   buildBatchRequests,
   chunkText,
   type EnrichmentResult,
@@ -308,17 +309,28 @@ Deno.serve(async (req: Request) => {
     errors.push(String(e).slice(0, 300));
   }
 
+  // CC-FAR-OPS-RESTORE-1.0 Fix 3: a couple of per-item failures out of ~120
+  // (an unparseable line, an Anthropic "errored" result) must not flag the
+  // whole run failed — that produced 11 false-alarm runs in 14 days. Tolerate
+  // per-item failures up to BATCH_FAILURE_TOLERANCE; systemic errors (submit /
+  // batch-fetch / top-level) still fail the run. Every per-item failure is
+  // still captured in `errors` and `notes` below.
+  const processed = Number(out.processed ?? 0);
+  const failed = Number(out.failed ?? 0);
+  const systemicErrors = Math.max(0, errors.length - failed); // errors not tied to a per-item failure
+  const success = batchRunSucceeded(processed, failed, systemicErrors);
+
   await supabase.from("automation_health_log").insert({
     auto_id: AUTO_ID,
     crawler_id: CRAWLER_ID,
     run_started_at: runStarted,
     run_completed_at: new Date().toISOString(),
-    artifacts_found: Number(out.processed ?? 0) + Number(out.failed ?? 0),
-    artifacts_new: Number(out.processed ?? 0),
+    artifacts_found: processed + failed,
+    artifacts_new: processed,
     artifacts_duped: 0,
     errors,
-    success: errors.length === 0,
-    notes: `v21 batches mode=${mode} processed=${out.processed ?? 0} failed=${out.failed ?? 0} submitted=${out.submitted ?? 0}`,
+    success,
+    notes: `v21 batches mode=${mode} processed=${processed} failed=${failed} submitted=${out.submitted ?? 0} success=${success}${systemicErrors ? ` systemic_errors=${systemicErrors}` : ""}`,
   });
 
   return new Response(JSON.stringify({ ...out, errors: errors.length ? errors : undefined }), {

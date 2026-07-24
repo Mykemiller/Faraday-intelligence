@@ -55,9 +55,54 @@ export function buildBatchRequests(artifacts: ArtifactLike[]) {
   }));
 }
 
-/** Parse the enrichment JSON out of a model response, tolerating fences. */
+/** Parse the enrichment JSON out of a model response. Strips markdown code
+ * fences (```json / ``` / any ```lang tag, case-insensitive) plus surrounding
+ * whitespace before JSON.parse; if that still fails, falls back to the
+ * outermost {...} object (handles stray prose or a leftover fence around an
+ * otherwise-valid object). This never repairs the model's JSON *content* — a
+ * genuinely malformed object (e.g. an unescaped inner quote) still throws and
+ * is recorded as a per-item failure by the caller. */
 export function parseEnrichmentText(text: string): EnrichmentResult {
-  return JSON.parse(text.replace(/```json|```/g, "").trim()) as EnrichmentResult;
+  const stripped = text
+    .trim()
+    .replace(/^\s*```[a-zA-Z0-9]*\s*/, "") // leading fence + optional language tag
+    .replace(/\s*```\s*$/, "")             // trailing fence
+    .trim();
+  try {
+    return JSON.parse(stripped) as EnrichmentResult;
+  } catch (e) {
+    const first = stripped.indexOf("{");
+    const last = stripped.lastIndexOf("}");
+    if (first >= 0 && last > first) {
+      return JSON.parse(stripped.slice(first, last + 1)) as EnrichmentResult;
+    }
+    throw e;
+  }
+}
+
+/** Fraction of per-item failures a batch run tolerates before it is flagged
+ * unhealthy. Occasional single-item enrichment failures (an unparseable line,
+ * an Anthropic-side "errored" result) out of ~120 must not mark the whole run
+ * failed — that produced 11 false-alarm runs in 14 days. */
+export const BATCH_FAILURE_TOLERANCE = 0.05;
+
+/** Health-log success flag for an enrich run. A run is healthy when the
+ * per-item failure rate is within BATCH_FAILURE_TOLERANCE AND no systemic
+ * (non-per-item) error occurred — a submit failure, a batch-fetch error, or a
+ * top-level exception still fails the run. Per-item failures are recorded in
+ * the errors array / notes regardless; this flag alone no longer flips on them.
+ *   processed       — items enriched successfully this run
+ *   failed          — items that failed per-item (each also logged to errors)
+ *   systemicErrors  — errors NOT tied to a per-item failure (errors.length - failed) */
+export function batchRunSucceeded(
+  processed: number,
+  failed: number,
+  systemicErrors: number,
+): boolean {
+  if (systemicErrors > 0) return false;
+  const attempted = processed + failed;
+  if (attempted === 0) return true; // nothing to do — a healthy no-op run
+  return failed / attempted <= BATCH_FAILURE_TOLERANCE;
 }
 
 export interface BatchLine {
