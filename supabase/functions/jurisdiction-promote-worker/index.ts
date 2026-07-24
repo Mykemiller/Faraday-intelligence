@@ -14,6 +14,12 @@
  *   was migrated onto public.cron_http_post(..., 'cron_caller_token', ...), which
  *   sends the house token, not the service-role key. Accepting only the service
  *   key made every scheduled call 401 and starved jw_editorial_events (0 rows).
+ * CC-FAR-OPS-RESTORE-1.0 follow-up (2026-07-24): fixed the Sprint-0 crawler gate.
+ *   isCrawlerHealthy() queried crawler_id='faraday-crawl-daily' (no health row
+ *   uses that id — the daily crawl logs auto_id='AUTO-040') AND a non-existent
+ *   created_at column, so the query errored and the gate was ALWAYS closed —
+ *   the real reason 19,811 promote events sat 'gated'. Now keyed on
+ *   auto_id='AUTO-040' / run_completed_at with a 26h staleness bound.
  */
 
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
@@ -49,20 +55,25 @@ async function isAuthorized(req: Request): Promise<boolean> {
 
 // ── Sprint 0 crawler health gate ─────────────────────────────────────────────
 
+// The daily crawl (cron faraday-crawl-daily → fn faraday-crawl, 07:00 UTC) logs
+// under auto_id='AUTO-040' / crawler_id='AUTO-040_v1.0'. automation_health_log
+// has no `created_at` column — it timestamps on run_completed_at. Fail closed on
+// query error, on no run, on a failed last run, or on staleness (>26h — the
+// daily cadence plus margin so the pre-07:00 window doesn't gate spuriously).
+const CRAWL_STALE_MS = 26 * 60 * 60 * 1000;
+
 async function isCrawlerHealthy(): Promise<boolean> {
-  const since = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
-  const { data } = await db
+  const { data, error } = await db
     .from('automation_health_log')
-    .select('success')
-    .eq('crawler_id', 'faraday-crawl-daily')
-    .gte('created_at', since)
-    .order('created_at', { ascending: false })
+    .select('success, run_completed_at')
+    .eq('auto_id', 'AUTO-040')
+    .order('run_completed_at', { ascending: false })
     .limit(1)
     .maybeSingle();
 
-  // If no recent log entry, or the last run failed, gate
-  if (!data) return false;
-  return data.success === true;
+  // Fail closed: query error, no run logged, failed last run, or stale run → gate
+  if (error || !data || data.success !== true || !data.run_completed_at) return false;
+  return Date.now() - new Date(data.run_completed_at).getTime() <= CRAWL_STALE_MS;
 }
 
 async function gateEvents(eventIds: string[]): Promise<void> {
