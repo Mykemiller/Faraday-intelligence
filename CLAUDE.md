@@ -37,9 +37,14 @@ from here (Ask Faraday, waitlist/subscribe, lexicon).
   promotion): first `jw_data_source_registry` rows for ALL state-incentive feeds (8 existing + 3
   new + HI registered-not-ingested). Closes "no source without a registry row."
 - Tests `test/incentive-mappers.test.mjs` (real captured rows); `npm test` green (57/57).
-  **Deploy + seed + idempotency re-run + advisor check DEFERRED to the merge/deploy gate**
-  (prod writes). AUTO-178 collides with Faraday Crawl Health-Check; **next free = AUTO-204**
-  recommended for a dedicated reassignment (Airtable = Myke-gated, not done here).
+- **DEPLOYED + SEEDED 2026-07-26 (Myke-approved post-merge):** fn v11→v12 (edge fn
+  `ingest-state-incentives`), migration `0034` applied. Backfill via the existing weekly
+  invoker (`cron_http_post` jobid 35): **WI 4,866 rows → 72 counties INC-01..05, IA 135 →
+  48 counties, OK 4,217 (0 resolved — city/zip-only gap, documented)**. Idempotency re-run
+  = 0 new / 0 newly-resolved. Advisor: no new ERROR/WARN (my tables carry only the intended
+  `rls_enabled_no_policy` INFO deny-all posture). **AUTO-178 collision resolved:** dedicated
+  **AUTO-204** ("State Incentive Disclosure Ingest") created in the Registry and the fn's
+  `AUTO_ID` repointed to it (v12) off the Faraday Crawl Health-Check collision.
 - **Waves 2–4 scoped, not built** (docs/ingest/): ~40 states of bulk/scrape/PDF-FOIA need
   server-side iteration + a per-source confidence input on `fn_state_incentives_resolve_and_score`
   (currently hardcodes SRC/0.85). GA documented as suppressed-by-law (aggregate-only).

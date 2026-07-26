@@ -1,4 +1,4 @@
-// CC-INGEST-STATE-INCENTIVE-API-1.0/1.1  (JPAS T7 Incentives, INC-01..05) — AUTO-178
+// CC-INGEST-STATE-INCENTIVE-API-1.0/1.1  (JPAS T7 Incentives, INC-01..05) — AUTO-204
 // v1.1 (CC-BULLETIN-INCENTIVE-DIGEST-1.0 expansion, Myke decision 2026-07-08):
 // the per-state fetchers became a config-driven Socrata source registry
 // (mappers.ts) — 8 LIVE sources across NY/CT/MD/OR/DE + 24 registered-pending
@@ -6,9 +6,9 @@
 //   * windowed paging with {offset, pages}; {chain:true} self-invokes until done
 //   * content-hash idempotent upsert into state_incentive_disclosures
 //   * fn_state_incentives_resolve_and_score() per state each window (INC-01..05)
-//   * per-source automation_health_log rows (auto_id AUTO-178; NOTE: AUTO-178
-//     collides with faraday-crawl-healthcheck in the registry — kept until the
-//     registry reassignment is granted, so telemetry stays continuous)
+//   * per-source automation_health_log rows (auto_id AUTO-204; the dedicated
+//     "State Incentive Disclosure Ingest" registry id, reassigned off the former
+//     AUTO-178 collision with faraday-crawl-healthcheck, Myke-approved 2026-07-26)
 // The bulletin digest does NOT run here — bulletin-incentive-digest sweeps the
 // landing table on its own weekly cron (clean write boundary).
 //
@@ -26,7 +26,7 @@ const ANON_KEY = Deno.env.get("SUPABASE_ANON_KEY") ?? "";
 const INGEST_SECRET = Deno.env.get("STATE_INCENTIVE_INGEST_SECRET") ?? "";
 const NY_APP_TOKEN = Deno.env.get("DATA_NY_APP_TOKEN") ?? "";
 
-const AUTO_ID = "AUTO-178";
+const AUTO_ID = "AUTO-204";
 const CRAWLER_ID = "ingest-state-incentives_v1.1";
 const SCHEMA_VERSION = "v1";
 const MAX_PER_SOURCE = 200000;
