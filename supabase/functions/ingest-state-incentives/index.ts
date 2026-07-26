@@ -44,23 +44,63 @@ async function contentHash(r: CommonRecord): Promise<string> {
 }
 
 type WindowResult = { records: CommonRecord[]; exhausted: boolean };
+type Row = Record<string, unknown>;
+// A single page of raw rows. `serverExhausted` is set only where the upstream
+// tells us authoritatively there is no more (ArcGIS exceededTransferLimit) —
+// needed because a hosted layer's maxRecordCount can be below our PAGE_SIZE.
+type PageResult = { rows: Row[]; serverExhausted?: boolean };
 
-async function fetchSocrataWindow(src: LiveSource, offset: number, pages: number): Promise<WindowResult> {
+async function fetchPage(src: LiveSource, off: number): Promise<PageResult> {
+  const tag = `${src.state_abbr}/${src.source_key}`;
+  if (src.kind === "socrata") {
+    const url = `https://${src.domain}/resource/${src.dataset_id}.json` +
+      `?$limit=${PAGE_SIZE}&$offset=${off}&$order=${encodeURIComponent(src.order_field ?? ":id")}`;
+    const headers: Record<string, string> = { Accept: "application/json" };
+    // Socrata app token raises rate limits; the NY token works on any Socrata domain.
+    if (NY_APP_TOKEN) headers["X-App-Token"] = NY_APP_TOKEN;
+    const res = await fetch(url, { headers });
+    if (!res.ok) throw new Error(`${tag} ${res.status}: ${(await res.text()).slice(0, 300)}`);
+    return { rows: await res.json() as Row[] };
+  }
+  if (src.kind === "ckan") {
+    const url = `https://${src.ckan_domain}/api/3/action/datastore_search` +
+      `?resource_id=${src.resource_id}&limit=${PAGE_SIZE}&offset=${off}`;
+    const res = await fetch(url, { headers: { Accept: "application/json" } });
+    if (!res.ok) throw new Error(`${tag} ${res.status}: ${(await res.text()).slice(0, 300)}`);
+    const j = await res.json() as { success?: boolean; result?: { records?: Row[] }; error?: unknown };
+    if (j.success === false) throw new Error(`${tag} ckan error: ${JSON.stringify(j.error).slice(0, 300)}`);
+    return { rows: j.result?.records ?? [] };
+  }
+  if (src.kind === "idh_json") {
+    const url = `https://${src.idh_domain}/api/v1/datasets/${src.idh_dataset}/rows.json` +
+      `?limit=${PAGE_SIZE}&offset=${off}`;
+    const res = await fetch(url, { headers: { Accept: "application/json" } });
+    if (!res.ok) throw new Error(`${tag} ${res.status}: ${(await res.text()).slice(0, 300)}`);
+    return { rows: await res.json() as Row[] };
+  }
+  // arcgis (hosted FeatureServer layer) — stable keyset paging via orderByFields.
+  const order = src.arcgis_order ?? "ObjectId";
+  const url = `${src.arcgis_layer_url}/query?where=1%3D1&outFields=*&returnGeometry=false` +
+    `&orderByFields=${encodeURIComponent(order)}&resultOffset=${off}&resultRecordCount=${PAGE_SIZE}&f=json`;
+  const res = await fetch(url, { headers: { Accept: "application/json" } });
+  if (!res.ok) throw new Error(`${tag} ${res.status}: ${(await res.text()).slice(0, 300)}`);
+  const j = await res.json() as { features?: { attributes: Row }[]; exceededTransferLimit?: boolean; error?: unknown };
+  if (j.error) throw new Error(`${tag} arcgis error: ${JSON.stringify(j.error).slice(0, 300)}`);
+  const rows = (j.features ?? []).map((f) => f.attributes);
+  return { rows, serverExhausted: j.exceededTransferLimit !== true };
+}
+
+async function fetchWindow(src: LiveSource, offset: number, pages: number): Promise<WindowResult> {
   const records: CommonRecord[] = [];
   let exhausted = false;
   for (let p = 0; p < pages; p++) {
     const off = offset + p * PAGE_SIZE;
     if (off >= MAX_PER_SOURCE) { exhausted = true; break; }
-    const url = `https://${src.domain}/resource/${src.dataset_id}.json` +
-      `?$limit=${PAGE_SIZE}&$offset=${off}&$order=${encodeURIComponent(src.order_field)}`;
-    const headers: Record<string, string> = { Accept: "application/json" };
-    // Socrata app token raises rate limits; the NY token works on any Socrata domain.
-    if (NY_APP_TOKEN) headers["X-App-Token"] = NY_APP_TOKEN;
-    const res = await fetch(url, { headers });
-    if (!res.ok) throw new Error(`${src.domain}/${src.dataset_id} ${res.status}: ${(await res.text()).slice(0, 300)}`);
-    const rows = await res.json() as Record<string, unknown>[];
+    const { rows, serverExhausted } = await fetchPage(src, off);
     for (const row of rows) records.push(src.map(row));
-    if (rows.length < PAGE_SIZE) { exhausted = true; break; }
+    // Short page ⇒ end of feed. For ArcGIS, a full page whose response also
+    // reports no overflow (serverExhausted) is likewise the last page.
+    if (rows.length < PAGE_SIZE || serverExhausted === true) { exhausted = true; break; }
   }
   return { records, exhausted };
 }
@@ -98,7 +138,7 @@ async function runWindow(
   for (const src of liveSources) {
     const started = new Date().toISOString();
     try {
-      const { records, exhausted } = await fetchSocrataWindow(src, offset, pages);
+      const { records, exhausted } = await fetchWindow(src, offset, pages);
       if (!exhausted) anyLiveMore = true;
 
       let inserted = 0;
@@ -131,7 +171,9 @@ async function runWindow(
         artifacts_duped: records.length - inserted,
         success: true,
         notes: JSON.stringify({ state: src.state_abbr, status: "live", source_key: src.source_key,
-                                dataset: src.dataset_id, offset, next_offset }),
+                                kind: src.kind,
+                                dataset: src.dataset_id ?? src.resource_id ?? src.idh_dataset ?? src.arcgis_layer_url,
+                                offset, next_offset }),
       });
       results.push({ state: src.state_abbr, source_key: src.source_key, status: "live",
                      offset, found: records.length, new: inserted, next_offset });

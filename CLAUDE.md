@@ -20,6 +20,30 @@ from here (Ask Faraday, waitlist/subscribe, lexicon).
 
 ## Changelog
 
+### CC-INGEST-STATE-INCENTIVE-ALL-WAVES-1.0 — 2026-07-26 (FAR-341 Wave 1 + VCS baseline)
+- **Vendored the live `ingest-state-incentives` edge fn into VCS** (`supabase/functions/
+  ingest-state-incentives/{index.ts,mappers.ts}`) — it had been running only as deployed
+  v10 (CC-INGEST-STATE-INCENTIVE-API-1.1, AUTO-178, 8 live Socrata feeds NY/CT/MD/OR/DE)
+  and was in no repo. Baseline commit = deployed source verbatim.
+- **Wave 1 (API drop-in): +3 live per-recipient sources** verified 2026-07-26 (server-side
+  `pg_net`, since container egress is policy-blocked): `ok_quality_jobs` (CKAN, 4,324 rows),
+  `wi_wedc_ared` (ArcGIS FeatureServer, 4,867 — county+awardAmount → full INC-01..05),
+  `ia_ieda_awards` (Iowa Data Hub JSON, county+city). Fetcher generalized to a `kind`-dispatch
+  (`socrata|ckan|arcgis|idh_json`) over the unchanged Socrata client / chain-paging /
+  content-hash upsert / resolve-and-score contract. **All SRC** (primary disclosures).
+  OK carries city/zip only → county ABS, documented (no INC write until a city→county resolver;
+  not fabricated).
+- **Registry backfill** `0034_cc_state_incentive_source_registry.sql` (**un-applied**, apply at
+  promotion): first `jw_data_source_registry` rows for ALL state-incentive feeds (8 existing + 3
+  new + HI registered-not-ingested). Closes "no source without a registry row."
+- Tests `test/incentive-mappers.test.mjs` (real captured rows); `npm test` green (57/57).
+  **Deploy + seed + idempotency re-run + advisor check DEFERRED to the merge/deploy gate**
+  (prod writes). AUTO-178 collides with Faraday Crawl Health-Check; **next free = AUTO-204**
+  recommended for a dedicated reassignment (Airtable = Myke-gated, not done here).
+- **Waves 2–4 scoped, not built** (docs/ingest/): ~40 states of bulk/scrape/PDF-FOIA need
+  server-side iteration + a per-source confidence input on `fn_state_incentives_resolve_and_score`
+  (currently hardcodes SRC/0.85). GA documented as suppressed-by-law (aggregate-only).
+
 ### CC-SCOOP-SUBSTATION-COMMISSION-DATES-1.0 — 2026-07-23 (FAR-379 substation-vintage scoop)
 - **New reference layer sourcing substation `commissioned_year`** from PUC dockets (FAR-353)
   + ISO/RTO transmission plans, resolved against the HIFLD `substations` spine (FAR-372).

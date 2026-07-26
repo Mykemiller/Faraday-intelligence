@@ -57,6 +57,25 @@ export function num(v: unknown): number | null {
   return isNaN(n) ? null : n;
 }
 
+// US m/d/Y (e.g. "08/15/2006") -> ISO "2006-08-15". Non-US strings fall through
+// to toDate() semantics (ISO-prefix) so a single call is safe on mixed feeds.
+export function toDateUS(v: unknown): string | null {
+  if (typeof v !== "string") return null;
+  const m = /^(\d{1,2})\/(\d{1,2})\/(\d{4})/.exec(v.trim());
+  if (m) {
+    const [, mm, dd, yyyy] = m;
+    return `${yyyy}-${mm.padStart(2, "0")}-${dd.padStart(2, "0")}`;
+  }
+  return toDate(v);
+}
+
+// Esri/ArcGIS date fields arrive as epoch milliseconds (number). -> ISO date.
+export function toDateEpochMs(v: unknown): string | null {
+  if (typeof v !== "number" || !isFinite(v)) return null;
+  const d = new Date(v);
+  return isNaN(d.getTime()) ? null : d.toISOString().slice(0, 10);
+}
+
 // "Albany County Industrial Development Agency" -> "Albany"; city IDAs -> null.
 export function countyFromAuthority(name: string | null | undefined): string | null {
   if (!name) return null;
@@ -229,32 +248,143 @@ export function mapDeEeif(row: Row): CommonRecord {
   };
 }
 
+// ── Wave 1 (CC-INGEST-STATE-INCENTIVE-ALL-WAVES-1.0) ────────────────────────
+// New per-recipient primary-source feeds beyond the v1.1 Socrata set. Field
+// names below are taken from LIVE responses probed 2026-07-26 (server-side
+// pg_net), not guessed — see docs/ingest/CC-INGEST-STATE-INCENTIVE-ALL-WAVES-*.
+
+// OK — Oklahoma Quality Jobs Program incentive payments (CKAN datastore,
+// data.ok.gov resource d4845ba8…). Per-vendor cash rebate of new payroll.
+// County is NOT carried (only city/zip) → county_name left null (honest); the
+// row lands in the disclosure table but writes no INC-* attribute until a
+// city/zip→county resolver exists. Documented as a coverage gap, not fabricated.
+export function mapOkQualityJobs(row: Row): CommonRecord {
+  const issue = toDateUS(row["Issue Date"]);
+  return {
+    state_abbr: "OK", source_key: "ok_quality_jobs",
+    source_record_id: [s(row, "Vendor Name") ?? "", s(row, "Fiscal Year") ?? "",
+                       s(row, "Issue Date") ?? "", s(row, "Payment Amount") ?? ""].join(":"),
+    recipient_name: s(row, "Vendor Name"),
+    project_name: null,
+    project_address: s(row, "Street Address"), parcel_id: null,
+    place_name: s(row, "Vendor Address City"),
+    county_name: null,
+    incentive_type: "rebate",
+    raw_incentive_type: s(row, "Department Description") ?? s(row, "Account Description"),
+    program_name: "Oklahoma Quality Jobs Program",
+    statute_citation: "68 O.S. §3601 et seq.",
+    award_value_usd: num(row["Payment Amount"]),
+    term_start: issue, term_end: null, term_years: null,
+    source_url: "https://data.ok.gov/dataset/oklahoma-quality-jobs-program", raw: row,
+  };
+}
+
+// WI — WEDC "All Reportable Economic Development" (ARED) awards, ArcGIS hosted
+// FeatureServer (services2.arcgis.com/xkpZtaTA2F05Vq7i). Carries county +
+// municipality (resolves) and a numeric awardAmount.
+export function mapWiWedcAred(row: Row): CommonRecord {
+  const start = toDateEpochMs(row.awardDate);
+  return {
+    state_abbr: "WI", source_key: "wi_wedc_ared",
+    source_record_id: s(row, "uid") ?? s(row, "id") ?? (row.ObjectId != null ? `oid:${row.ObjectId}` : null),
+    recipient_name: s(row, "awardRecipient"),
+    project_name: s(row, "projectName"),
+    project_address: null, parcel_id: null,
+    place_name: s(row, "municipality"),
+    county_name: s(row, "county"),
+    incentive_type: normalizeType(s(row, "awardType")),
+    raw_incentive_type: s(row, "awardType"),
+    program_name: s(row, "awardProgram"),
+    statute_citation: null,
+    award_value_usd: num(row.awardAmount),
+    term_start: start,
+    term_end: null,
+    term_years: null,
+    source_url: "https://www.wedc.org/about-wedc/transparency/", raw: row,
+  };
+}
+
+// IA — Iowa Economic Development Authority award contracts, Iowa Data Hub JSON
+// (idh-be.iowa.gov dataset 946). Carries county + city; award value = direct
+// financial assistance + tax benefits (both are the state's incentive to the
+// recipient; capital_investment is the recipient's own spend and is excluded).
+export function mapIaIeda(row: Row): CommonRecord {
+  const direct = num(row.direct_assistance_awarded) ?? 0;
+  const taxben = num(row.tax_benefits_awarded) ?? 0;
+  const total = direct + taxben;
+  const start = toDate(row.award_date);
+  const end = toDate(row.project_completion_date);
+  const itype = direct > 0 && taxben > 0 ? "mixed"
+    : direct > 0 ? "grant"
+    : taxben > 0 ? "credit" : "other";
+  return {
+    state_abbr: "IA", source_key: "ia_ieda_awards",
+    source_record_id: s(row, "primary_funding_agreement")
+      ?? [s(row, "contract_name") ?? "", toDate(row.award_date) ?? ""].join(":"),
+    recipient_name: s(row, "contract_name"),
+    project_name: null,
+    project_address: null, parcel_id: null,
+    place_name: s(row, "city"),
+    county_name: s(row, "county"),
+    incentive_type: itype,
+    raw_incentive_type: s(row, "program"),
+    program_name: s(row, "program"),
+    statute_citation: null,
+    award_value_usd: total > 0 ? total : null,
+    term_start: start, term_end: end, term_years: yearsBetween(start, end),
+    source_url: "https://www.iowaeda.com/impact/", raw: row,
+  };
+}
+
+export type SourceKind = "socrata" | "ckan" | "arcgis" | "idh_json";
+
 export type LiveSource = {
   state_abbr: string;
   source_key: string;
-  domain: string;
-  dataset_id: string;
-  order_field: string;
+  kind: SourceKind;
   map: (row: Row) => CommonRecord;
+  // socrata
+  domain?: string;
+  dataset_id?: string;
+  order_field?: string;
+  // ckan (datastore_search)
+  ckan_domain?: string;
+  resource_id?: string;
+  // arcgis (FeatureServer layer query)
+  arcgis_layer_url?: string;
+  arcgis_order?: string;
+  // idh_json (Iowa Data Hub rows.json)
+  idh_domain?: string;
+  idh_dataset?: string;
 };
 
 export const LIVE_SOURCES: LiveSource[] = [
-  { state_abbr: "NY", source_key: "ny_esd_dei", domain: "data.ny.gov",
+  { state_abbr: "NY", source_key: "ny_esd_dei", kind: "socrata", domain: "data.ny.gov",
     dataset_id: "26ei-n4eb", order_field: "project_id_number", map: mapNyDoei },
-  { state_abbr: "NY", source_key: "ny_ida_projects", domain: "data.ny.gov",
+  { state_abbr: "NY", source_key: "ny_ida_projects", kind: "socrata", domain: "data.ny.gov",
     dataset_id: "9rtk-3fkw", order_field: ":id", map: mapNyIda },
-  { state_abbr: "CT", source_key: "ct_decd_business_assistance", domain: "data.ct.gov",
+  { state_abbr: "CT", source_key: "ct_decd_business_assistance", kind: "socrata", domain: "data.ct.gov",
     dataset_id: "xnw3-nytd", order_field: ":id", map: mapCtDecd },
-  { state_abbr: "MD", source_key: "md_commerce_finance_tracker", domain: "opendata.maryland.gov",
+  { state_abbr: "MD", source_key: "md_commerce_finance_tracker", kind: "socrata", domain: "opendata.maryland.gov",
     dataset_id: "cf3i-xdgb", order_field: ":id", map: mapMdFinanceTracker },
-  { state_abbr: "OR", source_key: "or_ez_parta_2025", domain: "data.oregon.gov",
+  { state_abbr: "OR", source_key: "or_ez_parta_2025", kind: "socrata", domain: "data.oregon.gov",
     dataset_id: "9cc3-52ar", order_field: ":id", map: mapOrEnterpriseZone("or_ez_parta_2025", "9cc3-52ar") },
-  { state_abbr: "OR", source_key: "or_ez_parta_2024", domain: "data.oregon.gov",
+  { state_abbr: "OR", source_key: "or_ez_parta_2024", kind: "socrata", domain: "data.oregon.gov",
     dataset_id: "ecbu-9t3b", order_field: ":id", map: mapOrEnterpriseZone("or_ez_parta_2024", "ecbu-9t3b") },
-  { state_abbr: "OR", source_key: "or_energy_incentive_program", domain: "data.oregon.gov",
+  { state_abbr: "OR", source_key: "or_energy_incentive_program", kind: "socrata", domain: "data.oregon.gov",
     dataset_id: "ria5-vqsx", order_field: ":id", map: mapOrEip },
-  { state_abbr: "DE", source_key: "de_eeif_grants", domain: "data.delaware.gov",
+  { state_abbr: "DE", source_key: "de_eeif_grants", kind: "socrata", domain: "data.delaware.gov",
     dataset_id: "vukm-g6g5", order_field: ":id", map: mapDeEeif },
+
+  // ── Wave 1 — API drop-in (verified live 2026-07-26) ──
+  { state_abbr: "OK", source_key: "ok_quality_jobs", kind: "ckan",
+    ckan_domain: "data.ok.gov", resource_id: "d4845ba8-1caa-43fb-821c-b902d3520b06",
+    map: mapOkQualityJobs },
+  { state_abbr: "WI", source_key: "wi_wedc_ared", kind: "arcgis",
+    arcgis_layer_url: "https://services2.arcgis.com/xkpZtaTA2F05Vq7i/arcgis/rest/services/ImpactMap_featureSvc_Awards/FeatureServer/0",
+    arcgis_order: "ObjectId", map: mapWiWedcAred },
+  { state_abbr: "IA", source_key: "ia_ieda_awards", kind: "idh_json",
+    idh_domain: "idh-be.iowa.gov", idh_dataset: "946", map: mapIaIeda },
 ];
 
 export type PendingSource = {
@@ -279,8 +409,6 @@ export const PENDING_SOURCES: PendingSource[] = [
     note: "ITEP via LED FastLane public reports (export; scrape contract TBD)." },
   { state_abbr: "MO", source_key: "mo_ded_accountability", source_url: "https://ded.mo.gov/data-reports",
     note: "DED tax-credit accountability data. Confirmed ABSENT from data.mo.gov (probe 2026-07-08)." },
-  { state_abbr: "IA", source_key: "ia_ieda_awards", source_url: "https://www.iowaeda.com/impact/",
-    note: "IEDA award actions (board dockets). Confirmed ABSENT from data.iowa.gov (probe 2026-07-08)." },
   { state_abbr: "PA", source_key: "pa_dced_investment_tracker", source_url: "https://dced.pa.gov/about-dced/investment-tracker/",
     note: "DCED Investment Tracker (web app). Confirmed ABSENT from data.pa.gov (probe 2026-07-08)." },
   { state_abbr: "CO", source_key: "co_oedit_incentives", source_url: "https://oedit.colorado.gov/reports",
@@ -289,10 +417,10 @@ export const PENDING_SOURCES: PendingSource[] = [
     note: "MEDC/MSF legislative reports (PDF/Excel)." },
   { state_abbr: "MN", source_key: "mn_deed_business_subsidy", source_url: "https://mn.gov/deed/data/subsidy-reports/",
     note: "DEED Business Subsidy annual data (Excel download; file-adapter TBD)." },
-  { state_abbr: "WI", source_key: "wi_wedc_awards", source_url: "https://wedc.org/about-wedc/transparency/",
-    note: "WEDC awards transparency data (annual)." },
   { state_abbr: "FL", source_key: "fl_commerce_incentives", source_url: "https://floridajobs.org/business-growth-and-partnerships/for-businesses-and-entrepreneurs/business-resource/incentives-reporting",
     note: "FloridaCommerce incentive reporting portal (app)." },
+  { state_abbr: "HI", source_key: "hi_film_tax_credit", source_url: "https://opendata.hawaii.gov/dataset/film-tax-credit",
+    note: "CKAN datastore live (probe 2026-07-26) but LOW YIELD: anonymized (no recipient names), film-only (not site/DC-relevant), last modified 2020-10-19. Registered, not ingested — recipient-level capture would fabricate identities the source suppresses." },
   { state_abbr: "NV", source_key: "nv_goed_abatements", source_url: "https://goed.nv.gov/programs-incentives/",
     note: "GOED abatement dashboards (Tableau; no API). data.nv.gov not Socrata-indexed (probe 2026-07-08)." },
   { state_abbr: "KY", source_key: "ky_kedfa_approvals", source_url: "https://ced.ky.gov/Reports_Publications",
@@ -311,6 +439,4 @@ export const PENDING_SOURCES: PendingSource[] = [
     note: "Tier-B V2 scraping per v1 scope. data.georgia.gov DNS dead (probe 2026-07-08)." },
   { state_abbr: "AZ", source_key: "az_aca_annual_report", source_url: "https://www.azcommerce.com/about-us/transparency/",
     note: "ACA annual report + transparency page. Tier-B V2 per v1 scope." },
-  { state_abbr: "OK", source_key: "ok_tip_tig_ckan", source_url: "https://data.ok.gov/dataset/training-for-industry-and-training-for-industry-growth-economic-development-programs",
-    note: "CKAN datastore CSV confirmed live (probe 2026-07-08) but weak fit (workforce training, not site incentives). CKAN adapter TBD." },
 ];
