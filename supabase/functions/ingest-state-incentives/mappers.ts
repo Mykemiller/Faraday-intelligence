@@ -76,6 +76,23 @@ export function toDateEpochMs(v: unknown): string | null {
   return isNaN(d.getTime()) ? null : d.toISOString().slice(0, 10);
 }
 
+// Money strings with a magnitude word, e.g. "$50.0 million" -> 50000000,
+// "$1.2 billion" -> 1200000000, "$500,000" -> 500000. Returns null on no number.
+export function parseUsdScaled(v: unknown): number | null {
+  if (v === null || v === undefined || v === "") return null;
+  const str = String(v).toLowerCase().replace(/[$,]/g, "").trim();
+  const m = /(-?\d+(?:\.\d+)?)\s*(billion|million|thousand|b|m|k)?\b/.exec(str);
+  if (!m) return null;
+  let n = Number(m[1]);
+  if (isNaN(n)) return null;
+  switch (m[2]) {
+    case "billion": case "b": n *= 1e9; break;
+    case "million": case "m": n *= 1e6; break;
+    case "thousand": case "k": n *= 1e3; break;
+  }
+  return Math.round(n); // scaled multiplies introduce float noise ($534.8M → 534799999.999…)
+}
+
 // "Albany County Industrial Development Agency" -> "Albany"; city IDAs -> null.
 export function countyFromAuthority(name: string | null | undefined): string | null {
   if (!name) return null;
@@ -336,6 +353,38 @@ export function mapIaIeda(row: Row): CommonRecord {
   };
 }
 
+// ── Wave 2 (CC-INGEST-STATE-INCENTIVE-ALL-WAVES-1.0) ────────────────────────
+// DC — Tax Increment Financing (TIF) areas, DC OCTO ArcGIS MapServer layer 26
+// (maps2.dcgis.dc.gov DCGIS_DATA/Business_Incentives_WebMercator). Fields probed
+// live 2026-07-26. The dollar figure is carried IN the layer
+// (INITIAL_AUTHORIZATION, e.g. "$50.0 million") — no separate OCFO scrape needed,
+// so this stays SRC (primary). DC is a single county-equivalent jurisdiction, so
+// county_name is the constant "District of Columbia" (resolves).
+export function mapDcTif(row: Row): CommonRecord {
+  const authYear = year4(row.YEAR_AUTHORIZED);
+  const matYear = year4(row.MATURITY_YEAR);
+  const start = authYear ? `${authYear}-01-01` : null;
+  const end = matYear ? `${matYear}-12-31` : null;
+  const name = s(row, "NAME");
+  return {
+    state_abbr: "DC", source_key: "dc_tif_areas",
+    source_record_id: s(row, "GLOBALID") ?? [name ?? "", authYear ?? ""].join(":"),
+    recipient_name: name,
+    project_name: name,
+    project_address: null, parcel_id: null,
+    place_name: s(row, "WARD") ? `Ward ${s(row, "WARD")}` : null,
+    county_name: "District of Columbia",
+    incentive_type: normalizeType(s(row, "TYPE")) ?? "tif",
+    raw_incentive_type: s(row, "TYPE"),
+    program_name: "DC Tax Increment Financing",
+    statute_citation: s(row, "DC_CODE"),
+    award_value_usd: parseUsdScaled(row.INITIAL_AUTHORIZATION),
+    term_start: start, term_end: end, term_years: yearsBetween(start, end),
+    source_url: "https://maps2.dcgis.dc.gov/dcgis/rest/services/DCGIS_DATA/Business_Incentives_WebMercator/MapServer/26",
+    raw: row,
+  };
+}
+
 export type SourceKind = "socrata" | "ckan" | "arcgis" | "idh_json";
 
 export type LiveSource = {
@@ -385,6 +434,13 @@ export const LIVE_SOURCES: LiveSource[] = [
     arcgis_order: "ObjectId", map: mapWiWedcAred },
   { state_abbr: "IA", source_key: "ia_ieda_awards", kind: "idh_json",
     idh_domain: "idh-be.iowa.gov", idh_dataset: "946", map: mapIaIeda },
+
+  // ── Wave 2 — bulk/ArcGIS (verified live 2026-07-26) ──
+  // DC TIF is an ArcGIS layer (no Excel needed); the other Wave-2 states are in
+  // PENDING_SOURCES with documented fetch/URL blockers.
+  { state_abbr: "DC", source_key: "dc_tif_areas", kind: "arcgis",
+    arcgis_layer_url: "https://maps2.dcgis.dc.gov/dcgis/rest/services/DCGIS_DATA/Business_Incentives_WebMercator/MapServer/26",
+    arcgis_order: "OBJECTID", map: mapDcTif },
 ];
 
 export type PendingSource = {
@@ -415,8 +471,12 @@ export const PENDING_SOURCES: PendingSource[] = [
     note: "OEDIT JGITC/Strategic Fund reports (PDF). Confirmed ABSENT from data.colorado.gov (probe 2026-07-08)." },
   { state_abbr: "MI", source_key: "mi_medc_msf", source_url: "https://www.michiganbusiness.org/reports-data/",
     note: "MEDC/MSF legislative reports (PDF/Excel)." },
-  { state_abbr: "MN", source_key: "mn_deed_business_subsidy", source_url: "https://mn.gov/deed/data/subsidy-reports/",
-    note: "DEED Business Subsidy annual data (Excel download; file-adapter TBD)." },
+  { state_abbr: "MN", source_key: "mn_deed_business_subsidy", source_url: "https://mn.gov/deed/",
+    note: "DEED Business Subsidy / MBAF annual Excel. WAVE-2 BLOCKER (probe 2026-07-26): the DEED site is JS-rendered and every candidate report path soft-404s, so the direct .xlsx URL is not machine-discoverable. Needs the direct MBAF export link (browser/Myke) — the SheetJS bulk parser is proven working, this is a URL-discovery block, not a capability block." },
+  { state_abbr: "TN", source_key: "tn_openecd_fasttrack", source_url: "https://www.tn.gov/ecd/resources/openecd/fasttrack-project-database.html",
+    note: "OpenECD FastTrack contracted-projects .xlsx (OpenECD_Contracted_7-15-2026.xlsx, href confirmed live). WAVE-2 BLOCKER (probe 2026-07-26): the tn.gov /content/dam CDN resets the TLS connection from the Supabase edge runtime (os error 104 at Connect — IP/fingerprint block, unaffected by headers). Parser ready; needs a reachable mirror or fetch proxy." },
+  { state_abbr: "TX", source_key: "tx_comptroller_ch313", source_url: "https://comptroller.texas.gov/economy/local/ch313/",
+    note: "Ch.313 (expired 2022) / Ch.403 JETI agreements. WAVE-2 FINDING (probe 2026-07-26): the only .xlsx on the Ch.313 page is a generic Comptroller report INDEX (Table of Contents, not recipient data); recipient-level Ch.313 data is per-agreement (PDF/app). Reclassified to Wave-3/4 scrape — no clean bulk file exists." },
   { state_abbr: "FL", source_key: "fl_commerce_incentives", source_url: "https://floridajobs.org/business-growth-and-partnerships/for-businesses-and-entrepreneurs/business-resource/incentives-reporting",
     note: "FloridaCommerce incentive reporting portal (app)." },
   { state_abbr: "HI", source_key: "hi_film_tax_credit", source_url: "https://opendata.hawaii.gov/dataset/film-tax-credit",
@@ -429,8 +489,6 @@ export const PENDING_SOURCES: PendingSource[] = [
     note: "IEDC transparency portal. hub.mph.in.gov not in Socrata discovery (probe 2026-07-08); portal API unconfirmed." },
   { state_abbr: "NC", source_key: "nc_jdig_onenc", source_url: "https://www.commerce.nc.gov/grants-incentives/competitive-incentives/reports",
     note: "JDIG/OneNC annual grant reports (PDF/Excel). linc.osbm.nc.gov not in Socrata discovery (probe 2026-07-08)." },
-  { state_abbr: "TN", source_key: "tn_openecd", source_url: "https://tnecd.com/openecd/",
-    note: "TNECD OpenECD transparency (FastTrack data; format unconfirmed). data.tn.gov not Socrata-indexed (probe 2026-07-08)." },
   { state_abbr: "SC", source_key: "sc_commerce_reports", source_url: "https://www.sccommerce.com/about-us/resources",
     note: "SC Commerce incentive reports (PDF)." },
   { state_abbr: "VA", source_key: "va_vedp_incentives", source_url: "https://www.vedp.org/reports",

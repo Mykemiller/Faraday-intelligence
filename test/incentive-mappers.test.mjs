@@ -8,8 +8,10 @@ import {
   mapOkQualityJobs,
   mapWiWedcAred,
   mapIaIeda,
+  mapDcTif,
   toDateUS,
   toDateEpochMs,
+  parseUsdScaled,
   normalizeType,
   LIVE_SOURCES,
   PENDING_SOURCES,
@@ -112,6 +114,40 @@ test("IA incentive_type collapses to grant / credit / other by component", () =>
   assert.equal(mapIaIeda({ contract_name: "Z" }).award_value_usd, null);
 });
 
+test("parseUsdScaled handles magnitude words and plain dollars", () => {
+  assert.equal(parseUsdScaled("$50.0 million"), 50000000);
+  assert.equal(parseUsdScaled("$1.2 billion"), 1200000000);
+  assert.equal(parseUsdScaled("$534.8 million"), 534800000); // rounded, no float noise
+  assert.equal(parseUsdScaled("$500,000"), 500000);
+  assert.equal(parseUsdScaled("750 thousand"), 750000);
+  assert.equal(parseUsdScaled(2500000), 2500000);
+  assert.equal(parseUsdScaled(""), null);
+  assert.equal(parseUsdScaled("n/a"), null);
+});
+
+test("DC TIF (ArcGIS layer 26) → CommonRecord", () => {
+  const row = {
+    NAME: "Verizon Center", TYPE: "TIF", WARD: "2",
+    DC_CODE: "https://code.dccouncil.gov/us/dc/council/laws/17-12",
+    OBJECTID: 655, MATURITY_YEAR: 2043, YEAR_AUTHORIZED: 2007,
+    INITIAL_AUTHORIZATION: "$50.0 million",
+    GLOBALID: "{8370B12D-8FBC-47E4-A12C-6BA8ABCA17B8}",
+  };
+  const r = mapDcTif(row);
+  assert.equal(r.state_abbr, "DC");
+  assert.equal(r.source_key, "dc_tif_areas");
+  assert.equal(r.recipient_name, "Verizon Center");
+  assert.equal(r.project_name, "Verizon Center");
+  assert.equal(r.county_name, "District of Columbia"); // resolves to the DC county row
+  assert.equal(r.place_name, "Ward 2");
+  assert.equal(r.award_value_usd, 50000000);
+  assert.equal(r.incentive_type, "tif");
+  assert.equal(r.term_start, "2007-01-01");
+  assert.equal(r.term_end, "2043-12-31");
+  assert.equal(r.statute_citation, "https://code.dccouncil.gov/us/dc/council/laws/17-12");
+  assert.equal(r.source_record_id, "{8370B12D-8FBC-47E4-A12C-6BA8ABCA17B8}");
+});
+
 test("LIVE_SOURCES: unique keys and kind-correct endpoint config", () => {
   const keys = LIVE_SOURCES.map((s) => s.source_key);
   assert.equal(new Set(keys).size, keys.length, "source_keys must be unique");
@@ -122,8 +158,8 @@ test("LIVE_SOURCES: unique keys and kind-correct endpoint config", () => {
     if (s.kind === "arcgis") assert.ok(s.arcgis_layer_url, `${s.source_key} arcgis cfg`);
     if (s.kind === "idh_json") assert.ok(s.idh_domain && s.idh_dataset, `${s.source_key} idh cfg`);
   }
-  for (const k of ["ok_quality_jobs", "wi_wedc_ared", "ia_ieda_awards"]) {
-    assert.ok(keys.includes(k), `Wave-1 source ${k} present`);
+  for (const k of ["ok_quality_jobs", "wi_wedc_ared", "ia_ieda_awards", "dc_tif_areas"]) {
+    assert.ok(keys.includes(k), `Wave-1/2 source ${k} present`);
   }
 });
 

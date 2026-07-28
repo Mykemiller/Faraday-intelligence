@@ -20,6 +20,24 @@ from here (Ask Faraday, waitlist/subscribe, lexicon).
 
 ## Changelog
 
+### CC-INGEST-STATE-INCENTIVE-ALL-WAVES-1.0 — 2026-07-26 (FAR-341 Wave 2: DC + pendings)
+- **Wave 2 (bulk-file wave: TN/MN/TX/DC) → 1 of 4 ingested (DC).** All probed live
+  server-side (`pg_net` + a throwaway SheetJS edge probe). **DC** = Business_Incentives
+  ArcGIS MapServer **layer 26** (TIF areas) — reuses the existing `arcgis` path; dollar
+  figure is carried in-layer (`INITIAL_AUTHORIZATION`, e.g. "$50.0 million") so **no OCFO
+  scrape needed → SRC**. New helper `parseUsdScaled` ("$50.0 million"→50000000, rounded).
+  Seeded **13 TIF areas, all 13 resolved → the DC jurisdiction** (INC-01..05: Nationals Park
+  $534.8M, The Wharf $198M, etc.). Idempotent (0 new on re-run).
+- **TN/MN/TX pending with hard blockers (documented, NOT guessed):** TN OpenECD FastTrack
+  `.xlsx` href is valid but the tn.gov `/content/dam` CDN **TLS-resets** the Supabase edge
+  runtime (os error 104 at Connect); MN DEED site is JS-rendered so the MBAF `.xlsx` URL is
+  not machine-discoverable; TX Ch.313 page's only `.xlsx` is a generic report INDEX (recipient
+  data is per-agreement → Wave-3/4). SheetJS bulk parser proven working — these are
+  reachability/URL blocks, not capability gaps.
+- fn **v13→v14** deployed; migration `0035` (DC registry row) applied; probe fn retired to a
+  410 stub. Tests 59/59. Live coverage now **9 states** (…+DC). Run report:
+  `docs/ingest/CC-INGEST-STATE-INCENTIVE-ALL-WAVES-wave2-run-report.md`.
+
 ### CC-INGEST-STATE-INCENTIVE-ALL-WAVES-1.0 — 2026-07-26 (FAR-341 Wave 1 + VCS baseline)
 - **Vendored the live `ingest-state-incentives` edge fn into VCS** (`supabase/functions/
   ingest-state-incentives/{index.ts,mappers.ts}`) — it had been running only as deployed
