@@ -44,7 +44,12 @@ jobs:
         run: npx playwright install chromium
       - name: Run scraper
         env:
-          SUPABASE_FUNCTIONS_URL: ${{ secrets.SUPABASE_FUNCTIONS_URL }}
+          # The functions base is public (project ref is not a secret); default it
+          # so `push` needs no hand-set secret. The ingest fn is verify_jwt=false and
+          # its STATE_INCENTIVE_INGEST_SECRET is unset in prod, so the secret/anon
+          # inputs below are optional — set SUPABASE_ANON_KEY only if the gateway
+          # starts requiring an apikey.
+          SUPABASE_FUNCTIONS_URL: ${{ secrets.SUPABASE_FUNCTIONS_URL || 'https://ycadmmngkdhvpcsrcuaq.supabase.co/functions/v1' }}
           STATE_INCENTIVE_INGEST_SECRET: ${{ secrets.STATE_INCENTIVE_INGEST_SECRET }}
           SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
         run: node scrape.mjs --source "${{ github.event.inputs.source }}" --mode "${{ github.event.inputs.mode }}"
