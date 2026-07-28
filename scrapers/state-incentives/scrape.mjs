@@ -77,6 +77,9 @@ async function push(rows) {
 
 const browser = await chromium.launch();
 const context = await browser.newContext({
+  // Wide viewport so responsive tables (e.g. FooTable breakpoint-lg) don't
+  // collapse overflow columns into hidden detail rows.
+  viewport: { width: 2400, height: 1400 },
   userAgent: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0 Safari/537.36",
 });
 const page = await context.newPage();
