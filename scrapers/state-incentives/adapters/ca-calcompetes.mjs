@@ -20,6 +20,9 @@ export default {
   async load(page) {
     await page.goto(this.url, { waitUntil: "networkidle", timeout: 90000 });
     await page.waitForSelector(`${TABLE} tbody tr td`, { timeout: 60000 });
+    // The FooTable pager renders a beat after the rows; wait for it so the first
+    // pagination attempt doesn't see an empty pager and stop after page 1.
+    await page.waitForSelector(`${TABLE} tr.footable-paging li[data-page="next"]`, { timeout: 30000 }).catch(() => {});
   },
 
   async extract(page) {
@@ -62,20 +65,26 @@ export default {
         });
       }
 
-      // Advance FooTable pagination. Click via direct DOM .click() (fires
-      // FooTable's handler without Playwright's visibility gate — there can be a
-      // hidden duplicate pager). Stop when every "next" control is disabled.
+      // Advance the canonical FooTable bottom pager (tr.footable-paging). Click
+      // its "next" anchor via direct DOM .click() (fires FooTable's handler). Stop
+      // when it's disabled/absent OR the first row stops changing (last page).
+      const NEXT = `${TABLE} tr.footable-paging li.footable-page-nav[data-page="next"]`;
+      if (guard === 0) {
+        const diag = await page.evaluate((s) => {
+          const li = document.querySelector(s);
+          return { found: !!li, disabled: li ? li.classList.contains("disabled") : null };
+        }, NEXT);
+        console.log(`ca_calcompetes pager diag: ${JSON.stringify(diag)}`);
+      }
       const before = pageRows[0]?.[0] ?? "";
-      const clicked = await page.evaluate((sel) => {
-        const navs = [...document.querySelectorAll(`${sel} li.footable-page-nav[data-page="next"]`)];
-        if (!navs.length) return "no-pager";
-        const live = navs.find((li) => !li.classList.contains("disabled"));
-        if (!live) return "disabled";
-        (live.querySelector("a") || live).click();
+      const state = await page.evaluate((s) => {
+        const li = document.querySelector(s);
+        if (!li) return "no-pager";
+        if (li.classList.contains("disabled")) return "disabled";
+        (li.querySelector("a") || li).click();
         return "clicked";
-      }, TABLE);
-      if (clicked !== "clicked") break;
-      // wait until the first row changes (AJAX page swap) or a short timeout
+      }, NEXT);
+      if (state !== "clicked") break;
       await page.waitForFunction(
         ([sel, prev]) => {
           const tr = document.querySelector(`${sel} tbody tr`);
@@ -83,8 +92,10 @@ export default {
           return first && first !== prev;
         },
         [TABLE, before],
-        { timeout: 15000 },
+        { timeout: 12000 },
       ).catch(() => {});
+      const after = await page.$eval(`${TABLE} tbody tr td`, (td) => (td.innerText || "").trim()).catch(() => "");
+      if (after === before) break; // first row didn't change → last page reached
       if (guard % 10 === 0) console.log(`  …page ${guard + 1}, ${rows.length} rows so far`);
     }
     console.log(`ca_calcompetes: paginated ${rows.length} rows`);
