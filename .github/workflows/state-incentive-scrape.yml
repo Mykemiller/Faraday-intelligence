@@ -1,0 +1,49 @@
+name: State Incentive Scrape (Wave 3 headless)
+
+# Renders JS/bot-gated state-incentive portals with a real Chromium (GitHub
+# runners have open egress) and pushes parsed rows to the
+# ingest-state-incentives-push edge function at INF confidence.
+#
+#   mode=dump  → render + print the DOM (no secrets, no DB writes) for selector discovery
+#   mode=push  → extract + POST to Supabase (needs the secrets below)
+#
+# Repo secrets required for push mode (Settings → Secrets → Actions):
+#   SUPABASE_FUNCTIONS_URL          e.g. https://ycadmmngkdhvpcsrcuaq.supabase.co/functions/v1
+#   STATE_INCENTIVE_INGEST_SECRET   same value the edge fn checks (may be empty if unset there)
+#   SUPABASE_ANON_KEY               gateway apikey for the functions endpoint
+
+on:
+  workflow_dispatch:
+    inputs:
+      source:
+        description: "Adapter source_key (e.g. ca_calcompetes)"
+        required: true
+        default: "ca_calcompetes"
+      mode:
+        description: "dump (print DOM) · test (extract+print) · push (extract+POST)"
+        required: true
+        default: "dump"
+        type: choice
+        options: [dump, test, push]
+
+jobs:
+  scrape:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: scrapers/state-incentives
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - name: Install deps
+        run: npm install --no-audit --no-fund
+      - name: Install Chromium
+        run: npx playwright install --with-deps chromium
+      - name: Run scraper
+        env:
+          SUPABASE_FUNCTIONS_URL: ${{ secrets.SUPABASE_FUNCTIONS_URL }}
+          STATE_INCENTIVE_INGEST_SECRET: ${{ secrets.STATE_INCENTIVE_INGEST_SECRET }}
+          SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
+        run: node scrape.mjs --source "${{ github.event.inputs.source }}" --mode "${{ github.event.inputs.mode }}"
