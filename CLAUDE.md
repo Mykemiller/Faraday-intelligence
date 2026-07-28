@@ -20,6 +20,19 @@ from here (Ask Faraday, waitlist/subscribe, lexicon).
 
 ## Changelog
 
+### CC-INGEST-STATE-INCENTIVE-ALL-WAVES-1.0 — 2026-07-26 (FAR-341: per-source confidence tiering)
+- **`fn_state_incentives_resolve_and_score` no longer hardcodes SRC/0.85/primary.** Migration
+  `0036` (**un-applied — gated on review, it rewrites the resolve/score contract**) reads each
+  disclosure's confidence from its `jw_data_source_registry` row: `confidence_cap`
+  VRF→0.95 / SRC→0.85 / INF→0.60 / EST→0.40 (unregistered→0.40, conservative), plus a new
+  `source_level` column (primary|aggregator, GJF/Upjohn precedence). Per jurisdiction the INC-*
+  attributes take the **highest-confidence contributor** and stay `primary` if any contributor
+  is. **Prerequisite for Waves 3–4** (scraped/PDF/INF/EST) so scraped HTML never scores as SRC.
+- **Zero regression, proven read-only:** all 12 live sources are SRC/primary → the new fn yields
+  SRC/0.85/primary for all **244** scored jurisdictions, identical to current `jpas_attributes`
+  (244=244, same tuple). Behavior only diverges once a non-SRC source is ingested.
+  Design: `docs/ingest/CC-INGEST-STATE-INCENTIVE-confidence-tiering.md`.
+
 ### CC-INGEST-STATE-INCENTIVE-ALL-WAVES-1.0 — 2026-07-26 (FAR-341 Wave 2: DC + pendings)
 - **Wave 2 (bulk-file wave: TN/MN/TX/DC) → 1 of 4 ingested (DC).** All probed live
   server-side (`pg_net` + a throwaway SheetJS edge probe). **DC** = Business_Incentives
