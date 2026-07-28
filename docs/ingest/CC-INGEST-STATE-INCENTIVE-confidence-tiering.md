@@ -43,10 +43,11 @@ ingested.
 
 ## Apply status
 
-Migration is **un-applied** (gated on review — it rewrites the resolve/score
-contract, unlike the additive Wave 1–2 seeds). Applying it re-scores existing
-states to the same values; new INF/EST sources then score correctly. Rollback:
-restore the prior all-SRC function body + drop the `source_level` column.
+**APPLIED to prod 2026-07-28** (Myke-approved via #44 merge). Re-scored all 9
+live states through the new fn: 1,220 INC attrs / 244 jurisdictions stayed
+SRC/0.85/primary — byte-identical to pre-apply. New INF/EST sources now score
+correctly. Both migration statements are re-run-safe. Rollback: restore the
+prior all-SRC function body + drop the `source_level` column.
 
 ## How a Wave 3–4 source uses it
 

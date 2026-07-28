@@ -14,10 +14,13 @@
 -- states yields byte-identical INC-01..05 (verified read-only before apply).
 -- Unregistered source_keys default to EST/0.40 — conservative, never over-claims.
 --
--- ADDITIVE + REVERSIBLE. UN-APPLIED as of 2026-07-26 — apply at promotion
--- (this REWRITES confidence on existing jpas_attributes, unlike the additive
--- Wave 1–2 seeds, so it is gated on review). Rollback: restore the prior
--- function body (all-SRC/0.85) and `alter table ... drop column source_level`.
+-- ADDITIVE + REVERSIBLE. APPLIED to prod 2026-07-28 (Myke-approved via #44
+-- merge). Re-scored all 9 live states through the new fn: 1,220 INC attrs /
+-- 244 jurisdictions stayed SRC/0.85/primary — byte-identical to pre-apply, as
+-- the read-only proof predicted (behavior only diverges once a non-SRC source
+-- is ingested). Both statements are re-run-safe (`add column if not exists` +
+-- `create or replace`). Rollback: restore the prior function body (all-SRC/0.85)
+-- and `alter table ... drop column source_level`.
 
 -- 1) Per-source disclosure level (primary disclosure vs third-party aggregator).
 alter table public.jw_data_source_registry
