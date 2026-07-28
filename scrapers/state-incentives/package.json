@@ -1,0 +1,13 @@
+{
+  "name": "faraday-state-incentive-scrapers",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Headless (Playwright) scrapers for Wave-3 state-incentive portals that are JS-rendered or bot-gated and therefore unreachable by the Supabase edge runtime. Runs in GitHub Actions (real browser + open egress); pushes parsed rows to the ingest-state-incentives-push edge function at INF confidence.",
+  "scripts": {
+    "scrape": "node scrape.mjs"
+  },
+  "dependencies": {
+    "playwright": "^1.48.0"
+  }
+}
