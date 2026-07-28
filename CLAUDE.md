@@ -20,6 +20,32 @@ from here (Ask Faraday, waitlist/subscribe, lexicon).
 
 ## Changelog
 
+### CC-INGEST-STATE-INCENTIVE-ALL-WAVES-1.0 — 2026-07-28 (FAR-341 Wave 3: CA CalCompetes, first headless-scrape adapter)
+- **First adapter on the Wave-3 headless-scraper harness (#47) validated end-to-end.**
+  `scrapers/state-incentives/adapters/ca-calcompetes.mjs` extracts the CA California
+  Competes Tax Credit **Grant Awardee List** (JS-rendered Ninja Tables widget on
+  business.ca.gov, unfetchable by the edge runtime). Runs in GitHub Actions (real
+  Chromium + open egress), driven via the GitHub MCP tools.
+- **Sources the data endpoint, not the pager.** FooTable client-paginates (only ~10
+  rows in the DOM), so DOM+next-click scraping was lossy (truncated at 23 for the wrong
+  reason). The adapter now calls Ninja Tables' own `admin-ajax.php` `get-all-data`
+  endpoint **from inside the page context** (same-origin fetch, page cookies) → the
+  whole dataset in one request. Column keys are author-set slugs matched by pattern.
+  New `--mode probe` enumerates every widget's true row count + downloadable files.
+- **23 rows is the COMPLETE published set, not a truncation** (`probe`: one widget
+  `73522`, count 23 — the recent 2022–2023 awardee rounds). The full historical CCTC
+  awardee DB (thousands since 2014) is **not** on data.ca.gov (CKAN `q=calcompetes` → 0,
+  probed server-side) → a separate bulk/FOIA source (Wave 4). Credit-amount column
+  (`amountoftaxcredit`) now maps to `award_value_usd` (Tynergy $15M, Infinera $14M);
+  `county_name` left **null** (city-level/multi-city) → rows land but write no INC-*
+  until a city→county resolver (documented like OK, not fabricated).
+- **Confidence INF/0.60** (registry `ca_calcompetes`, migration 0037, source_level
+  `primary`) — first-party but headless-captured, never SRC. **No prod write yet** —
+  the `push` run is held for go-ahead (Wave 1–2 seed-gate pattern); workflow now
+  defaults the public `SUPABASE_FUNCTIONS_URL` and the fn is verify_jwt=false w/ unset
+  secret, so `push` needs no hand-set secret. Report:
+  `docs/ingest/CC-INGEST-STATE-INCENTIVE-ALL-WAVES-wave3-ca-calcompetes-run-report.md`.
+
 ### CC-INGEST-STATE-INCENTIVE-ALL-WAVES-1.0 — 2026-07-26 (FAR-341: per-source confidence tiering)
 - **`fn_state_incentives_resolve_and_score` no longer hardcodes SRC/0.85/primary.** Migration
   `0036` (**APPLIED to prod 2026-07-28, Myke-approved via #44 merge**) reads each

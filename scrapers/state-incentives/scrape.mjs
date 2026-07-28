@@ -45,7 +45,10 @@ async function dump(page) {
       };
     });
     const iframes = [...document.querySelectorAll("iframe")].map((f) => f.src).filter(Boolean);
-    return { title: document.title, tableCount: tables.length, tables, iframes };
+    // Capture pagination markup so pager selectors are written from real HTML.
+    const pager = [...document.querySelectorAll('ul.pagination, .footable-paging, [class*="paging"], [class*="pagination"]')]
+      .slice(0, 3).map((el) => el.outerHTML.slice(0, 1200));
+    return { title: document.title, tableCount: tables.length, tables, iframes, pager };
   });
   console.log("=== DUMP", adapter.source_key, "===");
   console.log(JSON.stringify(info, null, 2));
@@ -77,6 +80,9 @@ async function push(rows) {
 
 const browser = await chromium.launch();
 const context = await browser.newContext({
+  // Wide viewport so responsive tables (e.g. FooTable breakpoint-lg) don't
+  // collapse overflow columns into hidden detail rows.
+  viewport: { width: 2400, height: 1400 },
   userAgent: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0 Safari/537.36",
 });
 const page = await context.newPage();
@@ -84,6 +90,10 @@ try {
   await adapter.load(page); // navigate + wait for data
   if (mode === "dump") {
     await dump(page);
+  } else if (mode === "probe") {
+    // adapter-specific diagnostics (data-source enumeration); falls back to dump
+    if (adapter.probe) await adapter.probe(page);
+    else await dump(page);
   } else if (mode === "test") {
     // extract + print (no secrets, no writes) — validates an adapter's mapping in CI
     const rows = await adapter.extract(page);
