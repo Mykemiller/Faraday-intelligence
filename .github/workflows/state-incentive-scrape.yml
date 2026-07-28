@@ -40,7 +40,10 @@ jobs:
       - name: Install deps
         run: npm install --no-audit --no-fund
       - name: Install Chromium
-        run: npx playwright install --with-deps chromium
+        # No --with-deps: ubuntu-latest already ships the shared libs for headless
+        # Chromium, and the apt step was slow/flaky. Re-add `--with-deps` only if a
+        # missing-library error appears.
+        run: npx playwright install chromium
       - name: Run scraper
         env:
           SUPABASE_FUNCTIONS_URL: ${{ secrets.SUPABASE_FUNCTIONS_URL }}
