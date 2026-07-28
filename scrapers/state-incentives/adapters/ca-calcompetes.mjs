@@ -51,7 +51,16 @@ function mapAjaxRow(row) {
   const name = stripTags(pick(r, /^name$/i, /company|recipient|business|taxpayer/i));
   if (!name) return null;
   const location = stripTags(pick(r, /location/i));
-  const grant = pick(r, /grant.?amount/i, /credit.?amount/i, /award.?amount/i, /amount.?award/i);
+  // The credit is the incentive. Real key is "amountoftaxcredit"; match tax-credit
+  // patterns FIRST and never let /amount/ alone snag "amountrecaptured".
+  const grant = pick(
+    r,
+    /amountoftaxcredit/i,
+    /tax.?credit/i,
+    /amount.*credit/i,
+    /grant.?amount/i,
+    /award.?amount/i,
+  );
   const date = pick(r, /date.*(approv|agreement)/i, /agreement.*date/i, /approv/i);
   return {
     recipient_name: name,
@@ -86,6 +95,57 @@ export default {
   async load(page) {
     await page.goto(this.url, { waitUntil: "networkidle", timeout: 90000 });
     await page.waitForSelector(`${TABLE} tbody tr td`, { timeout: 60000 }).catch(() => {});
+  },
+
+  // Diagnostic: enumerate every Ninja Tables widget on the page (its true
+  // get-all-data row count) plus any downloadable award files, so we know whether
+  // the rendered table is the whole published set or one round of several.
+  async probe(page) {
+    const info = await page.evaluate(async () => {
+      const ajaxUrl =
+        window.ajaxurl ||
+        (window.ninja_footables && window.ninja_footables.ajax_url) ||
+        "/wp-admin/admin-ajax.php";
+      const ids = [
+        ...new Set(
+          [...document.querySelectorAll('table[id^="footable_"], [id^="footable_"]')]
+            .map((t) => (t.id.match(/footable_(\d+)/) || [])[1])
+            .filter(Boolean),
+        ),
+      ];
+      const tables = [];
+      for (const id of ids) {
+        try {
+          const body = new URLSearchParams({
+            action: "wp_ajax_ninja_tables_public_action",
+            table_id: id,
+            target_action: "get-all-data",
+            default_sorting: "old_first",
+          });
+          const res = await fetch(ajaxUrl, {
+            method: "POST",
+            headers: { "Content-Type": "application/x-www-form-urlencoded", "X-Requested-With": "XMLHttpRequest" },
+            body: body.toString(),
+            credentials: "include",
+          });
+          const j = res.ok ? await res.json() : null;
+          const arr = Array.isArray(j) ? j : Array.isArray(j?.data) ? j.data : null;
+          tables.push({ id, ok: res.ok, count: arr ? arr.length : null });
+        } catch (e) {
+          tables.push({ id, error: String(e) });
+        }
+      }
+      const files = [
+        ...new Set(
+          [...document.querySelectorAll("a[href]")]
+            .map((a) => a.href)
+            .filter((h) => /\.(xlsx?|csv|pdf)(\?|#|$)/i.test(h)),
+        ),
+      ];
+      return { title: document.title, ajaxUrl, tableIds: ids, tables, files: files.slice(0, 60) };
+    });
+    console.log("=== PROBE ca_calcompetes ===");
+    console.log(JSON.stringify(info, null, 2));
   },
 
   async extract(page) {

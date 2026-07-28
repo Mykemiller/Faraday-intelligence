@@ -90,6 +90,10 @@ try {
   await adapter.load(page); // navigate + wait for data
   if (mode === "dump") {
     await dump(page);
+  } else if (mode === "probe") {
+    // adapter-specific diagnostics (data-source enumeration); falls back to dump
+    if (adapter.probe) await adapter.probe(page);
+    else await dump(page);
   } else if (mode === "test") {
     // extract + print (no secrets, no writes) — validates an adapter's mapping in CI
     const rows = await adapter.extract(page);

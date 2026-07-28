@@ -20,11 +20,9 @@ on:
         required: true
         default: "ca_calcompetes"
       mode:
-        description: "dump (print DOM) · test (extract+print) · push (extract+POST)"
+        description: "dump (print DOM) · probe (enumerate data sources) · test (extract+print) · push (extract+POST)"
         required: true
         default: "dump"
-        type: choice
-        options: [dump, test, push]
 
 jobs:
   scrape:
