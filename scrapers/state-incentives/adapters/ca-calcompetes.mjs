@@ -62,13 +62,19 @@ export default {
         });
       }
 
-      // Advance FooTable pagination until the "next" control is disabled.
-      const next = await page.$(`${TABLE} .footable-page-nav[data-page="next"]`);
-      if (!next) break;
-      const disabled = await next.evaluate((li) => li.classList.contains("disabled"));
-      if (disabled) break;
+      // Advance FooTable pagination. Click via direct DOM .click() (fires
+      // FooTable's handler without Playwright's visibility gate — there can be a
+      // hidden duplicate pager). Stop when every "next" control is disabled.
       const before = pageRows[0]?.[0] ?? "";
-      await next.click();
+      const clicked = await page.evaluate((sel) => {
+        const navs = [...document.querySelectorAll(`${sel} li.footable-page-nav[data-page="next"]`)];
+        if (!navs.length) return "no-pager";
+        const live = navs.find((li) => !li.classList.contains("disabled"));
+        if (!live) return "disabled";
+        (live.querySelector("a") || live).click();
+        return "clicked";
+      }, TABLE);
+      if (clicked !== "clicked") break;
       // wait until the first row changes (AJAX page swap) or a short timeout
       await page.waitForFunction(
         ([sel, prev]) => {
@@ -79,7 +85,9 @@ export default {
         [TABLE, before],
         { timeout: 15000 },
       ).catch(() => {});
+      if (guard % 10 === 0) console.log(`  …page ${guard + 1}, ${rows.length} rows so far`);
     }
+    console.log(`ca_calcompetes: paginated ${rows.length} rows`);
     return rows;
   },
 };
