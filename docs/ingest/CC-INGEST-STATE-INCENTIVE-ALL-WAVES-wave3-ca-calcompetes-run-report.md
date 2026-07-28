@@ -84,11 +84,22 @@ is left **null** (locations are city-level and often multi-city), so — exactly
 — rows land but write **no INC-\* attribute** until a city→county resolver exists.
 That resolver, and the historical CCTC bulk set, are the documented CA follow-ups.
 
-## Status
+## Status — SEEDED to prod 2026-07-28
 
-- Extractor **validated end-to-end in `test` mode** (23/23 rows, all fields correct).
-  No production write yet.
-- The `push` run (extract + POST to `ingest-state-incentives-push`) lands the 23 rows
-  and calls resolve/score. The workflow now defaults the public `SUPABASE_FUNCTIONS_
-  URL`, and the fn is `verify_jwt=false` with an unset ingest secret, so `push` needs
-  **no** hand-set secret. Held for go-ahead (consistent with the Wave 1–2 seed gate).
+After #48 merged, `mode=push` ran against `main` (GitHub Actions run 30388361841).
+Endpoint response and DB verification agree:
+
+```
+push → HTTP 200  found=23  new=23  duped=0  registered_cap=INF
+resolve: newly_resolved=0  jurisdictions_written=0
+```
+
+DB (`state_incentive_disclosures where source_key='ca_calcompetes'`): **23 rows, all
+23 with `award_value_usd`** (mapping fix confirmed live; total credit **$333.2M**),
+**0 with a county** → 0 INC-\* attributes written, as designed (no fabrication). The
+push is idempotent (content-hash) — a re-run reports `new=0`. Confidence scored **INF**.
+The workflow defaults the public `SUPABASE_FUNCTIONS_URL`, and the fn is
+`verify_jwt=false` with an unset ingest secret, so `push` needed **no** hand-set secret.
+
+**Follow-ups (unchanged):** a city→county resolver would let these 23 (and OK) write
+INC-\* attributes; the full historical CCTC awardee DB is a Wave-4 bulk/FOIA source.
