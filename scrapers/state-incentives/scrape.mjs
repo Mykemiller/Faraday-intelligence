@@ -45,7 +45,10 @@ async function dump(page) {
       };
     });
     const iframes = [...document.querySelectorAll("iframe")].map((f) => f.src).filter(Boolean);
-    return { title: document.title, tableCount: tables.length, tables, iframes };
+    // Capture pagination markup so pager selectors are written from real HTML.
+    const pager = [...document.querySelectorAll('ul.pagination, .footable-paging, [class*="paging"], [class*="pagination"]')]
+      .slice(0, 3).map((el) => el.outerHTML.slice(0, 1200));
+    return { title: document.title, tableCount: tables.length, tables, iframes, pager };
   });
   console.log("=== DUMP", adapter.source_key, "===");
   console.log(JSON.stringify(info, null, 2));
