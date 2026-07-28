@@ -40,10 +40,14 @@ from here (Ask Faraday, waitlist/subscribe, lexicon).
   `county_name` left **null** (city-level/multi-city) → rows land but write no INC-*
   until a city→county resolver (documented like OK, not fabricated).
 - **Confidence INF/0.60** (registry `ca_calcompetes`, migration 0037, source_level
-  `primary`) — first-party but headless-captured, never SRC. **No prod write yet** —
-  the `push` run is held for go-ahead (Wave 1–2 seed-gate pattern); workflow now
-  defaults the public `SUPABASE_FUNCTIONS_URL` and the fn is verify_jwt=false w/ unset
-  secret, so `push` needs no hand-set secret. Report:
+  `primary`) — first-party but headless-captured, never SRC. **SEEDED to prod
+  2026-07-28** after #48 merged: `mode=push` (GH Actions run 30388361841) →
+  `found=23 new=23 duped=0 registered_cap=INF`; DB confirms 23 rows, all 23 with
+  `award_value_usd` ($333.2M total), **0 with a county → 0 INC-\* written** (no
+  fabrication, resolve `jurisdictions_written=0`). Idempotent (content-hash). Workflow
+  defaults the public `SUPABASE_FUNCTIONS_URL`; fn is verify_jwt=false w/ unset secret,
+  so `push` needed no hand-set secret. A city→county resolver (shared w/ OK) would let
+  these write INC-\*; the full historical CCTC DB is a Wave-4 bulk/FOIA source. Report:
   `docs/ingest/CC-INGEST-STATE-INCENTIVE-ALL-WAVES-wave3-ca-calcompetes-run-report.md`.
 
 ### CC-INGEST-STATE-INCENTIVE-ALL-WAVES-1.0 — 2026-07-26 (FAR-341: per-source confidence tiering)
