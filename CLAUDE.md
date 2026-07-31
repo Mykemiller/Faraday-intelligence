@@ -20,6 +20,49 @@ from here (Ask Faraday, waitlist/subscribe, lexicon).
 
 ## Changelog
 
+### CC-STATE-BRIEF-SCAFFOLD-1.0 — 2026-07-31 (State Brief Agent Network: schema + local news funnel)
+- **8 tables + 3 views for section-level state-brief persistence** (migrations `0038`–`0041`,
+  **all APPLIED to prod 2026-07-31**): `jw_brief_section_registry` (D6, 5 active sections
+  summing to **exactly 1,000** base words per D1/D7 + CONNECTIVITY incubating behind FAR-360),
+  `jw_brief_feed_bindings`, `jw_brief_editions`, `jw_brief_sections`, `jw_brief_auditor_shards`,
+  `jw_brief_audits`, `jw_local_feed_sources`, `jw_source_candidates`. Ops views
+  `v_jw_brief_dark_register` (D9) / `v_jw_brief_failed_sections` (D12) + runtime
+  `v_jw_state_brief_current`. **All 8 gates passed before any DDL.**
+- **⚠️ RLS + `security_invoker` were ADDED to the supplied DDL, deliberately.** The spec's DDL
+  omitted RLS; all 26 pre-existing `jw_*` tables have it, and these tables hold *unpublished*
+  brief copy — without it they are anon-readable via PostgREST. Views additionally carry
+  `security_invoker = true`, since a view defaults to running as **owner** and would otherwise
+  re-expose exactly the rows the RLS fences. Do not "simplify" either back out.
+- **⚠️ `jw_probe_feed` / `jw_probe_robots` must never be granted to `anon`/`authenticated`.**
+  They fetch an arbitrary caller-supplied URL as SECURITY DEFINER = an SSRF vector reachable
+  through PostgREST. `REVOKE … FROM anon, authenticated` is **NOT sufficient** — both inherit
+  the default **PUBLIC** grant, so `REVOKE … FROM PUBLIC` is required (this was caught as 4 new
+  advisor WARNs and fixed). Final security advisor output is **byte-identical to baseline**.
+- **Local news funnel: 645 candidates registered → 429 verified LIVE across all 52 jurisdictions**
+  (16,080 items; avg **8.3**/state, floor **7**, 38 states ≥8, zero dark). Every URL was actually
+  fetched server-side — container egress is policy-blocked (403 on CONNECT), so verification runs
+  through the **`http` extension** (sync, needed for item counts; note it whitelists curlopts —
+  `CURLOPT_FOLLOWLOCATION` is rejected, redirects are followed by hand).
+- **Reusable URL-pattern scorecard:** Tegna `/feeds/syndication/rss/news` 100% · Hearst
+  `/topstories-rss` 100% · Gray/Arc `/arc/outboundfeeds/rss/?outputType=xml` 85% · WordPress
+  `/feed/` 84% · Grove+Scripps `/news.rss` 76% · **Gannett `rssfeeds.*` 0% (RSS retired
+  network-wide)** · **bizjournals 0% (Cloudflare 403)**. **TownNews only emits RSS when `f=rss`
+  is the TRAILING param.** 27 initial 429s were self-inflicted burst rate-limiting and were
+  re-probed throttled before classification — 20 Lee Enterprises titles 429 persistently.
+- **D13 honoured:** robots.txt parsed for every live feed — **7 disallowed → demoted to `blocked`**
+  and excluded from ingestion; 4 unverifiable are flagged in `notes` (`robots_ok IS NULL` means
+  *unknown*, never *allowed*). **Nextdoor = discovery + registration ONLY** —
+  `developer.nextdoor.com` verified live and registered `requires_partnership`/`pending_review`;
+  nothing login-walled was fetched.
+- **NOT done (deliberate):** no ingest worker exists yet, so `com_news_raw_signals` is still at
+  its 48/7d baseline — the funnel is registered and verified, not ingesting; a worker must gate on
+  `status='live' AND robots_ok IS TRUE`. No brief generated. `tos_reviewed` is false everywhere.
+- **I8 finding — the null-state gap is BIGGER than the ticket assumed: 402, not 84.**
+  `opposition_event` is exactly 84/84 as stated, but `water_facts_delta` carries a second gap of
+  318/1,724. Both feed load-bearing sections (POLITICS, RESOURCES) → both bound as `degraded`.
+  Recorded, not repaired, per the task. Also: `jurisdictions.state_abbr` is `character(2)`, not
+  `text` — blank-pads on read, so `trim()` it. Report: `docs/state-brief/CC-STATE-BRIEF-SCAFFOLD-run-report.md`.
+
 ### CC-INGEST-STATE-INCENTIVE-ALL-WAVES-1.0 — 2026-07-28 (FAR-341 Wave 3: CA CalCompetes, first headless-scrape adapter)
 - **First adapter on the Wave-3 headless-scraper harness (#47) validated end-to-end.**
   `scrapers/state-incentives/adapters/ca-calcompetes.mjs` extracts the CA California
