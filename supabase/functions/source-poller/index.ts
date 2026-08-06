@@ -6,16 +6,23 @@
 //   {mode:"verify", limit?, source_key?}  — probe/discover feed URLs for registered
 //                                           sources; activate license-cleared ones
 //   {mode:"run", limit?, source_key?}     — poll active sources → artifacts
-//                                           (content_hash dedupe), refresh countable
+//                                           (raw_hash dedupe), refresh countable
 //
 // Auth: fcron house token (SHA-256 compare — census-backfill pattern, no plaintext
 // constant) or the service-role key. verify_jwt=false.
 //
 // Boundaries: writes ONLY source_registry (own subsystem='poller' rows),
-// artifacts (insert, dedup on content_hash), automation_health_log. Never touches
+// artifacts (insert + last_seen_at touch), automation_health_log. Never touches
 // scoring tables. Gated/restrictive-tos sources are probed for reachability but
 // NEVER activated and NEVER countable — activation requires license_status in
 // ('cleared','attribution_required').
+//
+// ⚠️ PROVENANCE NOTE (CC-BOUNDSTONE-INGEST-1.1, FAR-418): the repo checkout of
+// this file was at v1.3 while PRODUCTION was running v1.4. v1.4's canonical
+// envelope keys (CC-INGEST-METADATA-EXTRACTION-1.0) existed only in the
+// deployed function. This file is the DEPLOYED v1.4 source with the §4 dedupe
+// work applied on top — nothing from v1.4 was reverted. See
+// docs/far-418/dedupe-backfill-report.md.
 
 import { createClient } from "npm:@supabase/supabase-js@2";
 import {
@@ -28,14 +35,27 @@ import {
 import { jsonFetchUrl, parseJsonSource } from "./poller-json.ts";
 import { extractIndexItems, type IndexPollConfig } from "./poller-index.ts";
 import { isDue, isRelevant } from "./poller-relevance.ts";
+import {
+  canonicalizeUrl,
+  isStaleIndexItem,
+  looksLikeRedirectWrapper,
+  normalizeDocument,
+  unwrapQueryRedirect,
+} from "./poller-canonical.ts";
 
-const CRAWLER_ID = "source-poller_v1.3"; // v1.2 index-poll · v1.3 cadence-aware + relevance gate
+// v1.2 index-poll · v1.3 cadence-aware + relevance gate · v1.4 canonical envelope
+// keys (CC-INGEST-METADATA-EXTRACTION-1.0) · v1.5 raw_hash dedupe upstream of
+// enrichment + canonical_url (CC-BOUNDSTONE-INGEST-1.1 §4, FAR-418)
+const CRAWLER_ID = "source-poller_v1.5";
 const AUTO_ID = "AUTO-199";
 const UA = "FaradayIntelligenceBot/1.0 (+https://faraday-intelligence.ai; data-source poller)";
 const CRON_TOKEN_FALLBACK_SHA256 = "dd88c73bb785f950802d296ede8541501b486da1c141aef14635680d2780ea63";
 const WALL_BUDGET_MS = 95_000;
 const FETCH_TIMEOUT_MS = 8_000;
 const ACTIVATABLE = ["cleared", "attribution_required"];
+/** Wrapper-resolution hops per run. One hop is the spec (§4.1); the cap exists
+ * so a redirect loop can never eat the wall budget. */
+const MAX_UNWRAP_FETCHES = 12;
 
 const supabase = createClient(
   Deno.env.get("SUPABASE_URL")!,
@@ -72,6 +92,28 @@ async function fetchWithTimeout(url: string, headers: Record<string, string> = {
   }
 }
 
+/**
+ * §4.1 — resolve a feed-redirect wrapper to the document a human would cite.
+ * Order: free query-parameter unwrap first, then ONE network hop, and only for
+ * URLs that structurally look like wrappers. Every failure path returns the
+ * input: a wrapper we cannot resolve is still a usable URL, and a poll must
+ * never fail because a redirect did.
+ */
+async function resolveWrapper(url: string, budget: { fetches: number }): Promise<string> {
+  if (!url || !looksLikeRedirectWrapper(url)) return url;
+  const fromQuery = unwrapQueryRedirect(url);
+  if (fromQuery) return fromQuery;
+  if (budget.fetches >= MAX_UNWRAP_FETCHES) return url;
+  budget.fetches++;
+  try {
+    const res = await fetchWithTimeout(url);
+    await res.body?.cancel();
+    return res.url && /^https?:/i.test(res.url) ? res.url : url;
+  } catch {
+    return url;
+  }
+}
+
 interface SourceRow {
   source_key: string;
   name: string;
@@ -87,13 +129,14 @@ interface SourceRow {
   scope: string | null;
   fetch_config: Record<string, unknown>;
   last_fetch_at: string | null;
+  last_artifact_at: string | null;
   etag: string | null;
   last_modified: string | null;
   consecutive_failures: number;
 }
 
 const SOURCE_COLS =
-  "source_key,name,url,feed_url,access_method,license,license_status,idf_domains,cadence,status,countable,scope,fetch_config,etag,last_modified,last_fetch_at,consecutive_failures";
+  "source_key,name,url,feed_url,access_method,license,license_status,idf_domains,cadence,status,countable,scope,fetch_config,etag,last_modified,last_fetch_at,last_artifact_at,consecutive_failures";
 
 // ---------- verify ----------
 
@@ -204,6 +247,35 @@ async function verifyOne(src: SourceRow): Promise<{ ok: boolean; detail: string 
 
 // ---------- run (poll) ----------
 
+/**
+ * §4.2 — the document-identity hash, computed AT FETCH TIME.
+ *
+ * DEVIATION FROM THE SPEC AS WRITTEN, stated plainly because it changes what
+ * the hash means. §4.2 says `sha256(normalize(fetched_bytes))`. That assumes
+ * the poller fetches each item's document. It does not: it fetches a FEED or an
+ * INDEX PAGE and extracts links, so "the fetched bytes" is one body shared by
+ * up to 50 items. Hashing it would give every item on a page the same hash.
+ *
+ * What actually drives the duplication, measured over the trailing 30 days:
+ * 31,922 source_urls appear more than once, 51,271 excess rows in all. 30,681
+ * of those URL groups span MULTIPLE source_keys and only 2,978 span multiple
+ * crawler_ids — i.e. the same press release arriving through many query lanes,
+ * not one lane re-emitting. The old key `sha256(source_key|link)` cannot
+ * collapse that, because source_key is IN the key. Dropping source_key and
+ * keying on canonical document identity is exactly what does collapse it, and
+ * it is why the CC scopes the unique index to (crawler_id, raw_hash).
+ *
+ * So: identity is the canonical URL when the item has one. normalizeDocument()
+ * is used for the no-link fallback, and in the two places that genuinely hold a
+ * document — the classifier's Gate 2 fetcher and the backfill's re-fetch path.
+ */
+async function itemRawHash(canonicalUrl: string, title: string, summary: string): Promise<string> {
+  if (canonicalUrl) return await sha256hex(`url:${canonicalUrl}`);
+  // No link: the item text IS the document. Normalizing it keeps a feed that
+  // re-emits the same untitled blurb with different whitespace from re-entering.
+  return await sha256hex(`txt:${normalizeDocument(`${title}\n${summary}`)}`);
+}
+
 async function pollOne(src: SourceRow): Promise<{ found: number; inserted: number; note: string }> {
   const nowIso = new Date().toISOString();
   const headers: Record<string, string> = {};
@@ -235,8 +307,9 @@ async function pollOne(src: SourceRow): Promise<{ found: number; inserted: numbe
   const isJsonCt = (res.headers.get("content-type") ?? "").toLowerCase().includes("json");
   const body = (await res.text()).slice(0, isJsonCt ? 15_000_000 : 1_500_000);
   const kind = classifyFeed(res.headers.get("content-type"), body);
+  const isIndexPoll = src.access_method === "html";
   let items;
-  if (src.access_method === "html") {
+  if (isIndexPoll) {
     // Wave-3: heuristic article-link extraction from the index page
     // (access_method 'html' + verify_kind 'index'). Config overrides in
     // fetch_config.index_poll (data, no redeploy).
@@ -261,11 +334,26 @@ async function pollOne(src: SourceRow): Promise<{ found: number; inserted: numbe
   } else {
     items = parseFeed(body, 50);
   }
+
   const rows = [];
-  let gated = 0;
+  const unwrapBudget = { fetches: 0 };
+  let gated = 0, stale = 0;
   for (const it of items) {
-    const idKey = `${src.source_key}|${it.link ?? it.title}`;
-    const contentHash = await sha256hex(idKey);
+    const publishedAt = toIso(it.published);
+    // §4.4 — an index poller re-reads the same landing page every run. An item
+    // older than the source's own cadence window has already had its chance to
+    // be new. Undated items are never suppressed (see isStaleIndexItem).
+    if (isIndexPoll && isStaleIndexItem(publishedAt, src.last_artifact_at, src.cadence)) {
+      stale++;
+      continue;
+    }
+    const resolved = it.link ? await resolveWrapper(it.link, unwrapBudget) : null;
+    const canonicalUrl = canonicalizeUrl(resolved);
+    const rawHash = await itemRawHash(canonicalUrl, it.title, it.summary);
+    // content_hash is NOT NULL and remains the legacy per-source key, so this
+    // version stays insert-compatible with rows written by v1.0–v1.4. raw_hash
+    // is the key that actually decides novelty from here on.
+    const contentHash = await sha256hex(`${src.source_key}|${it.link ?? it.title}`);
     const raw = `${it.title}\n\n${it.summary}`.trim();
     // v1.3 relevance gate: query-lane noise is stored for audit but never
     // sent to the enrichment LLM. Curated feeds are always relevant.
@@ -277,26 +365,94 @@ async function pollOne(src: SourceRow): Promise<{ found: number; inserted: numbe
       source_type: "web_news",
       enrich_status: skip ? "skipped" : "pending",
       source_url: it.link ?? src.feed_url,
-      published_at: toIso(it.published),
+      canonical_url: canonicalUrl || null,
+      raw_hash: rawHash,
+      published_at: publishedAt,
       raw_content: raw || it.title || "(no content)",
       content_hash: contentHash,
+      last_seen_at: nowIso,
+      // tag_provenance stays at its 'inherited' default here and means "no item
+      // -level tags yet". enrich-artifacts v22 is the only writer that may set
+      // 'derived'. This function no longer contributes tags in any form —
+      // Decision 2, and the retired fill-from-envelope trigger (migration 0030).
       // content_length is a GENERATED column — never supply it
       signal_envelope: {
+        // v1.4 canonical keys (CC-INGEST-METADATA-EXTRACTION-1.0): title is the
+        // item's own headline, summary its feed summary. `source` is the
+        // publisher name and is NEVER written for query-lane sources (Google
+        // News searches) — their registry name is the search query, not a
+        // publication; manufacturing that attribution is the exact failure the
+        // citability rule exists to prevent.
+        ...(it.title ? { title: it.title } : {}),
+        ...(it.summary ? { summary: it.summary } : {}),
+        ...(src.scope === "query_feed" ? {} : { source: src.name }),
         source_key: src.source_key,
         source_name: src.name,
+        // Retained as a PROMPT PRIOR for enrich-artifacts v22 only (§5.2).
+        // Nothing may copy this onto the artifact's own tags.
         idf_domains: src.idf_domains,
         license: src.license,
         license_status: src.license_status,
         confidence_cap: "SRC",
       },
-      crawl_metadata: { feed_url: src.feed_url, mode: "poller", fetched_at: nowIso },
+      crawl_metadata: {
+        feed_url: src.feed_url,
+        mode: "poller",
+        fetched_at: nowIso,
+        ...(resolved && it.link && resolved !== it.link ? { unwrapped_from: it.link } : {}),
+      },
     });
   }
-  let inserted = 0;
+
+  // §4.3 — SKIP BEFORE ENRICHING. Documents we already hold get last_seen_at
+  // bumped and are then dropped from the insert: no artifact row, no enrichment
+  // enqueue, no LLM spend. This is where the token savings are, and it is
+  // deliberately a read-then-filter rather than a reliance on the unique index:
+  // an ON CONFLICT insert would still have paid to build the row and would not
+  // record that we saw the document again.
+  //
+  // NOT scoped to crawler_id, though the index is. The index is (crawler_id,
+  // raw_hash) so each crawler keeps its own provenance row; but for deciding
+  // "have we already got this document", a copy filed by v1.3 counts.
+  let seenAgain = 0;
+  let toInsert = rows;
   if (rows.length) {
+    const hashes = [...new Set(rows.map((r) => r.raw_hash))];
+    const known = new Map<string, string>();
+    for (let i = 0; i < hashes.length; i += 100) {
+      const { data: hits } = await supabase
+        .from("artifacts")
+        .select("artifact_id, raw_hash")
+        .in("raw_hash", hashes.slice(i, i + 100));
+      for (const h of hits ?? []) known.set(h.raw_hash as string, h.artifact_id as string);
+    }
+    if (known.size) {
+      const ids = [...known.values()];
+      for (let i = 0; i < ids.length; i += 200) {
+        await supabase
+          .from("artifacts")
+          .update({ last_seen_at: nowIso })
+          .in("artifact_id", ids.slice(i, i + 200));
+      }
+      toInsert = rows.filter((r) => !known.has(r.raw_hash));
+      seenAgain = rows.length - toInsert.length;
+    }
+    // A single poll can legitimately surface the same document twice (two feed
+    // entries, one article). De-dupe within the batch too, or the insert trips
+    // the unique index on itself.
+    const batchSeen = new Set<string>();
+    toInsert = toInsert.filter((r) => {
+      if (batchSeen.has(r.raw_hash)) return false;
+      batchSeen.add(r.raw_hash);
+      return true;
+    });
+  }
+
+  let inserted = 0;
+  if (toInsert.length) {
     const { data, error } = await supabase
       .from("artifacts")
-      .upsert(rows, { onConflict: "content_hash", ignoreDuplicates: true })
+      .upsert(toInsert, { onConflict: "content_hash", ignoreDuplicates: true })
       .select("artifact_id");
     if (error) {
       await bumpFailure(src, `insert error: ${error.message.slice(0, 200)}`);
@@ -316,7 +472,12 @@ async function pollOne(src: SourceRow): Promise<{ found: number; inserted: numbe
       updated_at: nowIso,
     })
     .eq("source_key", src.source_key);
-  return { found: items.length, inserted, note: gated > 0 ? `ok gated=${gated}` : "ok" };
+  const notes = [
+    gated > 0 ? `gated=${gated}` : "",
+    seenAgain > 0 ? `seen=${seenAgain}` : "",
+    stale > 0 ? `stale=${stale}` : "",
+  ].filter(Boolean).join(" ");
+  return { found: items.length, inserted, note: notes ? `ok ${notes}` : "ok" };
 }
 
 async function bumpFailure(src: SourceRow, err: string) {

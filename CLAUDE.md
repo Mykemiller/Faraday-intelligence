@@ -20,6 +20,39 @@ from here (Ask Faraday, waitlist/subscribe, lexicon).
 
 ## Changelog
 
+### 2026-08-?? — CC-BOUNDSTONE-INGEST-1.1 — Boundstone live ingest, candidate queue, curation + staleness mail (AUTO-nnn / FAR-418)
+- **The wire from `artifacts` to Boundstone, which did not exist.** New `boundstone-candidates`
+  edge function (cron `*/30`): Gate 0 lexical prefilter → Gate 1 strict-JSON classification →
+  Gate 2 primary-source retrieval → proposes rows in `boundstone.candidates`. It **never** writes
+  `boundstone.records`. Reads the engine, writes the Boundstone project; the two clients never mix.
+- **Dedupe moved off `source_key` (§4).** `raw_hash` + `canonical_url` on `artifacts`, unique on
+  `(crawler_id, raw_hash)`, skip-before-enrich. Measured: **52,126 of 334,029 rows (15.6%)** over
+  90 days are excess. §0's diagnosis (hashing enrichment output) was wrong — `content_hash` was
+  already computed at fetch; the defect is that `source_key` is *in* the key, so one press release
+  through 20 query lanes makes 20 rows. 30,681 of 31,922 duplicate URL groups span multiple
+  source_keys. `docs/far-418/dedupe-backfill-report.md`. **Nothing deleted.**
+- **Tag inheritance ended (§5, Decision 2).** `trg_artifacts_fill_ifs_domains` retired: it copied a
+  SOURCE's domains onto every item it emitted, which is how a statewide action filed under a
+  local-community domain and why 98.3% of artifacts carry no subdomain. `enrich-artifacts` v22
+  derives per-item tags against the live `faraday_subdomains` taxonomy (loaded per run, never
+  hardcoded — FAR-177 stays always-human), derives domains from subdomains so the two columns
+  cannot disagree, and emits an explicit `UNCLASSIFIED` instead of a silent empty array.
+  Boundstone reads neither column, asserted by a test that drives the real query builder.
+- **Source expansion to national completeness (§7).** +51 governors (**0 existed**), +26
+  commissions to reach 51, +7 market-operator notices lanes (**0 existed**; the 3 existing `iso:*`
+  rows are queue data products). All `registered`, none activated. **§7.4 IOUs blocked**: 145 real
+  IOUs in `eia_utility_territories`, but 0 of 145 have a resolvable domain anywhere in the stack —
+  reported rather than seeded with invented endpoints.
+- **§7.5 FiscalNote:** licence stays `blocked` (correct). Found: the 4 silent lanes have **no
+  automation attached**; and `fiscalnote-probe` writes 2,930 rows to the ledger while setting
+  `last_artifact_at`, though **0 artifacts** carry a `fiscalnote:*` source_key — so that column now
+  lies to every consumer that reads it as "put something in the corpus".
+- **Repo drift found:** the checkout was behind production — `source-poller` v1.3 vs deployed
+  **v1.4**, `enrich-artifacts` v2.1 vs deployed **v2.2**. Both rebased on the deployed source with
+  the missing work restored verbatim; this branch is v1.5 / v2.3.
+- Migrations `0030` (raw_hash/canonical/tag_provenance) and `0031` (source expansion, generated)
+  are **UN-APPLIED**. Nothing deployed, no cron wired, no AUTO- id self-assigned. `npm test` 90/90.
+
 ### CC-SCOOP-SUBSTATION-COMMISSION-DATES-1.0 — 2026-07-23 (FAR-379 substation-vintage scoop)
 - **New reference layer sourcing substation `commissioned_year`** from PUC dockets (FAR-353)
   + ISO/RTO transmission plans, resolved against the HIFLD `substations` spine (FAR-372).

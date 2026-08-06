@@ -12,16 +12,31 @@ import {
 
 const VALID_BODY = '{"summary":"s","category_tags":[],"relevance_score":0.1,"priority_flag":false,"prediction_signals":{},"entity_mentions":[]}';
 
+// v22 (FAR-418 §5.2): buildBatchRequests now takes the live taxonomy, and the
+// source's domains moved from `ifs_domains` (an assertion about the item) to
+// `source_prior_domains` (a labelled hint about the feed). MAX_OUTPUT_TOKENS
+// rose 512 → 768 because the response carries a tag array alongside the summary.
+const TAXONOMY = [
+  { subdomain_code: "D2.1", domain_code: "D2", display_name: "800V DC Power Distribution" },
+  { subdomain_code: "D3.2", domain_code: "D3", display_name: "State Moratorium & Legislative Landscape" },
+];
+
 test("buildBatchRequests maps artifacts onto custom_id requests, capped at 6000 chars", () => {
   const reqs = buildBatchRequests([{
     artifact_id: "a-1", raw_content: "x".repeat(9000), source_type: "web_news",
-    source_url: "https://e/1", ifs_domains: ["D2"],
-  }]);
+    source_url: "https://e/1", source_prior_domains: ["D2"],
+  }], TAXONOMY);
   assert.equal(reqs.length, 1);
   assert.equal(reqs[0].custom_id, "a-1");
-  assert.equal(reqs[0].params.max_tokens, 512);
-  assert.ok(reqs[0].params.messages[0].content.length < 6200);
-  assert.ok(reqs[0].params.messages[0].content.includes("Domains: D2"));
+  assert.equal(reqs[0].params.max_tokens, 768);
+  assert.ok(reqs[0].params.messages[0].content.length < 6600);
+  // The prior is carried, but framed as a fact about the FEED — never as this
+  // item's domain. The bare "Domains: D2" assertion was the inheritance defect.
+  assert.ok(reqs[0].params.messages[0].content.includes("D2"));
+  assert.ok(/hint about the FEED/i.test(reqs[0].params.messages[0].content));
+  assert.ok(!/^Domains: /m.test(reqs[0].params.messages[0].content));
+  // The taxonomy reaches the model, or it cannot classify anything.
+  assert.ok(reqs[0].params.system.includes("D3.2"));
 });
 
 test("parseBatchResults handles succeeded, errored, fenced JSON, and junk lines", () => {

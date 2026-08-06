@@ -15,6 +15,30 @@
 // auth is the service-role key or the fcron house token compared by SHA-256
 // (census-backfill pattern).
 //
+// CC-FAR-OPS-RESTORE-1.1 (2026-07-24): CRAWLER_ID bumped AUTO-030_v2.1 →
+// AUTO-030_v2.2. The 1.0 Fix 3 — robust fenced-JSON stripping in
+// enrich-pure.parseEnrichmentText plus the <=5% per-item failure tolerance in
+// enrich-pure.batchRunSucceeded (replacing the old rule that flipped the whole
+// batch to failed on any single unparseable/errored item — the cause of 11
+// false-alarm runs in 14 days) — already shipped in this function, but the
+// crawler_id was still v2.1, so pre- and post-fix health-log runs were
+// indistinguishable. This bump draws that line. Parser- and threshold-side
+// only: no change to the enrichment prompt, model, or output schema.
+//
+// ⚠️ The above landed in PRODUCTION but never in the repo — the checkout was at
+// v2.1 while the deployed function ran v2.2. It is restored here verbatim so
+// this branch does not silently revert it. Same drift affected source-poller
+// (repo v1.3 / deployed v1.4). See docs/far-418/dedupe-backfill-report.md.
+//
+// v22 / AUTO-030_v2.3 (CC-BOUNDSTONE-INGEST-1.1 §5.2, FAR-418): artifacts now
+// EARN their own IDF tags. The enrichment response carries ifs_subdomains,
+// validated against the live faraday_subdomains taxonomy (loaded per run, never
+// hardcoded — the taxonomy is always-human, FAR-177); parent domains are
+// derived from the subdomains rather than asked for, so the two columns cannot
+// disagree. The source's declared domains are passed as a labelled PRIOR and
+// are never written. Every enriched artifact gets at least one D#.# or an
+// explicit UNCLASSIFIED, and tag_provenance='derived'.
+//
 // Flow (cron POSTs {mode:"auto"} every 10 min):
 //   poll:   for each enrich_batches row not completed → GET the batch; when
 //           ended, stream results JSONL and process up to PROCESS_MAX
@@ -32,13 +56,15 @@ import {
   batchRunSucceeded,
   buildBatchRequests,
   chunkText,
+  deriveTags,
   type EnrichmentResult,
   mentionName,
   parseBatchResults,
+  type TaxonomyEntry,
 } from "./enrich-pure.ts";
 
 const AUTO_ID = "AUTO-030";
-const CRAWLER_ID = "AUTO-030_v2.1";
+const CRAWLER_ID = "AUTO-030_v2.3";
 const EMBED_MODEL = "text-embedding-3-small";
 const SUBMIT_MAX = 1000;
 const MAX_OPEN_BATCHES = 4; // v21: one slow batch must not freeze the pipe
@@ -84,9 +110,34 @@ async function embedTexts(texts: string[], openaiKey: string): Promise<number[][
   return out;
 }
 
+/**
+ * v22 — load the live IDF taxonomy. Read-only, every run.
+ *
+ * The classifier prompt and the write-side validation must agree on exactly one
+ * list of codes, and that list lives in the database. Hardcoding it here would
+ * fork the taxonomy the moment someone edits the table, and would make this
+ * function a second, silent author of an always-human artifact (FAR-177).
+ *
+ * `active` is respected: a retired subdomain must stop being assignable without
+ * anyone redeploying this function.
+ */
+async function loadTaxonomy(): Promise<TaxonomyEntry[]> {
+  const { data, error } = await supabase
+    .from("faraday_subdomains")
+    .select("subdomain_code, domain_code, display_name, active");
+  if (error) throw new Error(`taxonomy load: ${error.message}`);
+  const rows = (data ?? []).filter((r) => r.active !== false) as TaxonomyEntry[];
+  if (rows.length === 0) {
+    // Fail loudly. Submitting with an empty taxonomy would tag the entire batch
+    // UNCLASSIFIED and look like a modelling result rather than a broken read.
+    throw new Error("taxonomy load: faraday_subdomains returned 0 active rows — refusing to submit");
+  }
+  return rows;
+}
+
 // ---------- submit ----------
 
-async function submitBatch(anthropicKey: string) {
+async function submitBatch(anthropicKey: string, taxonomy: TaxonomyEntry[]) {
   const staleCutoff = new Date(Date.now() - STALE_PROCESSING_HOURS * 3600_000).toISOString();
   await supabase
     .from("artifacts")
@@ -96,7 +147,11 @@ async function submitBatch(anthropicKey: string) {
 
   const { data: batch, error } = await supabase
     .from("artifacts")
-    .select("artifact_id, raw_content, source_type, source_url, ifs_domains")
+    // v22: signal_envelope, not ifs_domains. The source's declared domains are
+    // read from the envelope and passed as a PRIOR; artifacts.ifs_domains is an
+    // OUTPUT of this pipeline now, so feeding it back in would be a loop that
+    // re-confirms whatever the retired inheritance trigger last wrote.
+    .select("artifact_id, raw_content, source_type, source_url, signal_envelope")
     .eq("enrich_status", "pending")
     .order("discovered_at", { ascending: true })
     .limit(SUBMIT_MAX);
@@ -115,7 +170,19 @@ async function submitBatch(anthropicKey: string) {
   const res = await fetch("https://api.anthropic.com/v1/messages/batches", {
     method: "POST",
     headers: anthropicHeaders(anthropicKey),
-    body: JSON.stringify({ requests: buildBatchRequests(batch as ArtifactLike[]) }),
+    body: JSON.stringify({
+      requests: buildBatchRequests(
+        (batch as Array<Record<string, unknown>>).map((a) => ({
+          artifact_id: a.artifact_id as string,
+          raw_content: a.raw_content as string,
+          source_type: a.source_type as string,
+          source_url: a.source_url as string,
+          source_prior_domains:
+            ((a.signal_envelope as Record<string, unknown> | null)?.idf_domains as string[] | undefined) ?? null,
+        })) as ArtifactLike[],
+        taxonomy,
+      ),
+    }),
   });
   if (!res.ok) {
     // Release the claim so the next run retries.
@@ -131,7 +198,7 @@ async function submitBatch(anthropicKey: string) {
 
 // ---------- poll / drain ----------
 
-async function processResult(artifactId: string, enrichment: EnrichmentResult, openaiKey: string, entityLookup: Map<string, string>) {
+async function processResult(artifactId: string, enrichment: EnrichmentResult, openaiKey: string, entityLookup: Map<string, string>, taxonomy: TaxonomyEntry[]) {
   const { data: art } = await supabase
     .from("artifacts")
     .select("artifact_id, raw_content, enrich_status")
@@ -180,9 +247,20 @@ async function processResult(artifactId: string, enrichment: EnrichmentResult, o
     await supabase.from("artifact_entities").upsert(links, { onConflict: "artifact_id,entity_id", ignoreDuplicates: false });
   }
 
+  // v22 (§5.2) — the item's OWN tags, written here and nowhere else.
+  // deriveTags drops anything outside the live taxonomy and falls back to the
+  // UNCLASSIFIED sentinel, so "no tags" can no longer be silent: it is either a
+  // real code or an explicit statement that the classifier found none.
+  const tags = deriveTags(enrichment.ifs_subdomains, taxonomy);
   await supabase
     .from("artifacts")
-    .update({ enrich_status: "complete", enrich_completed_at: new Date().toISOString() })
+    .update({
+      enrich_status: "complete",
+      enrich_completed_at: new Date().toISOString(),
+      ifs_domains: tags.ifs_domains,
+      ifs_subdomains: tags.ifs_subdomains,
+      tag_provenance: "derived",
+    })
     .eq("artifact_id", artifactId);
   return true;
 }
@@ -200,7 +278,7 @@ async function failResult(artifactId: string, reason: string, errors: string[]) 
     .eq("artifact_id", artifactId);
 }
 
-async function pollBatches(anthropicKey: string, openaiKey: string, deadlineMs: number) {
+async function pollBatches(anthropicKey: string, openaiKey: string, deadlineMs: number, taxonomy: TaxonomyEntry[]) {
   let processed = 0, failed = 0;
   const errors: string[] = [];
 
@@ -235,7 +313,7 @@ async function pollBatches(anthropicKey: string, openaiKey: string, deadlineMs: 
       if (Date.now() > deadlineMs || processed + failed >= PROCESS_MAX) { drainedAll = false; break; }
       try {
         if (line.ok && line.enrichment) {
-          if (await processResult(line.artifactId, line.enrichment, openaiKey, entityLookup)) { processed++; ok++; }
+          if (await processResult(line.artifactId, line.enrichment, openaiKey, entityLookup, taxonomy)) { processed++; ok++; }
         } else {
           await failResult(line.artifactId, line.error ?? "batch error", errors);
           failed++; err++;
@@ -285,8 +363,13 @@ Deno.serve(async (req: Request) => {
   const out: Record<string, unknown> = { mode };
   const errors: string[] = [];
   try {
+    // Loaded once per invocation and shared by both halves: the submit prompt
+    // and the result validation must be judged against the SAME taxonomy, or a
+    // mid-run edit could produce codes the validator then silently drops.
+    const taxonomy = await loadTaxonomy();
+    out.taxonomy_codes = taxonomy.length;
     if (mode === "auto" || mode === "poll") {
-      const polled = await pollBatches(anthropicKey, openaiKey, deadlineMs);
+      const polled = await pollBatches(anthropicKey, openaiKey, deadlineMs, taxonomy);
       out.processed = polled.processed;
       out.failed = polled.failed;
       out.open_batches = polled.openBatches;
@@ -297,7 +380,7 @@ Deno.serve(async (req: Request) => {
       // 24h, so serializing on one batch can freeze throughput behind a slow one.
       const { count: openCount } = await supabase.from("enrich_batches").select("*", { count: "exact", head: true }).is("completed_at", null);
       if (mode === "submit" || (openCount ?? 0) < MAX_OPEN_BATCHES) {
-        const sub = await submitBatch(anthropicKey);
+        const sub = await submitBatch(anthropicKey, taxonomy);
         out.submitted = sub.submitted;
         if (sub.batch_id) out.batch_id = sub.batch_id;
       } else {
