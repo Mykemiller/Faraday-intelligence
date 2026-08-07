@@ -108,10 +108,16 @@ where not exists (select 1 from source_registry r where r.source_key = 'gov:' ||
 -- added since it was written.
 --
 -- The URL is the state's own portal, which we do not know for the missing
--- jurisdictions — so these rows are registered with a NULL url and left for the
--- portal-family adapter work (§7.2) to fill. A null url cannot be probed and
--- cannot be activated, which is the correct behaviour: registering a guessed
--- commission portal would be worse than registering none.
+-- jurisdictions — so these rows are registered with an EMPTY url and left for
+-- the portal-family adapter work (§7.2) to fill. An empty url cannot be probed
+-- and cannot be activated, which is the correct behaviour: registering a
+-- guessed commission portal would be worse than registering none.
+--
+-- Empty string, not NULL: source_registry.url is NOT NULL DEFAULT ''. Writing
+-- NULL here would abort the migration on a not-null violation. '' is the
+-- column's own idiom for "unset" and behaves identically downstream —
+-- discoverCandidates() returns no candidates for it, so verify fails the row
+-- cleanly into status='error' rather than probing something arbitrary.
 -- ---------------------------------------------------------------------------
 insert into source_registry (
   source_key, name, provider, url, feed_url, access_method, cadence, confidence_cap,
@@ -122,7 +128,7 @@ select
   'puc:' || lower(s.abbr),
   left(s.name || ' — utility commission dockets', 200),
   s.name || ' utility commission',
-  null,
+  '',                          -- NOT NULL DEFAULT ''; see the note above
   null,
   'html',
   'weekly',
