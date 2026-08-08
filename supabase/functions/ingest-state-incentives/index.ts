@@ -22,16 +22,21 @@ import {
 
 const SUPABASE_URL = Deno.env.get("SUPABASE_URL")!;
 const SERVICE_ROLE = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
-const ANON_KEY = Deno.env.get("SUPABASE_ANON_KEY") ?? "";
+// NOTE: SUPABASE_ANON_KEY was removed in v1.2. The chain hop used to authenticate
+// with it and swallow the result; it now uses SERVICE_ROLE and checks the status.
 const INGEST_SECRET = Deno.env.get("STATE_INCENTIVE_INGEST_SECRET") ?? "";
 const NY_APP_TOKEN = Deno.env.get("DATA_NY_APP_TOKEN") ?? "";
 
 const AUTO_ID = "AUTO-204";
-const CRAWLER_ID = "ingest-state-incentives_v1.1";
+const CRAWLER_ID = "ingest-state-incentives_v1.2";
 const SCHEMA_VERSION = "v1";
 const MAX_PER_SOURCE = 200000;
 const PAGE_SIZE = 1000;
-const DEFAULT_PAGES_PER_CALL = 8;
+// v1.2 (CC-INGEST-STALLED-LANES-1.0): 8 → 4. See the chain-cursor note below.
+const DEFAULT_PAGES_PER_CALL = 4;
+// Hard ceiling on sources per isolate in chain mode. One source per hop is what
+// makes each isolate's workload bounded and predictable; see below.
+const SOURCES_PER_CHAIN_HOP = 1;
 
 async function contentHash(r: CommonRecord): Promise<string> {
   const basis = [
@@ -210,7 +215,8 @@ Deno.serve(async (req) => {
     new Response(JSON.stringify(b), { status: s, headers: { "Content-Type": "application/json" } });
 
   let body: { states?: string[]; sources?: string[]; secret?: string;
-              offset?: number; pages?: number; chain?: boolean } = {};
+              offset?: number; pages?: number; chain?: boolean;
+              source_index?: number } = {};
   try { body = await req.json(); } catch { /* empty body allowed */ }
 
   if (INGEST_SECRET && body.secret !== INGEST_SECRET) return json({ error: "unauthorized" }, 401);
@@ -218,6 +224,7 @@ Deno.serve(async (req) => {
   const offset = Math.max(0, body.offset ?? 0);
   const pages = Math.max(1, body.pages ?? DEFAULT_PAGES_PER_CALL);
   const chain = body.chain === true;
+  const srcIndex = Math.max(0, body.source_index ?? 0);
 
   const sb = createClient(SUPABASE_URL, SERVICE_ROLE, { auth: { persistSession: false } });
   const wantedStates = body.states?.map((s) => s.toUpperCase());
@@ -226,28 +233,96 @@ Deno.serve(async (req) => {
   if (wantedSources) live = live.filter((a) => wantedSources.includes(a.source_key));
 
   if (chain) {
+    // ── v1.2 chain cursor: (source_index, offset), NOT offset alone ────────────
+    //
+    // THE BUG THIS FIXES (CC-INGEST-STALLED-LANES-1.0, diagnosed 2026-08-08):
+    // v1.1 looped over ALL 13 live sources inside a single isolate. Every weekly
+    // cron run since 2026-07-12 got through exactly 3 sources / 18,204 records —
+    // byte-identical on 07-12, 07-19 and 08-02 — and then stopped. Sources 4..13
+    // produced NO health rows at all, not even error rows, even though every
+    // source body is individually try/caught. A thrown error would have logged;
+    // silence means the isolate was TERMINATED (resource budget) rather than
+    // throwing, so no catch block ran and the chain hop was never dispatched.
+    // MD, the 4th source, was verified reachable and fast (HTTP 200 in 0.64s), so
+    // this was not an upstream hang.
+    //
+    // Consequence: 10 of the 12 fetchable sources were not polled at all between
+    // 2026-07-08 and 2026-08-08, and no source was ever read past offset 0 — on
+    // ny_esd_dei that is the first 8,000 rows of a 65,237-row feed.
+    //
+    // The exposure was LATENT, not realised: a full re-walk on 2026-08-08 (every
+    // source to next_offset=null, ny_esd_dei across all 9 windows) inserted ZERO
+    // new rows. Do not read a row-count delta as data loss here — ny_esd_dei
+    // holds 65,197 against an upstream count of 65,237, but those 40 are
+    // duplicate records WITHIN the feed that collapse under the content hash
+    // (md_commerce 7,300→7,246 and ok_quality 4,324→4,217 behave the same way).
+    // The bug was real and would have lost the next genuine upstream change; it
+    // just had not cost anything yet.
+    //
+    // The fix is to make the unit of work per isolate ONE source (and at most
+    // `pages` pages of it), then hop. Work per invocation is now bounded and
+    // roughly constant instead of scaling with the size of the source registry,
+    // so adding a 14th source can never re-break the 13 before it.
     const selfUrl = `${SUPABASE_URL}/functions/v1/ingest-state-incentives`;
+
+    if (srcIndex >= live.length) {
+      return json({ ok: true, mode: "chain", auto_id: AUTO_ID, done: true,
+                    sources_total: live.length }, 200);
+    }
+
+    const slice = live.slice(srcIndex, srcIndex + SOURCES_PER_CHAIN_HOP);
+
     EdgeRuntime.waitUntil((async () => {
-      const { anyLiveMore } = await runWindow(sb, live, wantedStates, offset, pages, offset === 0);
-      if (anyLiveMore) {
-        await fetch(selfUrl, {
+      const { anyLiveMore } = await runWindow(
+        sb, slice, wantedStates, offset, pages,
+        /* logPending only on the very first hop */ srcIndex === 0 && offset === 0,
+      );
+
+      // More pages of THIS source, else advance to the next source.
+      const next = anyLiveMore
+        ? { source_index: srcIndex, offset: offset + pages * PAGE_SIZE }
+        : { source_index: srcIndex + SOURCES_PER_CHAIN_HOP, offset: 0 };
+      if (next.source_index >= live.length) return; // whole registry walked
+
+      // v1.1 authenticated the hop with SUPABASE_ANON_KEY and swallowed every
+      // outcome via .catch(() => {}). fetch() only rejects on transport errors, so
+      // a 401/5xx hop resolved normally and vanished. Use the service-role key
+      // (the same credential this function already runs on) and record a failed
+      // hop in automation_health_log — a broken chain must never be silent again.
+      try {
+        const res = await fetch(selfUrl, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
-            "Authorization": `Bearer ${ANON_KEY}`,
-            "apikey": ANON_KEY,
+            "Authorization": `Bearer ${SERVICE_ROLE}`,
+            "apikey": SERVICE_ROLE,
           },
           body: JSON.stringify({
             states: wantedStates, sources: wantedSources,
-            offset: offset + pages * PAGE_SIZE, pages, chain: true,
+            ...next, pages, chain: true,
             ...(INGEST_SECRET ? { secret: INGEST_SECRET } : {}),
           }),
-        }).catch(() => {/* next hop failure is captured by its own telemetry */});
+        });
+        if (!res.ok) throw new Error(`hop ${res.status}: ${(await res.text()).slice(0, 200)}`);
+      } catch (e) {
+        const nowIso = new Date().toISOString();
+        await sb.from("automation_health_log").insert({
+          log_id: crypto.randomUUID(), auto_id: AUTO_ID, crawler_id: CRAWLER_ID,
+          run_started_at: nowIso, run_completed_at: nowIso,
+          artifacts_found: 0, artifacts_new: 0, artifacts_duped: 0, success: false,
+          errors: { message: String(e instanceof Error ? e.message : e) },
+          notes: JSON.stringify({ status: "chain_hop_failed", ...next }),
+        });
       }
     })());
-    return json({ ok: true, mode: "chain", auto_id: AUTO_ID, offset, dispatched: true }, 202);
+
+    return json({ ok: true, mode: "chain", auto_id: AUTO_ID,
+                  source_index: srcIndex, source_key: slice[0]?.source_key ?? null,
+                  offset, sources_total: live.length, dispatched: true }, 202);
   }
 
+  // Non-chain (manual / narrow backfill) keeps v1.1 behaviour: caller controls the
+  // scope, so caller owns the workload. Prefer `sources` to keep it small.
   const { results } = await runWindow(sb, live, wantedStates, offset, pages, offset === 0);
   return json({ ok: true, crawler_id: CRAWLER_ID, auto_id: AUTO_ID, ran: results.length, results });
 });
