@@ -20,6 +20,84 @@ from here (Ask Faraday, waitlist/subscribe, lexicon).
 
 ## Changelog
 
+### CC-INGEST-STALLED-LANES-1.0 — 2026-08-08 (four silent ingest lanes root-caused + a generic staleness alert)
+- **⚠️ pg_cron `status='succeeded'` PROVES NOTHING for any job using `cron_http_post()`.**
+  That helper ends in `net.http_post()` and returns a pg_net request id the moment the
+  request is **queued**, so `cron.job_run_details` reads *succeeded* / "1 row" even when the
+  edge function 401s, throws, or is killed mid-run. All 8 investigated jobids showed a clean
+  green history across an 11–32 day stall. The real outcome is in `net._http_response`, which
+  retains **~6h** (edge logs ~24h) — so post-hoc it is always gone. **Never diagnose one of
+  these lanes from cron history.**
+- **State incentives (jobid 35) — the isolate is TERMINATED mid-loop, which is not an
+  exception**, so the per-source try/catch never fires, no error row is written, and the
+  chain hop is never dispatched. Every weekly run since 2026-07-12 got through **exactly 3 of
+  12 fetchable sources / 18,204 records, byte-identical** (07-12, 07-19, 08-02) with **zero**
+  error rows. Source #4 (MD) was verified reachable and fast (200 in 0.64s) — not a hang.
+  Result: 10 sources unpolled for a month and **no source ever read past offset 0** (8,000 of
+  ny_esd_dei's 65,237 rows). Fixed in **v1.2**: chain cursor is now `(source_index, offset)` —
+  **one source per hop**, so work per invocation is bounded and constant instead of scaling
+  with the registry. The hop also authenticated with `SUPABASE_ANON_KEY` and swallowed every
+  outcome via `.catch(()=>{})` (fetch only rejects on transport errors, so a 401 hop vanished);
+  it now uses the service-role key, checks status, and logs `chain_hop_failed`.
+- **⚠️ A row-count delta is NOT data loss here.** `ny_esd_dei` holds 65,197 vs 65,237
+  upstream, but a full 9-window re-walk inserted **0 new rows** — those 40 are duplicates
+  *within the feed* that collapse under the content hash (md_commerce 7,300→7,246,
+  ok_quality 4,324→4,217 behave identically). The exposure was **latent**: real bug, would
+  have lost the next genuine change, but had cost nothing yet.
+- **EIA 860/861 (jobid 40) is CORRECT — do not "fix" it (D4).** It ran 08-03 (28,103 seen /
+  **0 new** / 28,103 duped); 07-27 was the real annual ingest (28,103 new, 31,202 attrs). A
+  weekly cron over an annual source correctly writes nothing. Registered **poll-only** in the
+  watch table — a data-freshness watch here is a permanent false positive.
+- **International (24–27) is mostly correctly quiet** (annual sources, `mrv=1`, all-skipped
+  upserts = idempotency). The real defect: WDI+WGI runs sat `status='running'`/`finished_at
+  NULL` since 08-02 (isolate died reaching neither the success nor the catch path), and
+  because `ingestWdi` is awaited first, **Ember + RSF-PFI never started**. Reaped to `error`.
+  Note `intl_run_start` has **no concurrency guard**, so stuck rows never blocked the next run.
+- **Shovels: jobid 137 has NEVER run** (created after 07-15 → first fire 08-15; it missed
+  nothing). jobid 136 fired 08-01 and failed loudly — **HTTP 422, `state` is no longer a
+  `/v2/permits/search` param (now `geo_id`)**, fixed out-of-band 08-03. Now hard-blocked on
+  **402 `credits_exhausted` (trial limit) — a billing action, not code.** Also: the biweekly
+  cron writes **`shovels_permit_snapshots`** (fresh 08-03), NOT `shovels_permit_history`
+  (07-23), which is fed by the separate `shovels-permit-history` fn and **has no cron at all**.
+- **NCSL half-lane:** the 08-06 monthly run succeeded for `subsidies` and failed for
+  `moratorium` with `wayback CDX → 504`, recorded faithfully in `ncsl_ingest_runs.error` —
+  and read by nothing.
+- **New generic alert:** `ingest_staleness_watch` + `fn_ingest_staleness_check()` (migration
+  `0042`) + `ingest-staleness-healthcheck` edge fn + daily 09:00 UTC cron (`0043`).
+  Registering a lane is **one INSERT**, no per-lane code. **Three check modes are
+  load-bearing** — `poll` (last *attempt*), `data` (destination changed), `error` (latest run
+  carries an error). Data-freshness alone gets BOTH edge cases wrong: it pages weekly on EIA
+  and never fires on state incentives (whose table looks fresh because 3 of 12 sources still
+  run). **Live test: 24 watches → 14 breached / 10 clean, all correct**, run in
+  `BEGIN … ROLLBACK` (nothing committed).
+- **⚠️ The ticket's "use `source_registry.cadence`" premise is half-wrong.** That column IS
+  normalised across all 10,783 rows — but it is the **source-poller** corpus and does not
+  carry these lanes. They live in `jw_data_source_registry`, whose `cadence` is **free text:
+  57 distinct values over 100 rows**, incl. prose like *"irregular; page metadata shows last
+  modified 2020-07-16…"*. Unusable for machine comparison; `ingest_staleness_watch` is the
+  normalised binding layer.
+- **⚠️ Two gotchas baked into the checker — do not "simplify" them out.** (1)
+  `automation_health_log.notes` is free text on **17,603 of 17,823** rows, so the jsonb filter
+  must be `CASE WHEN col IS JSON OBJECT …`, never `col IS JSON OBJECT AND col::jsonb …` —
+  `AND` does not guarantee evaluation order and the planner may hoist the cast, raising
+  `22P02`. (2) `'[]'`/`'{}'` is how a **clean** run records "no errors" in a jsonb error
+  column, so error mode must exempt them or every healthy run false-alarms.
+- **⚠️ `ca_calcompetes` is push-only and is deliberately NOT watched** — it is not in
+  `mappers.ts LIVE_SOURCES` (JS-rendered widget, unfetchable by the edge runtime); it is
+  seeded by GitHub Actions into `ingest-state-incentives-push`. The lane is **12 fetchable +
+  1 push-only**, not 13 fetchable.
+- **⚠️ D2 was explicitly WAIVED by Myke.** `fn_state_incentives_resolve_and_score()` ends in
+  an unconditional `INSERT INTO jpas_attributes … ON CONFLICT DO UPDATE SET captured_at =
+  now()`, so *any* re-ingest writes scoring rows — D2 and Deliverable 4 cannot both hold.
+  Re-ingest ran normally: **0 new disclosure rows** (120,510 → 120,510), jpas total unchanged
+  (663,878), and **1,220 INC rows re-stamped `captured_at`** with no value or jurisdiction
+  changes. Success criterion 5 is knowingly unmet to exactly that extent.
+- **NOT deployed** (Myke's "PR first"): `0042`/`0043` un-applied, `ingest-staleness-healthcheck`
+  un-deployed, `ingest-state-incentives` v1.2 un-deployed (**prod still runs v1.1**). Deploy
+  order is **function → `0042` → `0043`**; a cron pointing at a missing function 404s and still
+  logs *succeeded*. `npm test` 72/72. Report:
+  `docs/ingest/CC-INGEST-STALLED-LANES-run-report.md`.
+
 ### CC-STATE-BRIEF-SCAFFOLD-1.0 — 2026-07-31 (State Brief Agent Network: schema + local news funnel)
 - **8 tables + 3 views for section-level state-brief persistence** (migrations `0038`–`0041`,
   **all APPLIED to prod 2026-07-31**): `jw_brief_section_registry` (D6, 5 active sections
