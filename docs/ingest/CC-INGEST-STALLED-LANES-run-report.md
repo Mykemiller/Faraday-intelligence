@@ -104,8 +104,43 @@ blocker.
   the API now requires `geo_id`. A genuine **upstream contract change**.
 - That 422 was already fixed out-of-band on 2026-08-03 (CC-SHOVELS-422-1.0) and runs
   resumed, storing 34 rows.
-- **Current blocker is not code:** `shovels 402 [credits_exhausted]` — *"Trial credit limit
-  reached."* This needs a plan upgrade; no code change will clear it.
+- **Current blocker is a credential, not a purchase** — see the correction below.
+
+### ⚠️ CORRECTED 2026-08-08 — the 402 is a wrong-key problem, not a billing problem
+
+This report originally said the 402 "needs a plan upgrade". **That was wrong.** Myke:
+*"Shovels is a paid plan and a paid api."* Both facts hold at once — the plan is paid, and
+the credential deployed in the `SHOVELS_API_KEY` secret is not carrying it:
+
+- Shovels' own 402 body reads **"Trial credit limit reached"**, and **`/v2/usage` — the
+  account endpoint, which costs nothing — 402s as well**. A key attached to a paid
+  subscription would not answer either way.
+- This is the same class of error already documented for DC Hub in this repo: *"the free key
+  minted in-session was the wrong account, discarded."*
+
+**Action: rotate the Supabase secret `SHOVELS_API_KEY` to the paid account's key and re-run.
+No code change is needed** — the 422 contract fix already shipped on 08-03. **Do not buy a
+subscription.** (The secret's value is not readable from here, so the swap is a human step;
+the env-var name is confirmed by the now-retired `shovels-env-diag`, built for exactly that.)
+
+### ⚠️ The credit accounting is fiction — `credits_remaining_last` cannot detect exhaustion
+
+Under-reported in the first pass, and it is why this lane looked healthy while dead:
+
+- **0 of 184 `shovels_ledger` rows** carry API-sourced `credit_headers` or
+  `credits_remaining` — `credits_source='unavailable'` on 111 of them. The only two rows with
+  a balance are `imported_run_aggregate`, hand-entered on 2026-07-07.
+- So the `credits_remaining_last: 9194` on the run rows is **locally derived and has no
+  connection to the real entitlement**. It reported ~9k credits in hand while every call was
+  being refused.
+- Consequently **`shovels_config.credit_floor = 2500` guards on a number that can never go
+  down in response to reality** — the floor cannot fire before exhaustion.
+- Timeline confirms a hard cutoff rather than a decay: 122 consecutive 200s, then the first
+  402 at **23:51:41.973 — 200 ms after a 200 at 23:51:41.773**.
+
+This is a real second defect in the Shovels lane. It is **not fixed here** (FAR-263 owns that
+lane); the new `shovels:permits:error` watch does at least make the 402 page instead of
+sitting silent.
 
 **Also corrects the ticket's table:** the biweekly cron writes **`shovels_permit_snapshots`**
 (last write 2026-08-03, fresh), not `shovels_permit_history` (last write 2026-07-23).
@@ -290,7 +325,11 @@ from the repo. Deployed in dependency order after a second explicit approval:
   INC rows 1,220 · stuck intl runs **0**.
 
 ## What is NOT done
-- **Shovels needs a paid plan.** 402 `credits_exhausted` is a billing action, not code.
+- **Shovels needs its `SHOVELS_API_KEY` secret rotated to the paid account's key** — the
+  plan is already paid; the deployed credential is trial-tier. Not a purchase. See the
+  correction above.
+- **Shovels credit accounting needs a real source** — the API returns no credit headers, so
+  `credits_remaining_last` and the `credit_floor` guard are both blind. FAR-263's lane.
 - **The NCSL Wayback 504** is transient upstream; the alert will now surface a recurrence.
 - **`jw_data_source_registry.cadence` was not normalised** — out of scope (registry schema),
   but it is the prerequisite for driving the watch table off the registry automatically.

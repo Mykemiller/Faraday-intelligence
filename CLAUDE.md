@@ -55,10 +55,24 @@ from here (Ask Faraday, waitlist/subscribe, lexicon).
   Note `intl_run_start` has **no concurrency guard**, so stuck rows never blocked the next run.
 - **Shovels: jobid 137 has NEVER run** (created after 07-15 → first fire 08-15; it missed
   nothing). jobid 136 fired 08-01 and failed loudly — **HTTP 422, `state` is no longer a
-  `/v2/permits/search` param (now `geo_id`)**, fixed out-of-band 08-03. Now hard-blocked on
-  **402 `credits_exhausted` (trial limit) — a billing action, not code.** Also: the biweekly
+  `/v2/permits/search` param (now `geo_id`)**, fixed out-of-band 08-03. Also: the biweekly
   cron writes **`shovels_permit_snapshots`** (fresh 08-03), NOT `shovels_permit_history`
   (07-23), which is fed by the separate `shovels-permit-history` fn and **has no cron at all**.
+- **⚠️ CORRECTED 2026-08-08 (Myke: "Shovels is a paid plan and a paid api"). The 402 is NOT
+  "go buy a plan" — the plan exists; the DEPLOYED KEY does not carry it.** Shovels' own body
+  says *"Trial credit limit reached"* and **`/v2/usage` (the account endpoint) 402s too**, so
+  the credential in the `SHOVELS_API_KEY` secret is presenting as **trial-tier**. Fix =
+  **rotate the Supabase secret to the paid account's key**, then re-run; no code change (the
+  422 fix already shipped 08-03). Same class as the documented DC Hub trap — a free key minted
+  on the wrong account. Do not tell anyone to purchase a subscription.
+- **⚠️ Shovels credit accounting is FICTION — do not trust `credits_remaining_last`.**
+  **0 of 184 `shovels_ledger` rows** have API-sourced `credit_headers`/`credits_remaining`
+  (`credits_source='unavailable'` on 111 of them); the only two rows carrying a balance are
+  `imported_run_aggregate`, hand-entered 07-07. So the `9194` in the run rows is a locally
+  derived number with no connection to the real entitlement — which is exactly why it read
+  "healthy" while the API refused everything. **`shovels_config.credit_floor=2500` therefore
+  guards on a number that cannot detect exhaustion.** The 402 began at 23:51:41.973, **200 ms
+  after a 200**, following 122 successful calls — the allotment simply ran out mid-run.
 - **NCSL half-lane:** the 08-06 monthly run succeeded for `subsidies` and failed for
   `moratorium` with `wayback CDX → 504`, recorded faithfully in `ncsl_ingest_runs.error` —
   and read by nothing.
