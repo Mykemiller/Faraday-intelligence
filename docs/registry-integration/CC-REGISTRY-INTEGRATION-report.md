@@ -321,22 +321,95 @@ should be (PK+FK, 188/188). Leave it.
 
 ---
 
-### Step 4 — Decide `forecast_sources` (needs Myke)
+### Step 4 — `forecast_sources`: register the API / Bulk Download subset
 
-Different grain (§1) — it does not fold. Two defensible options:
+**DECIDED (Myke, 2026-08-08): register only the `machine_access IN ('API','Bulk
+Download')` subset.** `PDF Only` (7) and `HTML Tables` (1) stay out — they cannot be
+polled and would register as permanently-failing sources. `forecast_sources` itself is
+**not** folded (different grain, §1); it remains the forecast-metadata child, since
+`horizon_end_year` / `horizon_tier` / `latest_vintage` / `revision_signal` /
+`archive_recoverable` / `jpas_tiers[]` / `attribute_codes[]` have no registry home and
+should not get one.
 
-- **(a) Leave it.** It is a curated analyst catalog, read by two forecast functions,
-  written by nobody. Cost: 51 sources invisible to any registry-wide coverage count.
-- **(b) Register only the machine-readable subset.** 15 rows are `Priority Ingest` (9)
-  or `Validated` (6); of the 51, those with `machine_access ∈ (API, Bulk Download)` are
-  genuinely pollable. Register those as origins, keep `forecast_sources` as the
-  forecast-metadata child (`horizon_*`, `revision_signal`, `latest_vintage` have no
-  registry home and should not get one).
+**⚠ The subset is 14 rows, but only 10 are new origins. Registering all 14 would create
+duplicate registry rows for sources already registered under a different key** — the
+exact failure mode that made the pre-consolidation registry hard to reason about.
+Host-matching alone does not catch this: FEMA NRI shows no host match because
+`forecast_sources` records `hazards.fema.gov` while the registry row records the ArcGIS
+FeatureServer URL. Each of the 14 was checked by product, not by hostname.
 
-**Recommendation: (b), scoped to `machine_access IN ('API','Bulk Download')` — and
-explicitly not the `PDF Only` rows**, which cannot be polled and would register as
-permanently-failing sources. This is a judgement call about what "registered" is meant
-to promise; flagging rather than deciding.
+#### Excluded — already registered (3)
+
+| `forecast_sources.source_id` | Existing registry row | Evidence |
+|---|---|---|
+| `sec-edgar-hyperscaler-capex` | `feed:sec-edgar-full-text-search-api` (active, countable) | `forecast_sources.publisher` literally reads "harvested by `fn_sec_edgar_fts_ingest` (AUTO-042)" — and that is the registry row's `fetcher`. Same thing. |
+| `fema-national-risk-index-nri` | `fema:nri` (active, countable) | Same dataset; different URL form. Also `ingest-fema-nri` + cron 108 already ingest it. |
+| `epoch-ai-frontier-compute-trends` | `dc:epoch-ai` (registered, countable) | `epoch.ai/data` vs `epoch.ai/data/ai-data-centers`. ⚠ The forecast row is the **broader** hub; prefer **widening the existing row's `url`** over adding a second. Do not create `dc:epoch-ai-data`. |
+
+#### Reclassified — a series, not an origin (1)
+
+`wri-aqueduct-4-0-future-projections` is the **Future Projections layer** of a source
+already registered as `wri:aqueduct40` ("Baseline Water Stress overlay", active,
+countable). Same origin, different layer → by D2 it is an **`ext_source_series` row
+under `wri:aqueduct40`**, not a new origin. Precedent exists: `wri:aqueduct40` already
+carries one `ext_source_series` row. (Note `wri:aqueduct40-basins` is a third,
+separately-registered non-countable row for the sub-basin polygons.)
+
+#### Register — 10 net-new origins
+
+`source_key = 'forecast:' || source_id`, `subsystem='forecast'`, `fetcher='manual'`
+(**not** `source-poller` — none of these have a poller adapter yet; claiming otherwise
+would make `source-poller-verify` mark them failing within 15 minutes),
+`status='registered'`, `countable=true`, `source_type='data_portal'`,
+`access_method` = `json_api` for API / `bulk_file` for Bulk Download,
+`url` ← `primary_url`, `name` ← `source_name`, `provider` ← `publisher`,
+`cadence` mapped (`Annual`→`annual`, `Quarterly`→`quarterly`,
+`Periodic`/`Continuous / Rolling`→`archival_refresh`),
+`legacy_ref = {"table":"forecast_sources","pk":"<source_id>"}`.
+
+| # | source_id | access | registry cadence |
+|---|---|---|---|
+| 1 | `eia-annual-energy-outlook-aeo` | API | annual |
+| 2 | `eia-international-energy-outlook` | API | archival_refresh |
+| 3 | `first-street-climate-risk-projections` | API | archival_refresh |
+| 4 | `un-world-population-prospects` | API | archival_refresh |
+| 5 | `bls-employment-projections` | bulk_file | annual |
+| 6 | `census-population-projections` | bulk_file | archival_refresh |
+| 7 | `nrel-annual-technology-baseline` | bulk_file | annual |
+| 8 | `nrel-standard-scenarios` | bulk_file | annual |
+| 9 | `projections-central-state-occupational-projections` | bulk_file | annual |
+| 10 | `usgs-water-use-in-the-united-states` | bulk_file | archival_refresh |
+
+**Same-publisher-≠-same-product, verified, do not "dedupe" these:**
+AEO/IEO are distinct products from `eia:860` (generator inventory) / `eia:861` (utility
+territories). BLS Employment Projections is a distinct program from `bls:laus` /
+`bls:qcew` / `bls:oews`. `usgs-water-use` (5-yearly withdrawal compilation) is distinct
+from `usgs:waterdata` (real-time gauge API) and from `usgs:padus` (protected areas).
+The `gsearch:org-national-renewable-energy-laboratory-nrel` and `gsearch:org-epoch-ai`
+rows are Google News watches (`countable=false`) — they are not the data source and
+must not be treated as prior registrations.
+
+⚠ **`census-population-projections` is adjacent to `census:pep`** (Population Estimates
+Program). Projections are forward, PEP is historical estimates — genuinely different
+products, registered separately here. Flagged because it is the one pair a future
+reviewer is most likely to mistake for a duplicate.
+
+**Gates (in-migration, raise + roll back on mismatch):**
+- `select count(*) from source_registry where subsystem='forecast'` = **10**
+- zero rows where `subsystem='forecast'` and `status <> 'registered'`
+- zero rows where `subsystem='forecast'` and `fetcher <> 'manual'`
+- `select count(*) from forecast_sources where machine_access in ('API','Bulk Download')`
+  = **14** (asserts the source set did not move under the migration; 14 − 3 dup − 1
+  series = 10)
+
+**Also flagged, not actioned:** 6 `forecast_sources` rows have `machine_access IS NULL`
+— unassessed, not `PDF Only`. They are correctly outside this decision's scope but need
+an access triage before anyone concludes the catalog has been fully harvested.
+
+**Rollback:** `delete from source_registry where subsystem='forecast'`. Nothing
+references these rows; `source_destination_map` would cascade, so confirm no map rows
+were added first. If the `dc:epoch-ai` URL was widened, restore
+`https://epoch.ai/data/ai-data-centers`.
 
 ---
 
@@ -401,3 +474,13 @@ subset of a 429-row filter.
    text with no FK** — an under-documented coupling that constrains any fold.
 5. The safe ingestable count is **425, not 429** — four `live` rows have unverified
    robots.txt state.
+6. **Matching a candidate source to the registry by hostname is not sufficient.** FEMA
+   NRI is already registered as `fema:nri` yet shows no host match, because the two
+   records hold different URL forms of the same dataset (`hazards.fema.gov` vs the
+   ArcGIS FeatureServer). Conversely `eia.gov` host-matches `eia:860`/`eia:861` for a
+   product (AEO) that is genuinely unregistered. **Match by product, then verify by
+   fetcher/provider** — §6 step 4 is worked this way and it changed the answer from 14
+   rows to 10.
+7. `gsearch:org-*` rows are Google News watches with `countable=false`. They name an
+   organisation but are **not** a registration of that organisation's data source, and
+   must not be counted as one when checking for duplicates.
