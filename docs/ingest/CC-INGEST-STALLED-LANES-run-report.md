@@ -254,11 +254,42 @@ is 12 fetchable sources + 1 push-only, not 13 fetchable.**
 
 ---
 
-## What is NOT done
+## DEPLOYED to prod 2026-08-08 (Myke-approved after PR #53 merged)
 
-- **Nothing deployed.** Per Myke's "PR first" call: migrations `0042`/`0043` un-applied,
-  `ingest-staleness-healthcheck` un-deployed, `ingest-state-incentives` v1.2 un-deployed
-  (prod still runs v1.1). Deploy order: **function first, then `0042`, then `0043`.**
+Merging did **not** deploy anything — Supabase functions and migrations ship separately
+from the repo. Deployed in dependency order after a second explicit approval:
+
+| # | Step | Result |
+|---|---|---|
+| 1 | `ingest-staleness-healthcheck` edge fn | **v1**, `verify_jwt=false` |
+| 2 | migration `0042` (watch table + checker + 23 seeds) | applied |
+| 3 | `ingest-state-incentives` **v20 → v21** (v1.2) | `verify_jwt=false` preserved |
+| 4 | migration `0043` (daily 09:00 UTC cron) | applied, cron registered |
+
+### Post-deploy verification, against live prod
+
+- **v1.2 is live:** a no-op call (`{"states":["ZZ"]}`, provably zero writes) returned
+  `crawler_id: ingest-state-incentives_v1.2`, `ran: 0`.
+- **The cross-source chain hop works — the thing that was broken.** A 2-source chain run
+  logged `ia_ieda_awards` at 19:23:15 and `dc_tif_areas` at **19:23:18 in a separate
+  invocation**. Both reached `next_offset: null` (fully walked). **Zero `chain_hop_failed`
+  rows.** Under v1.1 the second source would never have been reached.
+- **The alert fires end-to-end:** `?dry=1` on the deployed function returned HTTP 200,
+  `watches: 23`, `breaches: 4`, subject *"🚨 Faraday ingest — 4 stale/failing sources
+  (intl, ncsl, shovels)"*, `sent: false`. The 4 are all currently true: `intl:ember` and
+  `intl:rsf-pfi` (13.7d vs a 10.5d threshold), NCSL's `wayback CDX → 504`, Shovels' 402.
+- **The 10 state-incentive breaches correctly cleared** — the re-ingest polled those
+  sources, so the poll watch now reads healthy. The detector tracks reality.
+- **`eia:860:poll` stayed clean throughout** — D4 honoured against the live function.
+- **Advisor delta is exactly one intended finding:** `rls_enabled_no_policy` INFO on
+  `ingest_staleness_watch` (deny-all, matching every other table here). Neither new
+  function appears under `function_search_path_mutable` or the anon/authenticated
+  `security_definer_function_executable` lints — `search_path` is set and anon/
+  authenticated were revoked **by name** (the `ALTER DEFAULT PRIVILEGES` trap).
+- **Prod data unchanged by the deploy:** disclosures 120,510 · `jpas_attributes` 663,878 ·
+  INC rows 1,220 · stuck intl runs **0**.
+
+## What is NOT done
 - **Shovels needs a paid plan.** 402 `credits_exhausted` is a billing action, not code.
 - **The NCSL Wayback 504** is transient upstream; the alert will now surface a recurrence.
 - **`jw_data_source_registry.cadence` was not normalised** — out of scope (registry schema),

@@ -92,11 +92,25 @@ from here (Ask Faraday, waitlist/subscribe, lexicon).
   Re-ingest ran normally: **0 new disclosure rows** (120,510 → 120,510), jpas total unchanged
   (663,878), and **1,220 INC rows re-stamped `captured_at`** with no value or jurisdiction
   changes. Success criterion 5 is knowingly unmet to exactly that extent.
-- **NOT deployed** (Myke's "PR first"): `0042`/`0043` un-applied, `ingest-staleness-healthcheck`
-  un-deployed, `ingest-state-incentives` v1.2 un-deployed (**prod still runs v1.1**). Deploy
-  order is **function → `0042` → `0043`**; a cron pointing at a missing function 404s and still
-  logs *succeeded*. `npm test` 72/72. Report:
-  `docs/ingest/CC-INGEST-STALLED-LANES-run-report.md`.
+- **DEPLOYED to prod 2026-08-08** (Myke-approved after PR #53 merged — **merging deploys
+  nothing here**; edge fns + migrations ship separately). Order was **function → `0042` →
+  `0043`**: a cron pointing at a missing function 404s and still logs *succeeded*.
+  `ingest-staleness-healthcheck` v1 · `0042` applied (23 watches) · `ingest-state-incentives`
+  **v20→v21** (v1.2) · `0043` applied (cron `ingest-staleness-healthcheck-daily`, 09:00 UTC).
+  Both fns keep `verify_jwt=false` (a `true` setting 401s the cron at the gateway).
+- **Post-deploy proof:** the **cross-source hop works** — a 2-source chain run logged
+  `ia_ieda_awards` 19:23:15 then `dc_tif_areas` **19:23:18 in a separate invocation**, both to
+  `next_offset=null`, **0 `chain_hop_failed` rows** (under v1.1 the 2nd source was never
+  reached). Alert `?dry=1` → 200, 23 watches / 4 breaches, `sent:false`. The 10
+  state-incentive breaches **correctly cleared** after the re-ingest polled them;
+  `eia:860:poll` stayed clean (D4). Prod data unchanged: 120,510 disclosures · 663,878 jpas ·
+  1,220 INC · **0 stuck intl runs**.
+- **Advisor delta = exactly 1 intended INFO** (`rls_enabled_no_policy` on
+  `ingest_staleness_watch`). Neither new fn appears under `function_search_path_mutable` or
+  the anon/authenticated `security_definer_function_executable` lints — `search_path` set and
+  anon/authenticated revoked **BY NAME** (Supabase's `ALTER DEFAULT PRIVILEGES` grants
+  EXECUTE at CREATE time, so `revoke … from public` alone is not enough).
+- `npm test` 72/72. Report: `docs/ingest/CC-INGEST-STALLED-LANES-run-report.md`.
 
 ### CC-STATE-BRIEF-SCAFFOLD-1.0 — 2026-07-31 (State Brief Agent Network: schema + local news funnel)
 - **8 tables + 3 views for section-level state-brief persistence** (migrations `0038`–`0041`,
