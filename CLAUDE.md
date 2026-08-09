@@ -90,6 +90,25 @@ from here (Ask Faraday, waitlist/subscribe, lexicon).
   57 distinct values over 100 rows**, incl. prose like *"irregular; page metadata shows last
   modified 2020-07-16…"*. Unusable for machine comparison; `ingest_staleness_watch` is the
   normalised binding layer.
+- **FIRST NATURAL CRON RUN UNDER v1.2 — 2026-08-09 08:30 UTC — CONFIRMS THE FIX.**
+  **All 12 fetchable sources walked** (vs the same 3 every week for the prior month), 20
+  health rows, deep paging restored (`ny_ida_projects` 0→32,000 to completion = **34,348
+  records, exactly its upstream count**), whole registry in **~1m42s**, **0
+  `chain_hop_failed`**, **0 new disclosure rows** (120,510 unchanged — genuinely in sync;
+  live probe has 5 of 6 sources matching held counts exactly). INC re-stamped 08:32:31,
+  still 1,220 rows / 244 jurisdictions.
+- **⚠️ A source can now be half-walked, and POLL mode cannot see it.** That same run,
+  `ny_esd_dei` aborted at offset 32,000 on an **upstream data.ny.gov 500**
+  (`internal-error`, tag `3bda69b3`) → walked 32,000 of 65,237. The chain correctly
+  advanced to the next source (one sick source must not block the other 11), and it
+  self-heals next Sunday from offset 0 — but **nothing paged**, because `0042` registered
+  this lane POLL-only and poll asks "when did we last *attempt*?" (7h ago → clean).
+  Migration **`0053` adds 12 `error`-mode watches** for the lane (**applied to prod
+  2026-08-09**; 23 → **35 watches**, 14 error-mode). Verified live: the alert now reports
+  **2 breaches** (`ncsl:error` + `state_incentives:ny_esd_dei:error`) and prints the
+  upstream 500 verbatim. **Breach duration is intentional** — an errored source stays
+  breached until its next successful weekly run, because it really is half-walked for that
+  whole period; do not time-box it.
 - **⚠️ Two gotchas baked into the checker — do not "simplify" them out.** (1)
   `automation_health_log.notes` is free text on **17,603 of 17,823** rows, so the jsonb filter
   must be `CASE WHEN col IS JSON OBJECT …`, never `col IS JSON OBJECT AND col::jsonb …` —

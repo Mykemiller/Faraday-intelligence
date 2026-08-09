@@ -74,6 +74,46 @@ the service-role key, checks the status, and writes a `chain_hop_failed` health 
 
 ---
 
+### First natural cron run under v1.2 — 2026-08-09 08:30 UTC — the fix holds
+
+| | Before (07-12 → 08-02, every week) | 2026-08-09 |
+|---|---|---|
+| Sources walked | **3** of 12, byte-identical | **12 of 12** |
+| Max offset reached | **0** | 32,000 |
+| Health rows | 3 | 20 |
+| Chain hops | none dispatched | all, **0 `chain_hop_failed`** |
+
+`ny_ida_projects` walked 0 → 32,000 to completion: **34,348 records, exactly its upstream
+count.** Whole registry in **~1m42s** (08:30:48 → 08:32:30). **0 new disclosure rows** —
+verified correct, not suspicious: a live probe has `ny_ida_projects` 34,348, `ct_decd`
+2,204, `or_ez_2025` 155, `or_eip` 1,034, `de_eeif` 806 all matching held counts exactly.
+INC re-stamped at 08:32:31, still 1,220 rows / 244 jurisdictions.
+
+### ⚠️ New: a source can be half-walked, and POLL mode cannot see it
+
+That same run, `ny_esd_dei` aborted at offset 32,000 on an **upstream Socrata 500** from
+data.ny.gov (`internal-error`, tag `3bda69b3`) — their fault, not ours. The chain then
+advanced to the next source. That advance is the right default (one sick source must not
+block the other 11) and it self-heals next Sunday from offset 0, but it left that source
+walked to **32,000 of 65,237** rows.
+
+**Nothing paged.** `0042` registered this lane with POLL-mode watches only, and poll asks
+*"when did we last ATTEMPT this source?"* — 7 hours ago — so every watch read clean while a
+source sat half-walked. This is precisely the "polled shallowly" limitation flagged below.
+
+**Migration `0053` closes it** (applied to prod 2026-08-09): 12 `error`-mode watches over
+the lane, keyed on `automation_health_log.errors`, which is NULL on the success path and
+`{"message": …}` on the catch path — so the test is exact and the alert prints the upstream
+message verbatim. Watches 23 → **35** (14 error-mode). Verified live: `?dry=1` returns
+**2 breaches** — `ncsl:error` and the new `state_incentives:ny_esd_dei:error` — with 11 of
+12 state-incentive error watches correctly clean.
+
+**Breach duration is intentional.** An errored source stays breached until its next
+successful weekly run, because it genuinely is half-walked for that whole period. Do not
+"de-noise" this by time-boxing it — the condition is unresolved, not stale news.
+
+---
+
 ## Lane 2 — International (jobids 24–27) · **MIXED: mostly correct, one real hang**
 
 **The 24-day gap is mostly correct behaviour.** These are annual sources (World Bank
