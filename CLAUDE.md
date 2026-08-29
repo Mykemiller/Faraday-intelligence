@@ -55,10 +55,24 @@ from here (Ask Faraday, waitlist/subscribe, lexicon).
   Note `intl_run_start` has **no concurrency guard**, so stuck rows never blocked the next run.
 - **Shovels: jobid 137 has NEVER run** (created after 07-15 → first fire 08-15; it missed
   nothing). jobid 136 fired 08-01 and failed loudly — **HTTP 422, `state` is no longer a
-  `/v2/permits/search` param (now `geo_id`)**, fixed out-of-band 08-03. Now hard-blocked on
-  **402 `credits_exhausted` (trial limit) — a billing action, not code.** Also: the biweekly
+  `/v2/permits/search` param (now `geo_id`)**, fixed out-of-band 08-03. Also: the biweekly
   cron writes **`shovels_permit_snapshots`** (fresh 08-03), NOT `shovels_permit_history`
   (07-23), which is fed by the separate `shovels-permit-history` fn and **has no cron at all**.
+- **⚠️ CORRECTED 2026-08-08 (Myke: "Shovels is a paid plan and a paid api"). The 402 is NOT
+  "go buy a plan" — the plan exists; the DEPLOYED KEY does not carry it.** Shovels' own body
+  says *"Trial credit limit reached"* and **`/v2/usage` (the account endpoint) 402s too**, so
+  the credential in the `SHOVELS_API_KEY` secret is presenting as **trial-tier**. Fix =
+  **rotate the Supabase secret to the paid account's key**, then re-run; no code change (the
+  422 fix already shipped 08-03). Same class as the documented DC Hub trap — a free key minted
+  on the wrong account. Do not tell anyone to purchase a subscription.
+- **⚠️ Shovels credit accounting is FICTION — do not trust `credits_remaining_last`.**
+  **0 of 184 `shovels_ledger` rows** have API-sourced `credit_headers`/`credits_remaining`
+  (`credits_source='unavailable'` on 111 of them); the only two rows carrying a balance are
+  `imported_run_aggregate`, hand-entered 07-07. So the `9194` in the run rows is a locally
+  derived number with no connection to the real entitlement — which is exactly why it read
+  "healthy" while the API refused everything. **`shovels_config.credit_floor=2500` therefore
+  guards on a number that cannot detect exhaustion.** The 402 began at 23:51:41.973, **200 ms
+  after a 200**, following 122 successful calls — the allotment simply ran out mid-run.
 - **NCSL half-lane:** the 08-06 monthly run succeeded for `subsidies` and failed for
   `moratorium` with `wayback CDX → 504`, recorded faithfully in `ncsl_ingest_runs.error` —
   and read by nothing.
@@ -76,6 +90,25 @@ from here (Ask Faraday, waitlist/subscribe, lexicon).
   57 distinct values over 100 rows**, incl. prose like *"irregular; page metadata shows last
   modified 2020-07-16…"*. Unusable for machine comparison; `ingest_staleness_watch` is the
   normalised binding layer.
+- **FIRST NATURAL CRON RUN UNDER v1.2 — 2026-08-09 08:30 UTC — CONFIRMS THE FIX.**
+  **All 12 fetchable sources walked** (vs the same 3 every week for the prior month), 20
+  health rows, deep paging restored (`ny_ida_projects` 0→32,000 to completion = **34,348
+  records, exactly its upstream count**), whole registry in **~1m42s**, **0
+  `chain_hop_failed`**, **0 new disclosure rows** (120,510 unchanged — genuinely in sync;
+  live probe has 5 of 6 sources matching held counts exactly). INC re-stamped 08:32:31,
+  still 1,220 rows / 244 jurisdictions.
+- **⚠️ A source can now be half-walked, and POLL mode cannot see it.** That same run,
+  `ny_esd_dei` aborted at offset 32,000 on an **upstream data.ny.gov 500**
+  (`internal-error`, tag `3bda69b3`) → walked 32,000 of 65,237. The chain correctly
+  advanced to the next source (one sick source must not block the other 11), and it
+  self-heals next Sunday from offset 0 — but **nothing paged**, because `0042` registered
+  this lane POLL-only and poll asks "when did we last *attempt*?" (7h ago → clean).
+  Migration **`0053` adds 12 `error`-mode watches** for the lane (**applied to prod
+  2026-08-09**; 23 → **35 watches**, 14 error-mode). Verified live: the alert now reports
+  **2 breaches** (`ncsl:error` + `state_incentives:ny_esd_dei:error`) and prints the
+  upstream 500 verbatim. **Breach duration is intentional** — an errored source stays
+  breached until its next successful weekly run, because it really is half-walked for that
+  whole period; do not time-box it.
 - **⚠️ Two gotchas baked into the checker — do not "simplify" them out.** (1)
   `automation_health_log.notes` is free text on **17,603 of 17,823** rows, so the jsonb filter
   must be `CASE WHEN col IS JSON OBJECT …`, never `col IS JSON OBJECT AND col::jsonb …` —
