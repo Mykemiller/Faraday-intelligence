@@ -20,6 +20,31 @@ from here (Ask Faraday, waitlist/subscribe, lexicon).
 
 ## Changelog
 
+### CC-ARTIFACT-BODY-FETCH Phase 1 — 2026-09-27 (document bodies for the PUC / .gov slice)
+- **Bodies are fetched INSIDE Postgres** (`http` extension) — the dev container's egress is
+  blocked and an edge deploy is a Hard-Stop. Machinery: `abf_*` functions + procedures
+  `abf_fetch_run` / `abf_extract_run`, per-URL work table `artifact_body_fetch_url` (+ robots
+  cache, config row; deny-all RLS). `abf_apply()` is the ONLY write into `artifacts` and it
+  touches `body_*` only. Migrations `20260927210000`–`20260927220000`; report
+  `docs/body-fetch/PHASE-1-RUN-REPORT.md`.
+- **Result:** 1,443 rows = only **205 URLs** (fetch per URL, fan out). 1,037 rows `ok`;
+  median 507 → **5,949** chars; rows ≥800: 20 → **1,040**; hosts ≥800: 10 → **98**. 1c
+  (re-embed, ~138 canonical artifacts / ~$0.01) NOT run — OpenAI key lives only on
+  `enrich-artifacts`.
+- **⚠️ `academy_reference_propose` gates on `artifact_url_canonical.canonical_len` = RAW
+  `content_length`.** Body text does not reach the gate; that has to change before bodies
+  move the Reference Shelf. Recommended threshold once it does: **1,200** on effective length.
+- **⚠️ `http` cannot carry PDFs** (text `content`, NUL truncation). PDFs park as
+  `pdf_pending`; 13 were extracted on a GitHub runner (all text-layer, OCR backlog 0) but are
+  NOT loaded yet (needs a write path — Myke's call).
+- **⚠️ Postgres gotchas hit live:** a procedure with a `SET` clause cannot COMMIT; ARE
+  repetition bound is 255; back-referencing regexes on big HTML go CPU-bound; `http_response`
+  fields are `varchar`, cast before `RETURN QUERY` into `text`; federalregister.gov serves a
+  **200** bot wall (check body markers, not just status).
+- Blocked (never circumvented): congress.gov 403 (118 rows), permits.performance.gov,
+  whitehouse.gov, **sec.gov 403** (Phase 2 must use an egress EDGAR accepts), federalregister
+  bot wall, columbian.com paywall. 0 robots disallows.
+
 ### CC-INGEST-STALLED-LANES-1.0 — 2026-08-08 (four silent ingest lanes root-caused + a generic staleness alert)
 - **⚠️ pg_cron `status='succeeded'` PROVES NOTHING for any job using `cron_http_post()`.**
   That helper ends in `net.http_post()` and returns a pg_net request id the moment the
