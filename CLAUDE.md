@@ -20,6 +20,21 @@ from here (Ask Faraday, waitlist/subscribe, lexicon).
 
 ## Changelog
 
+### enrich-artifacts v2.5 — 2026-09-27 (OCP Phase 3, Myke D4: embed `body_text` when present)
+- **Deployed v45 (`AUTO-030_v2.5`).** The repo was live-ahead-of-prod again: v2.4
+  (`artifact_should_chunk` gate) was deployed but never committed — captured verbatim first
+  (baseline commit), then the D4 change on top.
+- **When `body_fetch_status='ok'` and `body_text` is materially deeper than `raw_content`**
+  (same rule as `artifact_body_embed_claim`: ≥2× and ≥+500 chars), chunk+embed
+  `chunkSource(raw_content, body_text)` instead of `raw_content`, and stamp
+  `body_embedded_at` / `body_chunk_count`. Rows without a qualifying body are byte-identical to
+  v2.4. The enrichment prompt still reads `raw_content` only.
+- **⚠️ Why it matters beyond OCP:** it closes a clobber race with the `artifact-body-fetch`
+  embed lane — a body-bearing row drained here used to have its body chunks deleted and
+  replaced by `raw_content`-only chunks. Stamping `body_embedded_at` also keeps the body lane
+  from double-embedding it.
+- Health-log notes now carry `body_chunked=N`. Tests: `test/enrich-body-source.test.mjs`.
+
 ### CC-ARTIFACT-BODY-FETCH Phase 1 — 2026-09-27 (document bodies for the PUC / .gov slice)
 - **Bodies are fetched INSIDE Postgres** (`http` extension) — the dev container's egress is
   blocked and an edge deploy is a Hard-Stop. Machinery: `abf_*` functions + procedures
