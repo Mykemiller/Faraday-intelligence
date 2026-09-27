@@ -165,3 +165,38 @@ export function chunkText(text: string): string[] {
   }
   return chunks.filter((c) => c.length > 50);
 }
+
+// ---------------------------------------------------------------- body_text (v2.5, D4)
+
+/** Same materiality rule as artifact_body_embed_claim / body-pure.qualifiesForRechunk:
+ * chunk the fetched body only when it is materially deeper than the ingest capture. */
+export function bodyQualifies(bodyChars: number | null | undefined, rawLen: number): boolean {
+  if (bodyChars == null) return false;
+  return bodyChars >= 2 * rawLen && bodyChars >= rawLen + 500;
+}
+
+/** Verbatim body-pure.chunkSource: the ingest capture leads so chunk 0 keeps title/abstract. */
+export function chunkSource(rawContent: string | null, body: string): string {
+  const head = (rawContent ?? "").trim();
+  if (!head || body.startsWith(head.slice(0, 80))) return body;
+  return `${head}\n\n${body}`;
+}
+
+export interface BodyFields {
+  raw_content: string | null;
+  body_text?: string | null;
+  body_fetch_status?: string | null;
+  body_char_count?: number | null;
+}
+
+/** What enrich-artifacts chunks for one artifact. Uses body_text only when the body fetch
+ * succeeded and the body qualifies; otherwise raw_content exactly as before v2.5. */
+export function selectChunkSource(a: BodyFields): { text: string; fromBody: boolean } {
+  const raw = a.raw_content ?? "";
+  const body = a.body_text ?? "";
+  const chars = a.body_char_count ?? (body ? body.length : null);
+  if (a.body_fetch_status === "ok" && body && bodyQualifies(chars, raw.length)) {
+    return { text: chunkSource(raw, body), fromBody: true };
+  }
+  return { text: raw, fromBody: false };
+}

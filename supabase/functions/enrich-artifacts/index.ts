@@ -34,6 +34,16 @@
 // errors the artifact is chunked as before (retrieval-side dedup still
 // applies). Health-log notes carry skipped_noncanonical / should_chunk_errors.
 //
+// v2.5 (2026-09-27, OCP Phase 3 — Myke D4): when an artifact already carries a
+// fetched body (body_fetch_status='ok' and body_text materially deeper than
+// raw_content — the same rule as artifact_body_embed_claim), chunk+embed
+// chunkSource(raw_content, body_text) instead of raw_content alone, and stamp
+// body_embedded_at / body_chunk_count so the artifact-body-fetch embed lane
+// never re-embeds it. Closes a clobber race: previously a row inserted with a
+// body and later drained here would have its body chunks replaced by
+// raw_content-only chunks. Rows without a qualifying body are unchanged. The
+// enrichment prompt still reads raw_content (title/abstract) only.
+//
 // Flow (cron POSTs {mode:"auto"} every 10 min):
 //   poll:   for each enrich_batches row not completed → GET the batch; when
 //           ended, stream results JSONL and process up to PROCESS_MAX
@@ -54,10 +64,11 @@ import {
   type EnrichmentResult,
   mentionName,
   parseBatchResults,
+  selectChunkSource,
 } from "./enrich-pure.ts";
 
 const AUTO_ID = "AUTO-030";
-const CRAWLER_ID = "AUTO-030_v2.4";
+const CRAWLER_ID = "AUTO-030_v2.5";
 const EMBED_MODEL = "text-embedding-3-small";
 const SUBMIT_MAX = 1000;
 const MAX_OPEN_BATCHES = 4; // v21: one slow batch must not freeze the pipe
@@ -74,6 +85,7 @@ const supabase = createClient(supabaseUrl, serviceKey);
 // Per-invocation counters (reset at the top of each request — isolates are reused).
 let skippedNoncanonical = 0;
 let shouldChunkErrors = 0;
+let bodyChunked = 0;
 
 async function sha256hex(s: string): Promise<string> {
   const buf = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(s));
@@ -157,7 +169,7 @@ async function submitBatch(anthropicKey: string) {
 async function processResult(artifactId: string, enrichment: EnrichmentResult, openaiKey: string, entityLookup: Map<string, string>) {
   const { data: art } = await supabase
     .from("artifacts")
-    .select("artifact_id, raw_content, enrich_status")
+    .select("artifact_id, raw_content, enrich_status, body_text, body_fetch_status, body_char_count")
     .eq("artifact_id", artifactId)
     .single();
   if (!art || art.enrich_status !== "processing") return false; // already drained or reclaimed
@@ -175,7 +187,8 @@ async function processResult(artifactId: string, enrichment: EnrichmentResult, o
     skippedNoncanonical++;
   }
 
-  const chunks = shouldChunk ? chunkText(art.raw_content) : [];
+  const source = selectChunkSource(art);
+  const chunks = shouldChunk ? chunkText(source.text) : [];
   if (chunks.length > 0) {
     const embeddings = await embedTexts(chunks, openaiKey);
     await supabase.from("artifact_chunks").delete().eq("artifact_id", artifactId);
@@ -216,9 +229,16 @@ async function processResult(artifactId: string, enrichment: EnrichmentResult, o
     await supabase.from("artifact_entities").upsert(links, { onConflict: "artifact_id,entity_id", ignoreDuplicates: false });
   }
 
+  const completedAt = new Date().toISOString();
+  const bodyEmbedded = source.fromBody && chunks.length > 0;
+  if (bodyEmbedded) bodyChunked++;
   await supabase
     .from("artifacts")
-    .update({ enrich_status: "complete", enrich_completed_at: new Date().toISOString() })
+    .update({
+      enrich_status: "complete",
+      enrich_completed_at: completedAt,
+      ...(bodyEmbedded ? { body_embedded_at: completedAt, body_chunk_count: chunks.length } : {}),
+    })
     .eq("artifact_id", artifactId);
   return true;
 }
@@ -297,6 +317,7 @@ Deno.serve(async (req: Request) => {
   const runStarted = new Date().toISOString();
   skippedNoncanonical = 0;
   shouldChunkErrors = 0;
+  bodyChunked = 0;
   const deadlineMs = Date.now() + 100_000;
 
   if (!(await authorized(req))) {
@@ -368,7 +389,7 @@ Deno.serve(async (req: Request) => {
     artifacts_duped: 0,
     errors,
     success,
-    notes: `v21 batches mode=${mode} processed=${processed} failed=${failed} submitted=${out.submitted ?? 0} success=${success} skipped_noncanonical=${skippedNoncanonical}${shouldChunkErrors ? ` should_chunk_errors=${shouldChunkErrors}` : ""}${systemicErrors ? ` systemic_errors=${systemicErrors}` : ""}`,
+    notes: `v21 batches mode=${mode} processed=${processed} failed=${failed} submitted=${out.submitted ?? 0} success=${success} skipped_noncanonical=${skippedNoncanonical} body_chunked=${bodyChunked}${shouldChunkErrors ? ` should_chunk_errors=${shouldChunkErrors}` : ""}${systemicErrors ? ` systemic_errors=${systemicErrors}` : ""}`,
   });
 
   return new Response(JSON.stringify({ ...out, errors: errors.length ? errors : undefined }), {
