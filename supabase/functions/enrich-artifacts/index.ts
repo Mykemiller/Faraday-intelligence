@@ -25,6 +25,15 @@
 // indistinguishable. This bump draws that line. Parser- and threshold-side
 // only: no change to the enrichment prompt, model, or output schema.
 //
+// CC-REFERENCE-SHELF-RETRIEVAL-REPAIR-1.0 (2026-09-25, D3/R6): CRAWLER_ID bumped
+// AUTO-030_v2.2 → AUTO-030_v2.4 (v2.3 is claimed by unmerged PR #51 — A2).
+// Before chunk+embed, processResult asks RPC artifact_should_chunk(); a
+// non-canonical copy of a URL that already has an equal-or-longer chunked copy
+// skips ONLY chunk+embed (existing chunks are left alone). Enrichment, entity
+// links and enrich_status='complete' are unchanged. Fails OPEN: if the RPC
+// errors the artifact is chunked as before (retrieval-side dedup still
+// applies). Health-log notes carry skipped_noncanonical / should_chunk_errors.
+//
 // Flow (cron POSTs {mode:"auto"} every 10 min):
 //   poll:   for each enrich_batches row not completed → GET the batch; when
 //           ended, stream results JSONL and process up to PROCESS_MAX
@@ -48,7 +57,7 @@ import {
 } from "./enrich-pure.ts";
 
 const AUTO_ID = "AUTO-030";
-const CRAWLER_ID = "AUTO-030_v2.2";
+const CRAWLER_ID = "AUTO-030_v2.4";
 const EMBED_MODEL = "text-embedding-3-small";
 const SUBMIT_MAX = 1000;
 const MAX_OPEN_BATCHES = 4; // v21: one slow batch must not freeze the pipe
@@ -61,6 +70,10 @@ const CRON_TOKEN_FALLBACK_SHA256 = "dd88c73bb785f950802d296ede8541501b486da1c141
 const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
 const serviceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
 const supabase = createClient(supabaseUrl, serviceKey);
+
+// Per-invocation counters (reset at the top of each request — isolates are reused).
+let skippedNoncanonical = 0;
+let shouldChunkErrors = 0;
 
 async function sha256hex(s: string): Promise<string> {
   const buf = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(s));
@@ -149,7 +162,20 @@ async function processResult(artifactId: string, enrichment: EnrichmentResult, o
     .single();
   if (!art || art.enrich_status !== "processing") return false; // already drained or reclaimed
 
-  const chunks = chunkText(art.raw_content);
+  // CC-REFERENCE-SHELF-RETRIEVAL-REPAIR-1.0 (D3/R6): skip chunk+embed for a
+  // non-canonical copy of a URL that already has an equal-or-longer chunked copy.
+  // Fail OPEN: if the check errors, chunk as before (retrieval-side dedup still applies).
+  let shouldChunk = true;
+  const { data: sc, error: scErr } = await supabase.rpc("artifact_should_chunk", { p_artifact_id: artifactId });
+  if (scErr) {
+    shouldChunkErrors++;
+    console.warn(`artifact_should_chunk failed for ${artifactId}: ${scErr.message} — chunking (fail-open)`);
+  } else if (sc === false) {
+    shouldChunk = false;
+    skippedNoncanonical++;
+  }
+
+  const chunks = shouldChunk ? chunkText(art.raw_content) : [];
   if (chunks.length > 0) {
     const embeddings = await embedTexts(chunks, openaiKey);
     await supabase.from("artifact_chunks").delete().eq("artifact_id", artifactId);
@@ -269,6 +295,8 @@ async function pollBatches(anthropicKey: string, openaiKey: string, deadlineMs: 
 
 Deno.serve(async (req: Request) => {
   const runStarted = new Date().toISOString();
+  skippedNoncanonical = 0;
+  shouldChunkErrors = 0;
   const deadlineMs = Date.now() + 100_000;
 
   if (!(await authorized(req))) {
@@ -340,7 +368,7 @@ Deno.serve(async (req: Request) => {
     artifacts_duped: 0,
     errors,
     success,
-    notes: `v21 batches mode=${mode} processed=${processed} failed=${failed} submitted=${out.submitted ?? 0} success=${success}${systemicErrors ? ` systemic_errors=${systemicErrors}` : ""}`,
+    notes: `v21 batches mode=${mode} processed=${processed} failed=${failed} submitted=${out.submitted ?? 0} success=${success} skipped_noncanonical=${skippedNoncanonical}${shouldChunkErrors ? ` should_chunk_errors=${shouldChunkErrors}` : ""}${systemicErrors ? ` systemic_errors=${systemicErrors}` : ""}`,
   });
 
   return new Response(JSON.stringify({ ...out, errors: errors.length ? errors : undefined }), {
