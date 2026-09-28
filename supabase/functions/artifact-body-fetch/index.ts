@@ -1,4 +1,9 @@
-// artifact-body-fetch v1.1 — CC-ARTIFACT-BODY-FETCH-1.0 (Phases 1–2).
+// artifact-body-fetch v1.2 — CC-ARTIFACT-BODY-FETCH-1.0 (Phases 1–2).
+//
+// v1.2 (2026-09-28): the attempt is charged BEFORE the fetch (and refunded on an
+// SEC block), so a document that kills the worker mid-extraction (CPU/memory
+// limit) drops out of the queue after MAX_ATTEMPTS instead of being re-claimed
+// first on every run and wedging the lane.
 //
 // v1.1 (2026-09-27): v1.0 died with WORKER_RESOURCE_LIMIT ("CPU Time exceeded")
 // after 10 embeds. Edge workers meter CPU per request, so: pdfjs (unpdf) is now
@@ -53,7 +58,7 @@ import {
 } from "./body-pure.ts";
 
 const AUTO_ID = "AUTO-246"; // provisional — registry grant pending
-const CRAWLER_ID = "artifact-body-fetch_v1.1";
+const CRAWLER_ID = "artifact-body-fetch_v1.2";
 const EMBED_MODEL = "text-embedding-3-small";
 const EMBED_BATCH = 96;
 const MAX_ATTEMPTS = 3;
@@ -207,6 +212,11 @@ async function runFetch(lane: Lane, limit: number, lease: number, deadline: numb
       }
     }
 
+    // Charge the attempt up front: a worker killed mid-document must not leave the
+    // row claimable forever (it would be first in line on every run).
+    await supabase.from("artifacts").update({ body_attempts: Math.min(row.body_attempts + 1, MAX_ATTEMPTS) })
+      .eq("artifact_id", row.artifact_id);
+
     lastStart = Date.now();
     lastHostStart.set(host, lastStart);
     c.attempted++;
@@ -216,7 +226,12 @@ async function runFetch(lane: Lane, limit: number, lease: number, deadline: numb
     if (f.status != null && isBlockResponse(f.status, f.text ?? "", host)) {
       c.blocked++;
       blockDetail = `${f.status} ${host} ${(f.text ?? "").replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").slice(0, 200)}`;
-      if (sec) { stopReason = `blocked ${f.status}`; break; }
+      if (sec) {
+        // Host-level refusal is not the document's fault: refund the attempt.
+        await supabase.from("artifacts").update({ body_attempts: row.body_attempts }).eq("artifact_id", row.artifact_id);
+        stopReason = `blocked ${f.status}`;
+        break;
+      }
       await writeRow(row, { status: "blocked", error: blockDetail, meta: { http_status: f.status } });
       continue;
     }
