@@ -91,3 +91,39 @@ restores nothing by itself — the old raw_content chunks were replaced. To rest
 the 110 artifacts through `enrich-artifacts` or re-chunk `raw_content`. Lanes/runs tables and the
 `artifact_body_*` functions are additive and can be dropped; `sec_form_type`/`body_meta` columns
 are nullable additions.
+
+---
+
+## Update 2026-09-28 — default UA, 10-K fetch, 2d measurement
+
+**Access (Myke: "Use the default").** `artifact_body_sec_http_get` sends pgsql-http's default
+User-Agent (0090). Probe 2a: 10/10 HTTP 200. Since then: **0 SEC blocks** across ~9.9k requests.
+
+**Driver.** 100-doc invocations were killed by the edge worker limit (546) after ~35 docs each —
+retuned to 15 docs / 20 s (0094). v1.2 charges the attempt before the fetch so a killed doc cannot
+wedge the queue.
+
+**Stop (17:16 UTC):** the >20% failure-rate guard fired — 22.9% over 105 attempts, **all HTTP 404**.
+The 10-K queue reached 2001-era rows whose URLs are legacy per-document paths
+(`/Archives/edgar/data/<cik>/<accession>/0001.txt`) that EDGAR no longer serves. 162 rows carry that
+shape (12 failed, 104 pending 10-K, 46 pending 8-K); everything else is unaffected. Lane disabled,
+awaiting Myke.
+
+### 2d — 10-K depth (9,522 of 9,845 fetched ok)
+
+| | before (raw_content) | after (body_text) |
+|---|---|---|
+| median chars | 147 | **293,900** |
+| p90 chars | — | **476,068** |
+| rows ≥ 800 chars | 4 | **9,492** |
+| distinct companies (CIK) ≥ 800 | 4 | **2,290** |
+
+Size guard fired on **752** (7.9%); **974** "10-K" rows are exhibits (kept whole). 5 `empty` rows are
+PDFs (the DB `http` path cannot carry binary). Bodies added ~1.2 GB to `artifacts` (TOAST-compressed).
+
+### 2e estimate — NOT started
+
+Qualifying rows: **9,499**, **2.71 B chars** → ≈ **1.52 M chunks** (2,048 / 256 overlap),
+≈ **650–680 M tokens** ≈ **$13–14** (text-embedding-3-small). **Storage ≈ +23 GB** at the existing
+`artifact_chunks` footprint (~15 KB/chunk incl. HNSW) — the database is 23 GB today. Wall time ≈ 10 h
+at edge limits. Options for Myke in the report.
