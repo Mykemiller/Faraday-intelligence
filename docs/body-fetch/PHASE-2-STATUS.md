@@ -127,3 +127,18 @@ Qualifying rows: **9,499**, **2.71 B chars** → ≈ **1.52 M chunks** (2,048 / 
 ≈ **650–680 M tokens** ≈ **$13–14** (text-embedding-3-small). **Storage ≈ +23 GB** at the existing
 `artifact_chunks` footprint (~15 KB/chunk incl. HNSW) — the database is 23 GB today. Wall time ≈ 10 h
 at edge limits. Options for Myke in the report.
+
+---
+
+## Update 2026-10-05 — fetch resumed, 2e embed running (Myke: "Resume the fetch" · "Everything")
+
+**Fetch.** v1.3 (version 6) records HTTP 404/410 as `skipped` ("gone"), never as a failure, and
+the failure-rate stop only counts runs since `lanes.failure_window_since`. Migration 0095 marked the
+162 legacy `/NNNN.txt` rows skipped (150 pending + 12 failed) and re-enabled the lane. First 9
+runs after resume: 134 ok · 1 skipped (a new 404) · 0 failed · **0 blocks**.
+
+**Embed.** 0096 charges an embed attempt at claim time and caps it at 3 (a poison row can't be
+re-billed forever). 0097 smoke: **2 × 10-K → 558 chunks, 241,580 tokens (~433/chunk), 28 s**, no
+worker kill — tokens/chunk match the 2d estimate (≈650–680 M total, ≈$13–14). Wall time is HNSW
+inserts, not edge CPU, so 0098 moved the claim to a per-row lease + `SKIP LOCKED` and scheduled
+`artifact-body-embed-sec` (2 docs / 20 s, overlapping invocations).
