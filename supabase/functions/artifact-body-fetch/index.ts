@@ -1,4 +1,10 @@
-// artifact-body-fetch v1.2 — CC-ARTIFACT-BODY-FETCH-1.0 (Phases 1–2).
+// artifact-body-fetch v1.3 — CC-ARTIFACT-BODY-FETCH-1.0 (Phases 1–2).
+//
+// v1.3 (2026-10-05): HTTP 404/410 is a permanently GONE document, not a failure.
+// Such rows are written 'skipped' (no retries) and kept out of the failure-rate
+// window, which also now only counts runs since lane.failure_window_since. The
+// 2026-09-28 stop was 2001-era EDGAR per-document URLs (…/<accession>/0001.txt)
+// that SEC no longer serves — dead links, not a fetch problem.
 //
 // v1.2 (2026-09-28): the attempt is charged BEFORE the fetch (and refunded on an
 // SEC block), so a document that kills the worker mid-extraction (CPU/memory
@@ -58,7 +64,7 @@ import {
 } from "./body-pure.ts";
 
 const AUTO_ID = "AUTO-246"; // provisional — registry grant pending
-const CRAWLER_ID = "artifact-body-fetch_v1.2";
+const CRAWLER_ID = "artifact-body-fetch_v1.3";
 const EMBED_MODEL = "text-embedding-3-small";
 const EMBED_BATCH = 96;
 const MAX_ATTEMPTS = 3;
@@ -96,6 +102,7 @@ interface Lane {
   min_interval_ms: number;
   per_host_interval_ms: number;
   failure_rate_stop: number;
+  failure_window_since: string | null;
 }
 
 interface Claimed {
@@ -236,6 +243,15 @@ async function runFetch(lane: Lane, limit: number, lease: number, deadline: numb
       continue;
     }
 
+    // Permanently gone (dead link): record and move on — never retried, never a "failure".
+    if (f.status === 404 || f.status === 410) {
+      c.skipped++;
+      await writeRow({ ...row, body_attempts: MAX_ATTEMPTS - 1 }, {
+        status: "skipped", error: `gone: HTTP ${f.status}`, meta: { http_status: f.status },
+      });
+      continue;
+    }
+
     if (f.error || f.status == null || f.status >= 400) {
       const err = f.error ?? `HTTP ${f.status}`;
       c.failed++;
@@ -296,11 +312,12 @@ async function runFetch(lane: Lane, limit: number, lease: number, deadline: numb
 
   // Failure-rate stop (>20%): this invocation plus the lane's recent fetch runs,
   // evaluated once at least 50 real attempts (ok+failed+empty) are in the window.
-  const { data: recentRuns } = await supabase
+  let recentQ = supabase
     .from("artifact_body_fetch_runs")
     .select("ok, failed, empty")
-    .eq("lane", lane.lane).eq("mode", "fetch").gt("attempted", 0)
-    .order("started_at", { ascending: false }).limit(6);
+    .eq("lane", lane.lane).eq("mode", "fetch").gt("attempted", 0);
+  if (lane.failure_window_since) recentQ = recentQ.gte("started_at", lane.failure_window_since);
+  const { data: recentRuns } = await recentQ.order("started_at", { ascending: false }).limit(6);
   let wOk = c.ok, wFailed = c.failed, wEmpty = c.empty;
   for (const r of recentRuns ?? []) { wOk += r.ok; wFailed += r.failed; wEmpty += r.empty; }
   const wTotal = wOk + wFailed + wEmpty;
