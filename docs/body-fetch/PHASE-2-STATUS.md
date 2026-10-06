@@ -142,3 +142,36 @@ re-billed forever). 0097 smoke: **2 × 10-K → 558 chunks, 241,580 tokens (~433
 worker kill — tokens/chunk match the 2d estimate (≈650–680 M total, ≈$13–14). Wall time is HNSW
 inserts, not edge CPU, so 0098 moved the claim to a per-row lease + `SKIP LOCKED` and scheduled
 `artifact-body-embed-sec` (2 docs / 20 s, overlapping invocations).
+
+---
+
+## Update 2026-10-06 — fetch complete, 8-K 2d, embed paused
+
+### Fetch: done
+Every 10-K / 8-K sec_filing row is terminal: **10-K 9,723 ok · 117 skipped · 5 empty**;
+**8-K 17,975 ok · 47 skipped · 2 empty**; 0 pending, 0 failed. **0 SEC blocks** across ~18k
+requests since the resume (default pgsql-http UA). The 52 `sec_filing` rows with no form type
+are outside `form_priority` and were not fetched.
+
+### 2d — 8-K depth
+
+| | before (raw_content) | after (body_text) |
+|---|---|---|
+| median chars | 151 | **22,005** |
+| p90 chars | 170 | **125,250** |
+| rows ≥ 800 chars | 2 | **17,946** |
+| distinct companies (CIK) ≥ 800 | 2 | **2,698** of 2,708 |
+
+**16,169** of the 8-K URLs are exhibits (mostly EX-99 press releases), kept whole; **467** hit the
+500k size guard. Qualifying for re-embed: **17,958** (974 M chars ≈ 540k chunks ≈ $4.6).
+
+### 2e — embed paused (IO-bound)
+3,206 SEC artifacts embedded (≈570k chunks, ≈238 M tokens, 0 failures, 0 chunk-count mismatches,
+no row past attempt 1). But per-invocation time climbed **8 s → 35 s → 52 s → 113 s** over nine
+hours: `artifact_chunks` grew 4.2 → 14 GB and its HNSW index out of memory, so every insert
+waited on `DataFileRead` and the load landed on the shared production DB. Lanes paused and both
+crons unscheduled (0099, applied manually in the SQL editor). DB 23 → 33 GB.
+
+Remaining if resumed: ~6,500 10-Ks + 17,958 8-Ks. Options: (1) larger compute so the index fits
+in RAM; (2) drop the vector index, bulk-load the rest, rebuild once (fastest; semantic search
+down until rebuilt); (3) stop here — remaining bodies stay full-text-readable, unembedded.
