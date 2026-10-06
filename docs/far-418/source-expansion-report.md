@@ -116,9 +116,19 @@ cheap but not free, and it needs a source of record) rather than seeded with inv
 endpoints. Phase 2 (co-ops and municipals intersecting a county that already holds a
 Boundstone record) was spec'd, not built, by the CC itself.
 
-Note also §7.4's own rule, which is honoured: utility domains are **not** added to
-`boundstone.allowed_source_domains`. A utility press release is discovery; the citable
-record is the commission docket.
+Note also §7.4's own rule, which is honoured: a utility domain is never treated as a
+citable source. A utility press release is discovery; the citable record is the
+commission docket.
+
+> **⚠️ CORRECTED 2026-10-06 (FDY-62).** The sentence above originally said utility
+> domains are "not added to `boundstone.allowed_source_domains`". **That table does not
+> exist.** Read read-only against `information_schema.tables` in project
+> `fwnerwrtlgnchuprvfgl`: the only domain table in the `boundstone` schema is
+> `blocked_source_domains`. Boundstone has no allowlist and never had one — quotability
+> is `boundstone.is_government_host()` (`.gov`, `.mil`, US state/local `.us`) minus the
+> blocklist, and nothing else. The rule as stated still holds; only its mechanism was
+> wrong. The mirror lives in `supabase/functions/boundstone-candidates/primary-source.ts`
+> and is pinned to live fixtures by `test/far418-government-host.test.mjs`.
 
 ## Registry hygiene (§7.6)
 

@@ -10,9 +10,24 @@
 // function is the one place that must read one and write the other, because
 // that is the wire whose absence is the entire finding in §0 ("There is no
 // wire"). It holds two clients with two service keys and never mixes them:
-//   ENGINE (ycadmmngkdhvpcsrcuaq)    — READ ONLY. artifacts, source_registry.
-//   BOUNDSTONE (fwnerwrtlgnchuprvfgl) — writes boundstone.candidates and the
-//                                       ingest watermark. Nothing else, ever.
+//   ENGINE (the Faraday project)     — READ ONLY on artifacts / source_registry,
+//                                      plus its own automation_health_log.
+//   BOUNDSTONE (fwnerwrtlgnchuprvfgl) — RPC ONLY. Three functions, no tables.
+//
+// THE BOUNDSTONE SIDE IS A FUNCTION CALL, NOT A TABLE GRANT (Boundstone
+// migration 0042, applied). Everything that touches that project goes through
+// boundstone-rpc.ts and `.rpc()`:
+//   bs_record_candidate_propose(p jsonb) → boundstone.record_candidates
+//   bs_ingest_watermark_get(p_key)  / bs_ingest_watermark_set(p_key, p_at)
+// There is no `db:{schema:'boundstone'}` and no `.from(...)` on that client.
+// The propose function reads its payload KEY BY KEY and never splats it, which
+// is precisely what keeps `review_state` out of a caller's reach. Writing the
+// table directly with a service-role key would hand Faraday the power to mark
+// its own proposals promoted, and PROMOTION IS A HUMAN EDITORIAL ACT. Every row
+// lands review_state='pending'. Nothing here writes boundstone.records and
+// nothing here writes a confidence_grade (trigger-derived, not ours).
+// test/far418-boundstone-rpc-only.test.mjs fails the build if a `.from(` ever
+// appears against the Boundstone client.
 //
 // DECISION 2 IS ENFORCED HERE BY ABSENCE: there is no reference to ifs_domains
 // or ifs_subdomains anywhere in the query path. A restriction is a restriction
@@ -36,19 +51,33 @@ import {
 import {
   type AuthorityLevel,
   extractAuthorityLinks,
+  makeProvenance,
+  type Provenance,
   rankAuthorityLinks,
   retrievalPlan,
+  urlHost,
 } from "./primary-source.ts";
+import {
+  buildCandidatePayload,
+  canaryPayload,
+  type CandidatePayload,
+  proposeCandidate,
+  WATERMARK_KEY,
+  watermarkGet,
+  watermarkSet,
+} from "./boundstone-rpc.ts";
 import { buildIntakeQuery, type ClientLike } from "./intake.ts";
 import { canonicalizeUrl, normalizeDocument } from "../source-poller/poller-canonical.ts";
 
-const CRAWLER_ID = "boundstone-candidates_v1.0";
+const CRAWLER_ID = "boundstone-candidates_v1.1"; // v1.1 = RPC-only write contract (Boundstone migration 0042)
 const AUTO_ID = Deno.env.get("BOUNDSTONE_CANDIDATES_AUTO_ID") ?? "AUTO-UNASSIGNED";
 const UA = "FaradayIntelligenceBot/1.0 (+https://faraday-intelligence.ai; boundstone candidate ingest)";
 const WALL_BUDGET_MS = 95_000;
 const FETCH_TIMEOUT_MS = 10_000;
 const CRON_TOKEN_FALLBACK_SHA256 = "dd88c73bb785f950802d296ede8541501b486da1c141aef14635680d2780ea63";
-const WATERMARK_KEY = "boundstone-candidates";
+/** Payloads echoed back by a `?dry=1` run. Capped so a dry run over a large
+ * backlog stays a readable report rather than a dump. */
+const DRY_SAMPLE_MAX = 5;
 /** Gate 1 is a model call per surviving artifact; Gate 0 is free. This caps the
  * spend per run, and the watermark makes the cap resumable rather than lossy. */
 const MAX_CLASSIFY_PER_RUN = 60;
@@ -62,11 +91,13 @@ const engine = createClient(
 
 const boundstoneUrl = Deno.env.get("BOUNDSTONE_SUPABASE_URL");
 const boundstoneKey = Deno.env.get("BOUNDSTONE_SERVICE_ROLE_KEY");
+// ⚠️ NO `db: { schema: "boundstone" }`. That option exists to make
+// `.from("candidates")` resolve to `boundstone.candidates`, and this function
+// does not call `.from()` on this client at all — the three RPCs live in
+// `public` and are SECURITY DEFINER into `boundstone`. Setting the schema would
+// also break `.rpc()`, which resolves against the configured schema.
 const boundstone = boundstoneUrl && boundstoneKey
-  ? createClient(boundstoneUrl, boundstoneKey, {
-    auth: { persistSession: false },
-    db: { schema: "boundstone" },
-  })
+  ? createClient(boundstoneUrl, boundstoneKey, { auth: { persistSession: false } })
   : null;
 
 async function sha256hex(s: string): Promise<string> {
@@ -98,55 +129,19 @@ async function fetchWithTimeout(url: string): Promise<Response> {
 }
 
 // ---------------------------------------------------------------------------
-// Provenance — the allowlist lives in Boundstone and is read, never copied.
+// Provenance — see primary-source.ts.
 // ---------------------------------------------------------------------------
-
-function hostOf(u: string): string {
-  try {
-    return new URL(u).hostname.toLowerCase().replace(/^www\./, "");
-  } catch {
-    return "";
-  }
-}
-
-interface Provenance {
-  isQuotable: (u: string) => boolean;
-  kindOf: (u: string) => string | null;
-}
-
-/** Mirrors boundstone.is_quotable_source_host(): blocklist first and always
- * wins, then the government-TLD rule, then the allowlist. Built from the live
- * tables on every run so an allowlist edit takes effect without a redeploy. */
-async function loadProvenance(): Promise<Provenance> {
-  const [{ data: allow }, { data: block }] = await Promise.all([
-    boundstone!.from("allowed_source_domains").select("domain, authority_kind"),
-    boundstone!.from("blocked_source_domains").select("domain"),
-  ]);
-  const allowed = new Map((allow ?? []).map((r) => [String(r.domain).toLowerCase(), String(r.authority_kind)]));
-  const blocked = new Set((block ?? []).map((r) => String(r.domain).toLowerCase()));
-  const suffixHit = (host: string, set: Iterable<string>) => {
-    for (const d of set) if (host === d || host.endsWith(`.${d}`)) return d;
-    return null;
-  };
-  const govTld = (host: string) => /(^|\.)(gov|mil)$/.test(host) || /\.[a-z]{2}\.us$/.test(host) || /(^|\.)us$/.test(host);
-  return {
-    isQuotable(u: string) {
-      const host = hostOf(u);
-      if (!host) return false;
-      if (suffixHit(host, blocked)) return false; // blocklist always wins
-      if (govTld(host)) return true;
-      return suffixHit(host, allowed.keys()) !== null;
-    },
-    kindOf(u: string) {
-      const host = hostOf(u);
-      if (!host) return null;
-      if (suffixHit(host, blocked)) return null;
-      const hit = suffixHit(host, allowed.keys());
-      if (hit) return allowed.get(hit) ?? null;
-      return govTld(host) ? "GOV_TLD" : null;
-    },
-  };
-}
+//
+// ⚠️ PROMPT SAID X, PRODUCTION IS Y. This block used to read
+// `boundstone.allowed_source_domains`. That table does not exist in the
+// Boundstone project — checked read-only against information_schema on
+// 2026-10-06 — and no `bs_*` RPC exposes `blocked_source_domains` either, so
+// neither list is reachable from a function-only client. The rule is therefore
+// carried in code: `isGovernmentHost()` mirrors `boundstone.is_government_host()`
+// character for character, and the blocklist is a pinned snapshot of the live
+// table. Both are tested; see primary-source.ts for why the mirror reproduces
+// the SQL's case-sensitivity quirk rather than improving on it.
+const prov: Provenance = makeProvenance();
 
 // ---------------------------------------------------------------------------
 // Gate 1
@@ -275,15 +270,20 @@ Deno.serve(async (req: Request) => {
   try {
     bodyIn = await req.json();
   } catch { /* defaults */ }
-  const dryRun = bodyIn.dry_run === true;
+  // §5 — two ways in, same mode. `?dry=1` is the one a human can run from a
+  // terminal without composing a body; `{"dry_run":true}` is the one the
+  // original CC specified and is kept so nothing that already calls it breaks.
+  const dryRun = new URL(req.url).searchParams.get("dry") === "1" || bodyIn.dry_run === true;
 
-  // ---- watermark -------------------------------------------------------
-  const { data: wm } = await boundstone
-    .from("ingest_watermarks")
-    .select("watermark_at")
-    .eq("key", WATERMARK_KEY)
-    .maybeSingle();
-  const since = (bodyIn.since as string | undefined) ?? wm?.watermark_at ??
+  // ---- watermark (RPC — bs_ingest_watermark_get) ------------------------
+  const wm = await watermarkGet(boundstone, WATERMARK_KEY);
+  if (!wm.ok) {
+    return new Response(JSON.stringify({ error: `watermark read failed: ${wm.error}` }), {
+      status: 502,
+      headers: { "content-type": "application/json" },
+    });
+  }
+  const since = (bodyIn.since as string | undefined) ?? wm.at ??
     new Date(Date.now() - 7 * 86400_000).toISOString();
 
   // ---- intake (§6.1) ---------------------------------------------------
@@ -301,7 +301,6 @@ Deno.serve(async (req: Request) => {
     });
   }
 
-  const prov = await loadProvenance();
   const { data: regRows } = await engine
     .from("source_registry")
     .select("source_key, url")
@@ -309,9 +308,14 @@ Deno.serve(async (req: Request) => {
   const registry = new Map((regRows ?? []).map((r) => [String(r.source_key), String(r.url)]));
 
   let gate0Pass = 0, classified = 0, accepted = 0, rejected = 0, written = 0, primaryOk = 0;
+  // A duplicate is neither a write nor a failure — it is §6.6 working. Counted
+  // on its own line so a healthy steady state does not read as a broken run.
+  let duplicates = 0, unmapped = 0;
   const rejectReasons: Record<string, number> = {};
   const errors: unknown[] = [];
   const budget = { fetches: 0 };
+  /** §5 — what a `?dry=1` run reports instead of writing. */
+  const wouldWrite: CandidatePayload[] = [];
   let watermark = since;
 
   for (const a of artifacts ?? []) {
@@ -353,7 +357,9 @@ Deno.serve(async (req: Request) => {
     const c = result.value;
 
     // Gate 2 — locate the authority's own document. Never drops the candidate.
-    const canonical = (a.canonical_url as string | null) || canonicalizeUrl(String(a.source_url ?? ""));
+    // Canonicalised here rather than read off the artifact: see intake.ts for
+    // why `artifacts.canonical_url` is no longer selected.
+    const canonical = canonicalizeUrl(String(a.source_url ?? ""));
     const primary = await findPrimarySource(c, String(a.source_url ?? ""), prov, registry, budget);
     if (primary.ok) primaryOk++;
 
@@ -367,15 +373,17 @@ Deno.serve(async (req: Request) => {
       }),
     );
 
-    if (dryRun) continue;
-
-    // §6.5 — conflict on hash is a NO-OP. Trade-press coverage of a captured
-    // instrument lands here and is absorbed, never opening a second row (§6.6).
-    const { error: insErr } = await boundstone.from("candidates").insert({
+    // THE CONTRACT. Every key below is one bs_record_candidate_propose reads
+    // out of `p`; nothing else is sent, and the builder refuses a payload that
+    // carries a key the function would ignore. `effective_date` is NOT here —
+    // boundstone.record_candidates has no such column, so the classifier's
+    // transcribed date feeds the content hash and goes no further. It is
+    // transcribed or null either way; it is never computed ([REC-6]).
+    const built = buildCandidatePayload({
       artifact_id: a.artifact_id,
       source_url: String(a.source_url ?? ""),
       canonical_url: canonical,
-      discovery_host: hostOf(String(a.source_url ?? "")),
+      discovery_host: urlHost(String(a.source_url ?? "")),
       headline: title || normalizeDocument(body).slice(0, 300) || "(untitled)",
       extract: c.extract,
       published_at: a.published_at ?? null,
@@ -396,21 +404,43 @@ Deno.serve(async (req: Request) => {
       primary_source_ok: primary.ok,
       content_hash: hash,
     });
-    if (insErr) {
-      // 23505 is the intended dedupe path, not a failure.
-      if (!String(insErr.code) .includes("23505")) {
-        errors.push({ artifact_id: a.artifact_id, error: insErr.message.slice(0, 300) });
-      }
-    } else {
+    if (!built.ok || !built.payload) {
+      unmapped++;
+      const r = `payload: ${built.reason ?? "unknown"}`;
+      rejectReasons[r] = (rejectReasons[r] ?? 0) + 1;
+      continue;
+    }
+
+    // §5 — DRY. bs_record_candidate_propose has no dry mode (read its
+    // definition: a plain INSERT ... ON CONFLICT DO NOTHING), so the dry path
+    // does not call it. It reports the payload instead. Calling it "just to
+    // see" would write the row, which is the one thing a dry run may not do.
+    if (dryRun) {
+      if (wouldWrite.length < DRY_SAMPLE_MAX) wouldWrite.push(built.payload);
+      written++; // "would have been proposed", reported as would_propose below
+      continue;
+    }
+
+    // §6.5 — conflict on content_hash is a NO-OP inside the function. Trade-press
+    // coverage of a captured instrument lands here and is absorbed, never opening
+    // a second row (§6.6). RPC only: see boundstone-rpc.ts.
+    const res = await proposeCandidate(boundstone, built.payload);
+    if (!res.ok) {
+      errors.push({ artifact_id: a.artifact_id, error: (res.error ?? "propose failed").slice(0, 300) });
+    } else if (res.action === "duplicate") {
+      duplicates++;
+    } else if (res.action === "inserted") {
       written++;
+    } else {
+      errors.push({ artifact_id: a.artifact_id, error: `unexpected propose action '${res.action}'` });
     }
   }
 
-  if (!dryRun) {
-    await boundstone.from("ingest_watermarks").upsert(
-      { key: WATERMARK_KEY, watermark_at: watermark, updated_at: new Date().toISOString() },
-      { onConflict: "key" },
-    );
+  // The watermark advances only on a real run. A dry run that moved it would
+  // skip everything it merely described.
+  if (!dryRun && watermark !== since) {
+    const set = await watermarkSet(boundstone, watermark, WATERMARK_KEY);
+    if (!set.ok) errors.push({ watermark, error: `watermark write failed: ${set.error}` });
   }
 
   await engine.from("automation_health_log").insert({
@@ -419,12 +449,13 @@ Deno.serve(async (req: Request) => {
     run_started_at: startedIso,
     run_completed_at: new Date().toISOString(),
     artifacts_found: artifacts?.length ?? 0,
-    artifacts_new: written,
-    artifacts_duped: Math.max(0, accepted - written),
+    artifacts_new: dryRun ? 0 : written,
+    artifacts_duped: duplicates,
     errors,
     success: errors.length === 0,
     notes: `gate0_pass=${gate0Pass} classified=${classified} accepted=${accepted} ` +
-      `rejected=${rejected} written=${written} primary_ok=${primaryOk}${dryRun ? " DRY" : ""}`,
+      `rejected=${rejected} written=${written} duplicates=${duplicates} unmapped=${unmapped} ` +
+      `primary_ok=${primaryOk}${dryRun ? " DRY" : ""}`,
   });
 
   return new Response(
@@ -438,9 +469,21 @@ Deno.serve(async (req: Request) => {
       accepted,
       rejected,
       reject_reasons: rejectReasons,
-      written,
+      [dryRun ? "would_propose" : "proposed"]: written,
+      duplicates,
+      unmapped,
       primary_source_located: primaryOk,
       dry_run: dryRun,
+      // §5 — a dry run always reports a payload, even over an empty corpus, so
+      // "what would this write" is answerable without waiting for a hit.
+      ...(dryRun
+        ? {
+          wrote_nothing: true,
+          canary_payload: canaryPayload(startedIso),
+          would_write_sample: wouldWrite,
+          would_write_sample_truncated: written > wouldWrite.length,
+        }
+        : {}),
     }),
     { headers: { "content-type": "application/json" } },
   );

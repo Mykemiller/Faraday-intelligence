@@ -1,8 +1,13 @@
 // far418-rosters.mjs — CC-BOUNDSTONE-INGEST-1.1 §7 (FAR-418).
-// ONE roster, two generated outputs: the source_registry seed (engine) and the
-// boundstone.allowed_source_domains seed. Generating both from the same file is
-// what keeps the allowlist complete as sources are added, instead of relying on
-// somebody remembering a state (§3.2).
+// ONE roster, ONE generated output: the source_registry seed (engine).
+//
+// ⚠️ CORRECTED 2026-10-06. This module used to describe a second output, a
+// `boundstone.allowed_source_domains` seed. THAT TABLE DOES NOT EXIST in the
+// Boundstone project (fwnerwrtlgnchuprvfgl) — checked read-only against
+// information_schema.tables. Boundstone decides quotability with
+// `boundstone.is_government_host()` plus `boundstone.blocked_source_domains`,
+// and there is no allowlist to keep in step. The mirror of that rule lives in
+// supabase/functions/boundstone-candidates/primary-source.ts.
 //
 // Nothing here is hand-entered per state where a list already existed:
 //   * STATES        — the 50 states + DC. Fixed, closed, and the spine of §7.1/§7.2.

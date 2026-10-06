@@ -20,6 +20,56 @@ from here (Ask Faraday, waitlist/subscribe, lexicon).
 
 ## Changelog
 
+### CC-BOUNDSTONE-INGEST — 2026-10-06 (FDY-62: the Boundstone write contract is an RPC, not a table)
+- **`boundstone-candidates` now writes Boundstone through functions only.** Boundstone shipped
+  migration **0042** (applied, their side): `public.bs_record_candidate_propose(p jsonb)`,
+  `public.bs_ingest_watermark_get(p_key)` / `bs_ingest_watermark_set(p_key, p_at)`. The
+  `db:{schema:'boundstone'}` client option, the `.from("candidates").insert(...)` and the
+  watermark select/upsert are gone. The whole write surface is
+  `supabase/functions/boundstone-candidates/boundstone-rpc.ts`.
+- **⚠️ Why RPC-only is a guarantee and not a preference.** The function holds a SERVICE-ROLE key
+  for the Boundstone project, so it *could* write any table there. `bs_record_candidate_propose`
+  reads its payload **key by key and never splats it**, which is the only thing making
+  `review_state` / `reviewed_by` / `created_at` unsettable by a caller. Going around it would
+  hand Faraday the power to mark its own proposals promoted. **Promotion of a candidate to a
+  published record remains a human editorial act.** `test/far418-boundstone-rpc-only.test.mjs`
+  builds the compiled call list two ways — a recording stub, and a tokenizing scan of the
+  shipped source — and fails on a single `.from(` against the Boundstone client.
+- **⚠️ `action`, not `status`.** The function returns
+  `jsonb_build_object('action','inserted'|'duplicate','candidate_id',…)`. `duplicate` is the
+  `on conflict (content_hash) do nothing` path: a **no-op and a success**, counted on its own
+  line so a healthy steady state does not read as a broken run.
+- **⚠️ `boundstone.allowed_source_domains` DOES NOT EXIST — it never did.** Checked read-only
+  against `information_schema.tables` in `fwnerwrtlgnchuprvfgl`. The only domain table is
+  `blocked_source_domains`, and **no `bs_*` RPC exposes it** (all 23 were enumerated). So
+  quotability is carried in code: `isGovernmentHost()` in `primary-source.ts` mirrors
+  `boundstone.is_government_host()` — **including the wart** that Postgres `regexp_replace`
+  without `'i'` is case-sensitive, so `HTTPS://energy.gov/x` resolves to host `https` and is
+  NOT a government host. Mirrored deliberately: a link Faraday calls quotable must be one
+  Boundstone calls quotable, and both being odd in the same way beats silent disagreement.
+  Every fixture in `test/far418-government-host.test.mjs` is live DB output, not a prediction.
+- **Blocklist: four vendors, FIVE domains.** `legiscan.com`, `fiscalnote.com`, `policynote.com`,
+  `data365.co`, `data365.com` — Data365 holds two. Pinned to
+  `docs/far-418/boundstone-blocked-source-domains.snapshot.json` (read 2026-10-06) by a test
+  that fails on drift.
+- **`?dry=1`** joins `{"dry_run":true}`. `bs_record_candidate_propose` **has no dry mode** (read
+  its definition — a plain INSERT … ON CONFLICT), so the dry path does not call it: it reports
+  the payloads it would have sent plus a `canary_payload` built through the same builder, and
+  never advances the watermark.
+- **⚠️ `artifacts.canonical_url` is no longer selected.** It is added by the UN-APPLIED migration
+  0101 and its writer (source-poller v1.5) is not in this branch, so selecting it would have
+  failed the whole intake query. The classifier canonicalises `source_url` itself with the same
+  `canonicalizeUrl()`. The function now has **no engine-schema precondition at all**.
+- **Rebuilt from main, not rebased.** PR #51 (`far-418/boundstone-ingest`) conflicts with main,
+  which is ~20 PRs ahead. Its two commits were cherry-picked onto `main` and resolved **in
+  favour of main** for `enrich-artifacts` and `source-poller` — so the §5.2 IDF-tagging spine
+  (enrich-artifacts v2.3) and the §4 dedupe poller (v1.5) are **NOT in this branch**; main's
+  v2.5 / v1.3 are preserved byte-for-byte. `test/far418-tagging.test.mjs` went with them.
+- Migrations renumbered **0030→0101**, **0031→0102** (main consumed 0030–0100). Both carry
+  `-- UN-APPLIED — requires Myke's approval`. **0101 is inert until its writer lands** — nothing
+  reads those columns today, and that is stated in the file rather than implied.
+- `npm test` **157/157**. Nothing deployed, no cron wired, no AUTO- id self-assigned.
+
 ### enrich-artifacts v2.5 — 2026-09-27 (OCP Phase 3, Myke D4: embed `body_text` when present)
 - **Deployed v45 (`AUTO-030_v2.5`).** The repo was live-ahead-of-prod again: v2.4
   (`artifact_should_chunk` gate) was deployed but never committed — captured verbatim first

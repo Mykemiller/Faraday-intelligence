@@ -1,13 +1,26 @@
--- 0030_far418_raw_hash_and_canonical.sql
+-- UN-APPLIED — requires Myke's approval
+-- 0101_far418_raw_hash_and_canonical.sql
 --
 -- CC-BOUNDSTONE-INGEST-1.1 §3.4 + §4 + §5.2 (FAR-418).
 --
 -- ⚠️ UN-APPLIED. This CC authorizes no applied schema migration. Do not run
---    `supabase db push`. Promotion is a separate, gated step.
+--    `supabase db push`. Promotion is a separate, gated step. Nothing in this
+--    file has been run against any project.
 --
--- NUMBERING: the CC names this file `0016_raw_hash_and_canonical.sql`. 0016 is
--- taken (`0016_dc_hub_facility_intel.sql`) and the engine is at 0029, so this
--- lands at 0030. Content is unchanged from the spec; only the ordinal moved.
+-- NUMBERING: the CC names this file `0016_raw_hash_and_canonical.sql`; 0016 is
+-- taken (`0016_dc_hub_facility_intel.sql`). PR #51 moved it to 0030 when the
+-- engine was at 0029. main has since used 0030–0100, so it moves again, to
+-- 0101. Content is unchanged from the spec; only the ordinal moved.
+--
+-- ⚠️ ITS WRITER IS NOT IN THIS PR, AND THAT IS DELIBERATE. `raw_hash`,
+-- `canonical_url` and `last_seen_at` were to be populated by source-poller
+-- v1.5. This branch preserves MAIN's source-poller instead — main is ~20 PRs
+-- ahead and its poller is the deployed one — so these columns would be added
+-- empty and stay empty until the poller change lands separately. Nothing reads
+-- them in the meantime: boundstone-candidates canonicalises `source_url`
+-- itself and no longer selects `canonical_url` (see intake.ts). Applying this
+-- file is therefore safe but inert, which is the honest state to leave it in
+-- rather than pretending the dedupe lane is live.
 --
 -- WHAT THIS DOES
 --   1. artifacts gains raw_hash / canonical_url / tag_provenance / last_seen_at

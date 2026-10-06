@@ -17,9 +17,19 @@
 // cost becomes a concern, say so in the PR rather than quietly narrowing this.
 
 /** Columns the classifier reads. Note what is absent: no ifs_domains, no
- * ifs_subdomains, and no join to anything that carries them. */
+ * ifs_subdomains, and no join to anything that carries them.
+ *
+ * ⚠️ `canonical_url` WAS HERE AND IS DELIBERATELY GONE. It is added to
+ * public.artifacts by migration 0101, which is UN-APPLIED, and its only writer
+ * would have been source-poller v1.5, which this branch does not take (main's
+ * poller is preserved). Selecting a column that does not exist fails the whole
+ * intake query, so boundstone-candidates would have been undeployable until an
+ * unrelated migration landed. The classifier now canonicalises `source_url`
+ * itself with the same `canonicalizeUrl()` the poller would have used, which
+ * yields the identical string — so this costs nothing and removes the engine
+ * schema from the function's deploy preconditions entirely. */
 export const INTAKE_COLUMNS =
-  "artifact_id, source_url, canonical_url, published_at, raw_content, enrich_completed_at, signal_envelope";
+  "artifact_id, source_url, published_at, raw_content, enrich_completed_at, signal_envelope";
 
 export const INTAKE_LIMIT = 2000;
 
