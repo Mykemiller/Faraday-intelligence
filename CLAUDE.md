@@ -68,7 +68,11 @@ from here (Ask Faraday, waitlist/subscribe, lexicon).
 - Migrations renumbered **0030→0101**, **0031→0102** (main consumed 0030–0100). Both carry
   `-- UN-APPLIED — requires Myke's approval`. **0101 is inert until its writer lands** — nothing
   reads those columns today, and that is stated in the file rather than implied.
-- `npm test` **157/157**. Nothing deployed, no cron wired, no AUTO- id self-assigned.
+- **DST-safe cron guard added** (`hour_guard`). pg_cron speaks UTC only, so the proposed daily
+  06:00 America/Chicago run is scheduled at **both** 11:00 and 12:00 UTC and the guard no-ops
+  the wrong one. Opt-in — only the cron sends it, so a manual invocation still runs on demand.
+  `hourCycle:'h23'`, not `hour12:false`, which renders midnight as "24" on some ICU builds.
+- `npm test` **158/158**. Nothing deployed, no cron wired, no AUTO- id self-assigned.
 
 ### enrich-artifacts v2.5 — 2026-09-27 (OCP Phase 3, Myke D4: embed `body_text` when present)
 - **Deployed v45 (`AUTO-030_v2.5`).** The repo was live-ahead-of-prod again: v2.4

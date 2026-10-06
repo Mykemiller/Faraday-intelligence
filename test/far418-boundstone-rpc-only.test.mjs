@@ -407,6 +407,21 @@ test("?dry=1 is a mode of the handler and the dry path never proposes", () => {
   assert.ok(/if \(!dryRun && watermark !== since\)/.test(src));
 });
 
+test("the DST-safe cron guard is opt-in, hour-23 safe, and named America/Chicago", () => {
+  const src = read(INDEX);
+  // Opt-in: a manual invocation must not be silently skipped.
+  assert.ok(/hour_guard/.test(src), "the guard must exist");
+  assert.ok(
+    /searchParams\.get\("hour_guard"\)\s*===\s*"1"\s*\|\|\s*bodyIn\.hour_guard === true/.test(src),
+    "the guard must be requested by the caller, never assumed",
+  );
+  assert.ok(src.includes('"America/Chicago"'), "the local zone must be explicit");
+  // hour12:false renders midnight as 24 on some ICU builds. h23 does not.
+  assert.ok(/hourCycle:\s*"h23"/.test(src), "hourCycle h23, not hour12:false");
+  // CODE only — the comment above the helper explains why hour12 is wrong.
+  assert.ok(!/hour12/.test(stripNonCode(src)), "hour12 must not be used for the guard");
+});
+
 // ---------------------------------------------------------------------------
 // 5. The blocklist snapshot.
 // ---------------------------------------------------------------------------

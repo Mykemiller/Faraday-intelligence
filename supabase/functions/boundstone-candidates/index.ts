@@ -1,5 +1,12 @@
 // boundstone-candidates — CC-BOUNDSTONE-INGEST-1.1 §6 (FAR-418).
-// Proposed AUTO-<assign>. Cron */30. verify_jwt=false.
+// AUTO id: read from BOUNDSTONE_CANDIDATES_AUTO_ID, defaulting to
+// 'AUTO-UNASSIGNED' — the function is safe to deploy before the Automation
+// Registry row exists, and its health rows say so rather than borrowing an id.
+// Proposed cron: DAILY at 06:00 America/Chicago. pg_cron runs in UTC, so that
+// is 11:00 UTC in CDT and 12:00 UTC in CST. Both are scheduled and the guard
+// hour guard in the handler makes the wrong one a no-op, which is why the
+// schedule does not drift an hour twice a year. verify_jwt=false (a true setting 401s the cron at the
+// gateway).
 //
 // Reads enriched artifacts from the Faraday engine, decides which of them
 // record a restriction on data center development, and PROPOSES them as
@@ -75,6 +82,23 @@ const UA = "FaradayIntelligenceBot/1.0 (+https://faraday-intelligence.ai; bounds
 const WALL_BUDGET_MS = 95_000;
 const FETCH_TIMEOUT_MS = 10_000;
 const CRON_TOKEN_FALLBACK_SHA256 = "dd88c73bb785f950802d296ede8541501b486da1c141aef14635680d2780ea63";
+/** §8 — the DST-safe cron guard. pg_cron speaks UTC only, so a job that must
+ * fire at a fixed LOCAL hour has to be scheduled at both UTC hours the local
+ * hour maps to across the year and then no-op on the wrong one. Editing the
+ * schedule twice a year is the alternative, and it is the one that gets
+ * forgotten in November. */
+const EXPECTED_LOCAL_HOUR = 6;
+const LOCAL_TZ = "America/Chicago";
+
+/** Hour 0-23 in `tz`. `hourCycle:'h23'` matters: `hour12:false` renders
+ * midnight as "24" on some ICU builds, which would make the guard reject the
+ * one run of the day it was meant to allow. */
+function localHour(at: Date, tz: string = LOCAL_TZ): number {
+  return Number(
+    new Intl.DateTimeFormat("en-US", { timeZone: tz, hour: "numeric", hourCycle: "h23" }).format(at),
+  );
+}
+
 /** Payloads echoed back by a `?dry=1` run. Capped so a dry run over a large
  * backlog stays a readable report rather than a dump. */
 const DRY_SAMPLE_MAX = 5;
@@ -273,7 +297,29 @@ Deno.serve(async (req: Request) => {
   // §5 — two ways in, same mode. `?dry=1` is the one a human can run from a
   // terminal without composing a body; `{"dry_run":true}` is the one the
   // original CC specified and is kept so nothing that already calls it breaks.
-  const dryRun = new URL(req.url).searchParams.get("dry") === "1" || bodyIn.dry_run === true;
+  const url = new URL(req.url);
+  const dryRun = url.searchParams.get("dry") === "1" || bodyIn.dry_run === true;
+
+  // §8 — the hour guard is OPT-IN, and the cron is what opts in. Both UTC
+  // schedules POST {"hour_guard":true}; exactly one of them is 06:00 in
+  // America/Chicago on any given day and the other returns here having done
+  // nothing. An ad-hoc invocation carries no guard and runs whenever it is
+  // asked to, which is what a human expects of a manual run.
+  const hourGuard = url.searchParams.get("hour_guard") === "1" || bodyIn.hour_guard === true;
+  if (hourGuard) {
+    const expected = Number(bodyIn.expected_local_hour ?? EXPECTED_LOCAL_HOUR);
+    const actual = localHour(new Date());
+    if (actual !== expected) {
+      return new Response(
+        JSON.stringify({
+          skipped: true,
+          reason: `hour guard: ${LOCAL_TZ} hour is ${actual}, expected ${expected}`,
+          hour_guard: true,
+        }),
+        { status: 200, headers: { "content-type": "application/json" } },
+      );
+    }
+  }
 
   // ---- watermark (RPC — bs_ingest_watermark_get) ------------------------
   const wm = await watermarkGet(boundstone, WATERMARK_KEY);
