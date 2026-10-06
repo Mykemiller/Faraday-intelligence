@@ -1,0 +1,31 @@
+{
+  "_what": "Verbatim contents of boundstone.blocked_source_domains in Supabase project fwnerwrtlgnchuprvfgl.",
+  "_why": "boundstone-candidates cannot read this table. It is in the `boundstone` schema, no bs_* RPC returns it, and the Faraday-side client is deliberately RPC-only (see supabase/functions/boundstone-candidates/boundstone-rpc.ts). So the list is carried in code as BLOCKED_SOURCE_DOMAINS and pinned to this snapshot by test/far418-boundstone-rpc-only.test.mjs, which fails if the two drift apart.",
+  "_how_to_refresh": "select domain, reason from boundstone.blocked_source_domains order by domain;  -- read-only, Supabase MCP, project fwnerwrtlgnchuprvfgl",
+  "_note": "Four VENDORS, five DOMAINS. Data365 holds both data365.co and data365.com. The code list is the domain list, because a domain is what a URL is matched against.",
+  "measured_at": "2026-10-06T17:00-05:00",
+  "project_ref": "fwnerwrtlgnchuprvfgl",
+  "row_count": 5,
+  "rows": [
+    {
+      "domain": "data365.co",
+      "reason": "Commercial data vendor. Discovery only — compiled output is not redistributable. Re-source to the originating document."
+    },
+    {
+      "domain": "data365.com",
+      "reason": "Commercial data vendor. Discovery only — compiled output is not redistributable. Re-source to the originating document."
+    },
+    {
+      "domain": "fiscalnote.com",
+      "reason": "Commercial legislative monitor. Discovery only — compiled output is not redistributable. Re-source to the originating document."
+    },
+    {
+      "domain": "legiscan.com",
+      "reason": "Commercial legislative monitor. Discovery only — compiled output is not redistributable. Re-source to the originating document."
+    },
+    {
+      "domain": "policynote.com",
+      "reason": "Commercial legislative monitor. Discovery only — compiled output is not redistributable. Re-source to the originating document."
+    }
+  ]
+}
