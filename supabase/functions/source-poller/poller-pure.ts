@@ -7,6 +7,12 @@ export interface FeedItem {
   link: string | null;
   published: string | null; // raw date string as found
   summary: string;
+  /** Publisher name from the feed item's own <source> element, when present.
+   * Google News RSS always carries it: <source url="https://www.utilitydive.com">Utility Dive</source>.
+   * NEVER inferred from the title or the registry name — this is authoritative or absent. */
+  publisher?: string | null;
+  /** Publisher homepage from the <source url="..."> attribute. */
+  publisherHome?: string | null;
 }
 
 /** Common feed-path suffixes probed during verification, in priority order. */
@@ -116,6 +122,23 @@ function stripTags(s: string): string {
   return s.replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim();
 }
 
+/** Pull the publisher out of a feed item's <source> element.
+ * CC-PUBLISHER-ATTRIBUTION-1.0: this is the ONLY sanctioned publisher source at
+ * ingest. Google News redirect links (news.google.com/rss/articles/...) cannot be
+ * resolved to a canonical publisher URL from our egress — the batchexecute
+ * endpoint answers 429 + reCAPTCHA — but every Google News RSS item carries an
+ * authoritative <source url="...">Name</source>, so attribution does not depend
+ * on resolving the link. Returns nulls when the element is absent rather than
+ * guessing from the title. */
+export function extractItemSource(block: string): { publisher: string | null; publisherHome: string | null } {
+  const tag = block.match(/<source\b[^>]*>[\s\S]*?<\/source>/i)?.[0];
+  if (!tag) return { publisher: null, publisherHome: null };
+  const home = tag.match(/\burl=["']([^"']+)["']/i)?.[1] ?? null;
+  const inner = tag.replace(/^<source\b[^>]*>/i, "").replace(/<\/source>\s*$/i, "");
+  const name = decodeEntities(stripTags(stripCdata(inner))).trim();
+  return { publisher: name || null, publisherHome: home };
+}
+
 /** Parse RSS 2.0 / RSS 1.0 / Atom into a flat item list (regex-based — edge
  * runtime has no XML DOMParser). Caps at `max` items. */
 export function parseFeed(body: string, max = 50): FeedItem[] {
@@ -150,11 +173,14 @@ export function parseFeed(body: string, max = 50): FeedItem[] {
       textBetween(block, "content") ??
       "";
     if (!title && !link) continue;
+    const { publisher, publisherHome } = extractItemSource(block);
     items.push({
       title: stripTags(title),
       link: link ? decodeEntities(link.trim()) : null,
       published,
       summary: stripTags(summaryRaw).slice(0, 4000),
+      publisher,
+      publisherHome,
     });
   }
   return items;
