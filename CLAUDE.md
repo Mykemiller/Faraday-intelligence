@@ -20,6 +20,32 @@ from here (Ask Faraday, waitlist/subscribe, lexicon).
 
 ## Changelog
 
+### CC-POLLER-FAIR-SCHEDULING — 2026-10-07 (FDY-89: the run lane ranks by overdue RATIO, not by absolute staleness)
+- **`source-poller` run-lane selection is now `public.poller_select_due(p_limit int)`** (migration
+  `20261009210000`, SECURITY DEFINER, read-only). It ranks every active row by
+  `(now() - due_at) / interval(cadence)` and holds a floor of `ceil(limit * 0.25)` slots for
+  `fetch_config.segment = 'local_gov'` whenever that segment has due rows; unused floor spills.
+  `supabase/functions/source-poller/poller-schedule.ts` is the TS reference implementation, the
+  fallback used while the migration is un-applied, and what the simulation test drives.
+- **Never order the run lane by `last_fetch_at ASC` again.** Measured 2026-10-07 by replaying the
+  deployed v1.8 selection read-only: all 80 slots went to daily segments and ZERO to any weekly
+  segment, while 895 of 1,000 `local_gov` rows were due and 873 were >2x overdue. `isDue()` only
+  FILTERS — it has never ordered anything, and the 320-row window was 320/320 never-fetched rows,
+  273 of them a single segment.
+- **The cadence table lives in one place**, `CADENCE_MINUTES` in `poller-schedule.ts`;
+  `poller-relevance.ts` re-exports it and `public.poller_cadence_interval(text)` mirrors it. A test
+  reads the migration file and fails if the two drift.
+- `public.v_poller_lag_by_segment` reports `due_now` / `overdue_gt_2x` / `oldest_last_fetch` per
+  (segment, cadence).
+- Politeness is enforced inside `fetchWithTimeout` — at most 1 request/second per host, and
+  `news.google.com` is one host covering the whole ~9,000-row query lane.
+- **Repo/production drift reconciled.** `main` was 5 versions behind the deployed function
+  (repo `v1.3`, deployed `v1.8`, Edge Function version 35): v1.4 canonical envelope keys, v1.5
+  publisher attribution from the feed `<source>` element, v1.6 "empty query-lane feed is valid",
+  v1.7/v1.8 transient-failure guards existed only in production. All are now in the repo, so a
+  deploy from `main` no longer regresses them. v1.6's priority-cadence concatenation was
+  deliberately NOT carried over — it is the starvation this change removes.
+
 ### CC-BOUNDSTONE-INGEST — 2026-10-06 (FDY-62: the Boundstone write contract is an RPC, not a table)
 - **`boundstone-candidates` now writes Boundstone through functions only.** Boundstone shipped
   migration **0042** (applied, their side): `public.bs_record_candidate_propose(p jsonb)`,

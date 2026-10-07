@@ -6,6 +6,7 @@
 // was vetted at registration.
 
 import type { FeedItem } from "./poller-pure.ts";
+import { cadenceMinutes } from "./poller-schedule.ts";
 
 /** Terms indicating data-center / AI-infrastructure relevance. Word-boundary
  * matched, case-insensitive (the 'tif' substring discipline). */
@@ -34,20 +35,16 @@ export function isRelevant(item: FeedItem): boolean {
   return PATTERNS.some((re) => re.test(text));
 }
 
-/** Cadence → minimum interval between polls (minutes), with slack so a run
- * that fires slightly early still picks the source up. Unknown cadences poll
- * daily. A never-fetched source is always due. */
-const CADENCE_MINUTES: Record<string, number> = {
-  hourly: 50,
-  daily: 20 * 60,
-  weekly: 6.5 * 24 * 60,
-  event_driven: 20 * 60,
-  archival_refresh: 27 * 24 * 60,
-  one_time: 365 * 24 * 60,
-};
+/** FDY-89: the cadence table moved to poller-schedule.ts so the due-FILTER here
+ * and the due-ORDER there can never disagree. Re-exported for callers that
+ * imported it from this module. */
+export { CADENCE_MINUTES } from "./poller-schedule.ts";
 
+/** True when `cadence` says this source may be polled again. A never-fetched
+ * source is always due. NOTE: this FILTERS only — it has never ordered anything,
+ * and relying on `last_fetch_at ASC` for the order is exactly what starved the
+ * local-gov watch (see poller-schedule.ts). Use selectDueFair() to order. */
 export function isDue(cadence: string, lastFetchAt: string | null, nowMs: number): boolean {
   if (!lastFetchAt) return true;
-  const mins = CADENCE_MINUTES[cadence] ?? CADENCE_MINUTES.daily;
-  return nowMs - Date.parse(lastFetchAt) >= mins * 60_000;
+  return nowMs - Date.parse(lastFetchAt) >= cadenceMinutes(cadence) * 60_000;
 }

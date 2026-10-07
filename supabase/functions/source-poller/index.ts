@@ -27,16 +27,29 @@ import {
 } from "./poller-pure.ts";
 import { jsonFetchUrl, parseJsonSource } from "./poller-json.ts";
 import { extractIndexItems, type IndexPollConfig } from "./poller-index.ts";
-import { isDue, isRelevant } from "./poller-relevance.ts";
+import { isRelevant } from "./poller-relevance.ts";
 import { localAttribution, localJurisdictionFromEntity } from "./local-query.ts";
+import {
+  type DueRow,
+  hostDelayMs,
+  hostOf,
+  MIN_HOST_GAP_MS,
+  SEGMENT_FLOORS,
+  selectDueFair,
+} from "./poller-schedule.ts";
 
-// NOTE (FDY-88): CRAWLER_ID is deliberately NOT bumped here. Production
-// artifacts already carry source-poller ids up to v1.8 (measured read-only
-// 2026-10-07: v1.3 257,173 · v1.4 30,541 · v1.5 158,817 · v1.6 236 · v1.8
-// 57,943), so the deployed function is ahead of this file and any id this
-// branch picked would collide with existing provenance. The attribution
-// version is carried per item instead, as crawl_metadata.attribution_rev.
-const CRAWLER_ID = "source-poller_v1.3"; // v1.2 index-poll · v1.3 cadence-aware + relevance gate
+// NOTE (FDY-88 + FDY-89, conflict resolved by the orchestrator): FDY-88 pinned
+// CRAWLER_ID at v1.3 on the grounds that the deployed function was five
+// versions ahead of this file (measured read-only 2026-10-07: v1.3 257,173 ·
+// v1.4 30,541 · v1.5 158,817 · v1.6 236 · v1.8 57,943), so any id this repo
+// invented would collide with existing provenance. FDY-89 then PORTED v1.4
+// through v1.8 into this repo, each pinned by a test, which removes that
+// premise: the file now genuinely represents the deployed lineage, so the bump
+// to v1.9 is correct and is kept. FDY-88's per-item attribution version is
+// retained independently as crawl_metadata.attribution_rev, so attribution
+// provenance stays readable without depending on CRAWLER_ID.
+// `isDue` is no longer imported: FDY-89's selectDueFair subsumes it.
+const CRAWLER_ID = "source-poller_v1.9"; // v1.2 index-poll · v1.3 cadence-aware + relevance gate · v1.4 canonical envelope keys (CC-INGEST-METADATA-EXTRACTION-1.0) · v1.5 publisher attribution from feed <source> (CC-PUBLISHER-ATTRIBUTION-1.0) · v1.6 empty query-lane feed is valid + cadence-priority selection (CC-PILLAR-FEED-COVERAGE-1.0) · v1.7 query-lane probes the canonical feed_url only + transient failures don't count toward the 3-strike error (verify lane) · v1.8 same transient guard on the RUN lane's 5-strike ladder · v1.9 FAIR due-selection (FDY-89): v1.6's priority-pool concatenation is superseded by overdue-ratio ranking + a local_gov floor
 const AUTO_ID = "AUTO-199";
 const UA = "FaradayIntelligenceBot/1.0 (+https://faraday-intelligence.ai; data-source poller)";
 const CRON_TOKEN_FALLBACK_SHA256 = "dd88c73bb785f950802d296ede8541501b486da1c141aef14635680d2780ea63";
@@ -66,6 +79,8 @@ async function authorized(req: Request): Promise<boolean> {
 }
 
 async function fetchWithTimeout(url: string, headers: Record<string, string> = {}): Promise<Response> {
+  // v1.9: at most one request per second per host (news.google.com is ONE host).
+  await politeWait(url);
   const ctrl = new AbortController();
   const t = setTimeout(() => ctrl.abort(), FETCH_TIMEOUT_MS);
   try {
@@ -94,19 +109,64 @@ interface SourceRow {
   scope: string | null;
   fetch_config: Record<string, unknown>;
   last_fetch_at: string | null;
+  created_at: string | null;
   etag: string | null;
   last_modified: string | null;
   consecutive_failures: number;
 }
 
 const SOURCE_COLS =
-  "source_key,name,url,feed_url,access_method,license,license_status,idf_domains,cadence,status,countable,scope,fetch_config,etag,last_modified,last_fetch_at,consecutive_failures";
+  "source_key,name,url,feed_url,access_method,license,license_status,idf_domains,cadence,status,countable,scope,fetch_config,etag,last_modified,last_fetch_at,created_at,consecutive_failures";
+
+/** v1.9 (FDY-89): the SECURITY DEFINER selector shipped by migration
+ * 20261009210000. It sees every active row — not a 320-row window — so it can
+ * rank by overdue ratio and hold the local_gov floor. When the migration has
+ * not been applied yet the run lane falls back to selectDueFair() over a
+ * multi-window candidate set, which is the same spec computed client-side. */
+const SELECT_DUE_RPC = "poller_select_due";
+
+/** Per-host politeness gate. The gsearch query lane is ~9,000 rows all on the
+ * single host news.google.com, so without this the fairer selection would turn
+ * into a burst against an upstream that already answers 429 under load. */
+const hostLastRequestAt = new Map<string, number>();
+
+async function politeWait(url: string): Promise<void> {
+  const host = hostOf(url);
+  if (!host) return;
+  const wait = hostDelayMs(hostLastRequestAt, host, Date.now(), MIN_HOST_GAP_MS);
+  if (wait > 0) await new Promise((r) => setTimeout(r, wait));
+  hostLastRequestAt.set(host, Date.now());
+}
+
+function toDueRow(r: SourceRow): DueRow {
+  return {
+    source_key: r.source_key,
+    cadence: r.cadence,
+    last_fetch_at: r.last_fetch_at,
+    segment: (r.fetch_config?.segment as string | undefined) ?? null,
+    created_at: r.created_at,
+  };
+}
 
 // ---------- verify ----------
 
 async function verifyOne(src: SourceRow): Promise<{ ok: boolean; detail: string }> {
   const tried: string[] = [];
   let candidates = discoverCandidates(src.url, src.feed_url);
+  // v1.7: a query-lane source's feed_url IS canonical — a Google News RSS search
+  // URL has no "/feed/" or "/rss.xml" variant to discover, so the 8-candidate
+  // suffix walk is pure waste. Worse, against a rate-limiting upstream it turns
+  // ONE throttled request into EIGHT. That is what stalled the 2026-09-06 re-arm
+  // drain: verify managed 5 sources in 113s and failed every one with "no feed
+  // among 8 candidates" while those same feed_urls answered HTTP 200 from a
+  // different egress. Probe the canonical URL only, and fail fast.
+  if (src.scope === "query_feed" && src.feed_url) candidates = [src.feed_url];
+  // Set when a probe fails in a way that says nothing about the feed's validity
+  // (timeout, or a retryable upstream status). Such a run must NOT count toward
+  // the 3-strike -> status='error' transition, which is a terminal dead-end:
+  // verify only re-probes status='registered', so a throttled afternoon would
+  // permanently strand healthy sources.
+  let transient = false;
   // Feed autodiscovery from the homepage HTML (once), appended after direct probes.
   let htmlChecked = false;
   // Kept for the Wave-3 index-poll fallback when no feed is found.
@@ -121,9 +181,15 @@ async function verifyOne(src: SourceRow): Promise<{ ok: boolean; detail: string 
       // (NVD full corpus, NWS historical firehose) — cand stays the stored URL.
       res = await fetchWithTimeout(jsonFetchUrl(src.source_key, cand, Date.now()));
     } catch {
+      // Abort/timeout/DNS — infrastructure, not evidence about the feed.
+      transient = true;
       continue;
     }
     if (!res.ok) {
+      // 408/425/429 and 5xx are "come back later", not "this is not a feed".
+      // v1.8: shared with the run lane via isTransientStatus so the two lanes
+      // cannot drift apart on what counts as transient.
+      if (isTransientStatus(res.status)) transient = true;
       await res.body?.cancel();
       continue;
     }
@@ -131,7 +197,16 @@ async function verifyOne(src: SourceRow): Promise<{ ok: boolean; detail: string 
     const kind = classifyFeed(res.headers.get("content-type"), body);
     if (kind) {
       const items = kind === "json" ? [] : parseFeed(body, 5);
-      if (kind !== "json" && items.length === 0) continue; // parseable shell, no items
+      // v1.6 (CC-PILLAR-FEED-COVERAGE-1.0): a well-formed QUERY-LANE feed with
+      // zero items is a legitimate EMPTY RESULT SET, not a broken feed. Google
+      // News answers 200 with a valid ~1.3KB RSS shell when a search currently
+      // matches nothing. Treating that as a verification failure marked 2,638
+      // healthy company/utility watches status='error' after 3 probes — and
+      // verify only re-probes status='registered', so they became permanently
+      // unreachable by BOTH verify and run: a terminal dead-end that silently
+      // removed a third of the watch fleet. Curated (non-query) feeds keep the
+      // stricter check, where an empty feed usually does mean a wrong URL.
+      if (kind !== "json" && items.length === 0 && src.scope !== "query_feed") continue;
       const activate = ACTIVATABLE.includes(src.license_status);
       const { error: upErr } = await supabase
         .from("source_registry")
@@ -150,7 +225,8 @@ async function verifyOne(src: SourceRow): Promise<{ ok: boolean; detail: string 
         })
         .eq("source_key", src.source_key);
       if (upErr) return { ok: false, detail: `db update failed: ${upErr.message.slice(0, 150)}` };
-      return { ok: true, detail: `${kind} @ ${cand}${activate ? " (activated)" : " (verified, not activatable: " + src.license_status + ")"}` };
+      const empty = kind !== "json" && items.length === 0 ? " (empty result set — valid)" : "";
+      return { ok: true, detail: `${kind} @ ${cand}${empty}${activate ? " (activated)" : " (verified, not activatable: " + src.license_status + ")"}` };
     }
     // If we got HTML back on the first (homepage-ish) candidate, mine it for
     // rel=alternate feed links and append them to the probe list.
@@ -192,7 +268,10 @@ async function verifyOne(src: SourceRow): Promise<{ ok: boolean; detail: string 
       return { ok: true, detail: `index @ ${indexUrl} (${links.length} links)${activate ? " (activated)" : ""}` };
     }
   }
-  const failCount = (Number(src.fetch_config?.verify_fail_count) || 0) + 1;
+  // v1.7: a transient run leaves the strike count untouched — the source stays
+  // 'registered' and is simply re-probed later.
+  const prevFail = Number(src.fetch_config?.verify_fail_count) || 0;
+  const failCount = transient ? prevFail : prevFail + 1;
   await supabase
     .from("source_registry")
     .update({
@@ -201,12 +280,14 @@ async function verifyOne(src: SourceRow): Promise<{ ok: boolean; detail: string 
         ...src.fetch_config,
         verify_last_at: new Date().toISOString(),
         verify_fail_count: failCount,
-        verify_error: `no feed among ${tried.length} candidates`,
+        verify_error: transient
+          ? `transient: unreachable across ${tried.length} candidate(s) — not counted`
+          : `no feed among ${tried.length} candidates`,
       },
       updated_at: new Date().toISOString(),
     })
     .eq("source_key", src.source_key);
-  return { ok: false, detail: `no feed (${tried.length} tried)` };
+  return { ok: false, detail: `${transient ? "transient" : "no feed"} (${tried.length} tried)` };
 }
 
 // ---------- run (poll) ----------
@@ -221,8 +302,9 @@ async function pollOne(src: SourceRow): Promise<{ found: number; inserted: numbe
   try {
     res = await fetchWithTimeout(fetchUrl, headers);
   } catch (e) {
-    await bumpFailure(src, `fetch error: ${String(e).slice(0, 200)}`);
-    return { found: 0, inserted: 0, note: "fetch error" };
+    // Abort/timeout/DNS — infrastructure, not evidence about the feed.
+    await bumpFailure(src, `fetch error: ${String(e).slice(0, 200)}`, true);
+    return { found: 0, inserted: 0, note: "fetch error (transient)" };
   }
   if (res.status === 304) {
     await res.body?.cancel();
@@ -234,8 +316,9 @@ async function pollOne(src: SourceRow): Promise<{ found: number; inserted: numbe
   }
   if (!res.ok) {
     await res.body?.cancel();
-    await bumpFailure(src, `http ${res.status}`);
-    return { found: 0, inserted: 0, note: `http ${res.status}` };
+    const transient = isTransientStatus(res.status);
+    await bumpFailure(src, `http ${res.status}`, transient);
+    return { found: 0, inserted: 0, note: `http ${res.status}${transient ? " (transient)" : ""}` };
   }
   // JSON APIs can be multi-MB (CISA KEV ~8MB) and must not be truncated
   // mid-document; markup feeds stay tightly capped.
@@ -270,6 +353,7 @@ async function pollOne(src: SourceRow): Promise<{ found: number; inserted: numbe
   }
   const rows = [];
   let gated = 0;
+  let attributed = 0;
   // FDY-88: local-gov watch sources carry a named jurisdiction. Flag each item
   // 'named' or 'unmatched' so a diluted feed is measurable. Nothing is dropped
   // and no already-stored artifact is touched.
@@ -285,6 +369,14 @@ async function pollOne(src: SourceRow): Promise<{ found: number; inserted: numbe
     // sent to the enrichment LLM. Curated feeds are always relevant.
     const skip = src.scope === "query_feed" && !isRelevant(it);
     if (skip) gated++;
+    // v1.5 (CC-PUBLISHER-ATTRIBUTION-1.0): the feed item's own <source> element,
+    // when present, names the actual publication. This is what makes a Google
+    // News redirect link citable — the link itself cannot be resolved to a
+    // canonical publisher URL from our egress (batchexecute answers 429 +
+    // reCAPTCHA), but the publisher is stated in the feed and needs no fetch.
+    const publisher = it.publisher ?? null;
+    const publisherHome = it.publisherHome ?? null;
+    if (publisher) attributed++;
     rows.push({
       crawler_id: CRAWLER_ID,
       auto_id: AUTO_ID,
@@ -296,6 +388,20 @@ async function pollOne(src: SourceRow): Promise<{ found: number; inserted: numbe
       content_hash: contentHash,
       // content_length is a GENERATED column — never supply it
       signal_envelope: {
+        // v1.4 canonical keys (CC-INGEST-METADATA-EXTRACTION-1.0): title is the
+        // item's own headline, summary its feed summary. `source` is the
+        // publisher name. For query-lane sources (Google News searches) the
+        // registry name is the search query, not a publication — so `source` is
+        // written ONLY from the item's own <source> element (v1.5), never from
+        // the registry name. Manufacturing that attribution is the exact failure
+        // the citability rule exists to prevent.
+        ...(it.title ? { title: it.title } : {}),
+        ...(it.summary ? { summary: it.summary } : {}),
+        ...(publisher ? { publisher } : {}),
+        ...(publisherHome ? { publisher_home: publisherHome } : {}),
+        ...(src.scope === "query_feed"
+          ? (publisher ? { source: publisher } : {})
+          : { source: publisher ?? src.name }),
         source_key: src.source_key,
         source_name: src.name,
         idf_domains: src.idf_domains,
@@ -341,21 +447,36 @@ async function pollOne(src: SourceRow): Promise<{ found: number; inserted: numbe
       updated_at: nowIso,
     })
     .eq("source_key", src.source_key);
-  return { found: items.length, inserted, note: gated > 0 ? `ok gated=${gated}` : "ok" };
+  const notes = [gated > 0 ? `gated=${gated}` : "", attributed > 0 ? `pub=${attributed}` : ""].filter(Boolean).join(" ");
+  return { found: items.length, inserted, note: notes ? `ok ${notes}` : "ok" };
 }
 
-async function bumpFailure(src: SourceRow, err: string) {
-  const fails = src.consecutive_failures + 1;
+// v1.8: `transient` means the fetch told us nothing about the FEED — an abort,
+// a timeout, or an upstream throttle (408/425/429/5xx). Those must not advance
+// the 5-strike ladder, because status='error' is a DEAD END: verify only
+// re-probes status='registered', so a throttled row becomes unreachable by both
+// lanes. That is exactly how 2,638 healthy company/utility watches were lost.
+// A real failure (404, a parse/insert error) still counts.
+async function bumpFailure(src: SourceRow, err: string, transient = false) {
+  const fails = transient ? src.consecutive_failures : src.consecutive_failures + 1;
   await supabase
     .from("source_registry")
     .update({
       last_fetch_at: new Date().toISOString(),
       consecutive_failures: fails,
-      status: fails >= 5 ? "error" : src.status,
-      fetch_config: { ...src.fetch_config, last_error: err },
+      status: !transient && fails >= 5 ? "error" : src.status,
+      fetch_config: {
+        ...src.fetch_config,
+        last_error: transient ? `transient (not counted): ${err}` : err,
+      },
       updated_at: new Date().toISOString(),
     })
     .eq("source_key", src.source_key);
+}
+
+/** HTTP statuses that say "come back later", not "this feed is broken". */
+function isTransientStatus(status: number): boolean {
+  return status === 408 || status === 425 || status === 429 || status >= 500;
 }
 
 /** R1 countable maintenance: active + license-clear + artifact in trailing 30d.
@@ -418,26 +539,101 @@ Deno.serve(async (req: Request) => {
     return new Response(JSON.stringify({ error: `unknown mode '${mode}'` }), { status: 400, headers: { "content-type": "application/json" } });
   }
 
-  let q = supabase.from("source_registry").select(SOURCE_COLS).eq("subsystem", "poller").limit(limit);
-  if (bodyIn.source_key) q = q.eq("source_key", String(bodyIn.source_key));
-  else if (mode === "verify") {
+  let fetched: Record<string, unknown>[] | null = null;
+  let error: { message: string } | null = null;
+  // v1.9: how the run lane's slots were awarded, echoed in the response and the
+  // health log so starvation is visible without a query.
+  let selection = "n/a";
+  let lanes: Record<string, string> = {};
+
+  if (bodyIn.source_key) {
+    const r = await supabase.from("source_registry").select(SOURCE_COLS)
+      .eq("subsystem", "poller").eq("source_key", String(bodyIn.source_key)).limit(limit);
+    fetched = r.data as Record<string, unknown>[] | null;
+    error = r.error;
+  } else if (mode === "verify") {
     // registered rows not yet verified, oldest attempt first (resume-safe)
-    q = q.eq("status", "registered").order("updated_at", { ascending: true });
+    const r = await supabase.from("source_registry").select(SOURCE_COLS)
+      .eq("subsystem", "poller").eq("status", "registered")
+      .order("updated_at", { ascending: true }).limit(limit);
+    fetched = r.data as Record<string, unknown>[] | null;
+    error = r.error;
   } else {
-    // v1.3: over-fetch oldest-first, then filter to cadence-due client-side —
-    // weekly long-tail sources stop consuming hourly-cron slots.
-    q = supabase.from("source_registry").select(SOURCE_COLS).eq("subsystem", "poller")
-      .eq("status", "active").not("feed_url", "is", null)
-      .order("last_fetch_at", { ascending: true, nullsFirst: true })
-      .limit(Math.min(limit * 4, 400));
+    // ---- v1.9 (FDY-89) FAIR DUE-SELECTION -------------------------------
+    // Superseded: v1.3's "over-fetch 4x oldest-first, then filter to due" and
+    // v1.6's "priority-cadence pool concatenated ahead of the general pool".
+    // Both ranked by ABSOLUTE staleness (last_fetch_at ASC) and used isDue() as
+    // a filter only, so the 1,312-row daily cohort — already ~1,566 due
+    // events/day against the 1,920 slots/day the cron buys — took every slot
+    // before the general pool was reached. Measured live 2026-10-07 by replaying
+    // that selection read-only: 80/80 slots to daily segments, 0 to any weekly
+    // segment, while 895 of 1,000 local_gov rows were due and 873 were >2x
+    // overdue. The 7 hourly rows at 10x overdue lost too, to daily rows at 1.05x.
+    //
+    // Now: rank by overdue RATIO (now - due_at)/interval(cadence) across every
+    // active row, with a per-run floor for named segments (local_gov >= 25%)
+    // that spills when unused. Primary path is the SECURITY DEFINER selector
+    // public.poller_select_due(int) (migration 20261009210000), which sees all
+    // ~10.3k rows rather than a 320-row window.
+    const rpc = await supabase.rpc(SELECT_DUE_RPC, { p_limit: limit });
+    if (!rpc.error && Array.isArray(rpc.data)) {
+      const keys = (rpc.data as { source_key: string; quota_lane: string }[]);
+      for (const k of keys) lanes[k.source_key] = k.quota_lane;
+      if (keys.length === 0) {
+        fetched = [];
+        selection = "rpc:poller_select_due (0 due)";
+      } else {
+        const r = await supabase.from("source_registry").select(SOURCE_COLS)
+          .in("source_key", keys.map((k) => k.source_key));
+        error = r.error;
+        // Preserve the selector's overdue order — .in() returns rows unordered.
+        const byKey = new Map((r.data ?? []).map((row) => [(row as unknown as SourceRow).source_key, row]));
+        fetched = keys.map((k) => byKey.get(k.source_key)).filter(Boolean) as Record<string, unknown>[];
+        selection = "rpc:poller_select_due";
+      }
+    } else {
+      // Fallback: migration 20261009210000 not applied yet (or the role cannot
+      // execute it). Same spec, computed client-side by selectDueFair() over a
+      // union of candidate windows. Three windows rather than one because a
+      // single `last_fetch_at ASC NULLS FIRST` window is exactly the bias being
+      // fixed: measured 2026-10-07 the 320-row window was 320/320 never-fetched
+      // rows, 273 of them one segment (utilities).
+      const win = Math.max(limit * 4, 400);
+      const base = () =>
+        supabase.from("source_registry").select(SOURCE_COLS)
+          .eq("subsystem", "poller").eq("status", "active").not("feed_url", "is", null)
+          .order("last_fetch_at", { ascending: true, nullsFirst: true }).limit(win);
+      const windows = await Promise.all([
+        base(),                                                     // global stalest
+        base().not("cadence", "in", "(weekly,archival_refresh,one_time)"), // short-cadence lanes
+        ...Object.keys(SEGMENT_FLOORS).map((seg) =>                  // each floored segment
+          base().eq("fetch_config->>segment", seg)),
+      ]);
+      error = windows.find((w) => w.error)?.error ?? null;
+      const seen = new Set<string>();
+      const candidates: SourceRow[] = [];
+      for (const w of windows) {
+        for (const row of (w.data ?? []) as unknown as SourceRow[]) {
+          if (seen.has(row.source_key)) continue;
+          seen.add(row.source_key);
+          candidates.push(row);
+        }
+      }
+      const picked = selectDueFair(candidates.map(toDueRow), { limit, nowMs: Date.now() });
+      lanes = picked.lanes;
+      const byKey = new Map(candidates.map((r) => [r.source_key, r]));
+      fetched = picked.picked.map((d) => byKey.get(d.source_key)).filter(Boolean) as unknown as Record<string, unknown>[];
+      selection = `fallback:selectDueFair (candidates=${candidates.length} due=${picked.dueTotal})`;
+    }
   }
-  const { data: fetched, error } = await q;
+
   if (error) {
     return new Response(JSON.stringify({ error: error.message }), { status: 500, headers: { "content-type": "application/json" } });
   }
-  const sources = mode === "run" && !bodyIn.source_key
-    ? (fetched ?? []).filter((s) => isDue((s as unknown as SourceRow).cadence, (s as unknown as SourceRow).last_fetch_at as unknown as string | null, Date.now())).slice(0, limit)
-    : fetched;
+  // Both run-lane paths return rows that are already due AND already capped at
+  // `limit`, in overdue order. No further filtering or slicing here — doing that
+  // is what let the order silently decide the outcome.
+  const sources = fetched;
 
   const results: Record<string, string> = {};
   let processed = 0, okCount = 0, found = 0, inserted = 0;
@@ -465,6 +661,13 @@ Deno.serve(async (req: Request) => {
 
   if (mode === "run") await refreshCountable();
 
+  // Which lane won each processed slot — the starvation canary.
+  const laneCounts: Record<string, number> = {};
+  for (const src of (sources ?? []) as unknown as SourceRow[]) {
+    const lane = lanes[src.source_key];
+    if (lane) laneCounts[lane] = (laneCounts[lane] ?? 0) + 1;
+  }
+
   await supabase.from("automation_health_log").insert({
     auto_id: AUTO_ID,
     crawler_id: CRAWLER_ID,
@@ -475,11 +678,13 @@ Deno.serve(async (req: Request) => {
     artifacts_duped: Math.max(0, found - inserted),
     errors,
     success: errors.length === 0,
-    notes: `mode=${mode} processed=${processed}/${sources?.length ?? 0} ok=${okCount}`,
+    notes: `mode=${mode} processed=${processed}/${sources?.length ?? 0} ok=${okCount} selection=${selection}${
+      Object.keys(laneCounts).length ? " lanes=" + JSON.stringify(laneCounts) : ""
+    }`,
   });
 
   return new Response(
-    JSON.stringify({ ok: true, mode, processed, of: sources?.length ?? 0, verified_or_polled_ok: okCount, artifacts_found: found, artifacts_new: inserted, results }),
+    JSON.stringify({ ok: true, mode, selection, lanes: laneCounts, processed, of: sources?.length ?? 0, verified_or_polled_ok: okCount, artifacts_found: found, artifacts_new: inserted, results }),
     { headers: { "content-type": "application/json" } },
   );
 });
