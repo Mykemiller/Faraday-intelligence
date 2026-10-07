@@ -1,0 +1,1008 @@
+# FDY-88 · local gov watch lane roster snapshot
+# Source: select fetch_config->>'entity' from public.source_registry
+#         where source_key like 'gsearch:loc-%' order by 1
+# Project: ycadmmngkdhvpcsrcuaq (Faraday production), read READ-ONLY 2026-10-07 14:4x CT
+# Rows: 1000 (all status='active', scope='query_feed', countable=false, cadence='weekly')
+# Trailing-word composition: city 539 · County 267 · town 142 · village 28 · Parish 22 · Municipio 2
+# source_key is derivable from the entity string: verified 1000/1000 exact, 1000 distinct.
+# This file is the reproducible input to scripts/gen-local-watch-query-migration.mjs.
+Abercrombie city, ND
+Acworth city, GA
+Ada County, ID
+Adams County, IA
+Adams County, IL
+Adams County, ND
+Adona city, AR
+Alameda city, CA
+Alexander city, AR
+Alexander County, IL
+Alexandria city, IN
+Alexandria city, LA
+Alexandria city, VA
+Alice city, ND
+Alicia town, AR
+Allen County, IN
+Allport town, AR
+Alma city, AR
+Almont city, ND
+Almyra town, AR
+Alpena town, AR
+Altus city, AR
+Alvan (Alvin) village, IL
+Amagon town, AR
+Amarillo city, TX
+Amenia city, ND
+Anaheim city, CA
+Anderson city, IN
+Anderson County, TX
+Andrews County, TX
+Archbold village, OH
+Argusville city, ND
+Arkadelphia city, AR
+Arkansas County, AR
+Arlington town, TN
+Arthur city, ND
+Ash Flat city, AR
+Ashley County, AR
+Assumption Parish, LA
+Athens County, OH
+Athens village, LA
+Atkins city, AR
+Atlanta city, GA
+Austin city, AR
+Austin city, TX
+Avondale city, AZ
+Ayr city, ND
+Bainbridge city, GA
+Bald Knob city, AR
+Baldwin Park city, CA
+Ballwin city, MO
+Baltimore city, MD
+Barling city, AR
+Barnes County, ND
+Barney city, ND
+Batesville city, AR
+Bath County, KY
+Baton Rouge city, LA
+Bauxite town, AR
+Baxter County, AR
+Bay city, AR
+Baytown city, TX
+Bearden city, AR
+Beaver town, AR
+Bee County, TX
+Beebe city, AR
+Beedeville town, AR
+Belfield city, ND
+Belgium village, IL
+Bell County, TX
+Bellefonte town, AR
+Bellingham city, WA
+Belton city, TX
+Ben Lomond town, AR
+Bend city, OR
+Benedict city, ND
+Benson County, ND
+Benton city, AR
+Benton County, IN
+Benton County, WA
+Bergman town, AR
+Berryville city, AR
+Big Flat town, AR
+Bigelow town, AR
+Billings County, ND
+Binford city, ND
+Birmingham city, AL
+Bismarck city, ND
+Bismarck village, IL
+Black Oak town, AR
+Black Rock city, AR
+Blevins city, AR
+Blue Eye town, AR
+Blue Mountain town, AR
+Bonanza city, AR
+Bond County, IL
+Bonner County, ID
+Bono city, AR
+Boston city, MA
+Bottineau County, ND
+Bowman County, ND
+Boyle County, KY
+Bracken County, KY
+Bradford city, AR
+Bradley city, AR
+Branch city, AR
+Brazoria County, TX
+Brecksville city, OH
+Briarcliff city, AR
+Briarwood city, ND
+Bridgeton city, MO
+Brookland city, AR
+Broward County, FL
+Brown County, TX
+Brownsville city, TX
+Bryant city, AR
+Buchanan city, ND
+Buckner city, AR
+Bucyrus city, ND
+Buena Vista County, IA
+Buffalo city, ND
+Bull Shoals city, AR
+Burdette town, AR
+Bureau County, IL
+Burleigh County, ND
+Burleson County, TX
+Burlington city, NC
+Butler County, IA
+Butler County, OH
+Butte city, ND
+Buxton city, ND
+Cabot city, AR
+Calcasieu Parish, LA
+Caldwell County, KY
+Caldwell Parish, LA
+Caldwell town, AR
+Calhoun County, IA
+Calhoun County, IL
+Calico Rock city, AR
+Camden city, AR
+Cameron County, TX
+Cameron Parish, LA
+Cammack Village city, AR
+Campbell Station city, AR
+Caraway city, AR
+Carlisle city, AR
+Carrington city, ND
+Carroll County, IA
+Carrollton city, TX
+Carson County, TX
+Casa town, AR
+Cash town, AR
+Cass County, IL
+Casselton city, ND
+Catahoula Parish, LA
+Cataño Municipio, PR
+Catlin village, IL
+Caulksville town, AR
+Cavalier County, ND
+Cave City city, AR
+Cedar Hill city, TX
+Cedar Park city, TX
+Cedar Rapids city, IA
+Cedarville city, AR
+Center city, ND
+Central City town, AR
+Cerro Gordo County, IA
+Champaign County, OH
+Chapel Hill town, NC
+Charleston city, AR
+Charleston city, SC
+Charlotte city, NC
+Charlottesville city, VA
+Chattanooga city, TN
+Cherokee County, IA
+Cherokee Village city, AR
+Cherry Valley city, AR
+Chesnee city, SC
+Chester town, AR
+Chesterfield city, MO
+Chicago city, IL
+Chickasaw County, IA
+Christiansburg town, VA
+Christine city, ND
+Cibolo city, TX
+Clackamas County, OR
+Claiborne Parish, LA
+Clark County, AR
+Clark County, IL
+Clark County, NV
+Clay County, FL
+Cleburne County, AR
+Cleveland city, ND
+Cleveland city, OH
+Clifford city, ND
+Clinton County, IN
+Coleharbor city, ND
+Coles County, IL
+Colfax city, ND
+Colorado Springs city, CO
+Colt city, AR
+Columbia city, SC
+Columbia County, AR
+Columbus city, GA
+Columbus city, OH
+Concord city, NH
+Concordia Parish, LA
+Conover city, NC
+Contra Costa County, CA
+Conway city, AR
+Conway County, AR
+Cooperstown city, ND
+Coppell city, TX
+Corning city, AR
+Corona city, CA
+Costa Mesa city, CA
+Cotter city, AR
+Cotton Valley town, LA
+Country Club Heights town, IN
+Courtenay city, ND
+Cove town, AR
+Covington city, LA
+Coy town, AR
+Crawford County, AR
+Crawford County, IA
+Crawford County, IL
+Crystal Lake city, IL
+Crystal River city, FL
+Culebra Municipio, PR
+Cullen town, LA
+Cumming city, GA
+Cushman city, AR
+Dallas city, OR
+Dallas city, TX
+Dallas County, AR
+Danville city, IL
+Datto town, AR
+Davenport city, ND
+Davidson County, TN
+Davidson town, NC
+Dawes County, NE
+Dazey city, ND
+De Witt County, IL
+DeKalb County, MO
+Delaware County, OH
+Delta village, OH
+Denning town, AR
+Denver city, CO
+Des Moines city, IA
+DeWitt city, AR
+Diamond City city, AR
+Diaz city, AR
+Dickey County, ND
+Dickinson city, ND
+Dierks city, AR
+Dixie Inn village, LA
+Dodge city, ND
+Donaldson town, AR
+Douglas County, IL
+Dover city, AR
+Doyline village, LA
+Dubberly village, LA
+Dublin city, OH
+Dunn Center city, ND
+Durham city, NC
+Dwight city, ND
+Dyer city, AR
+East Baton Rouge Parish, LA
+East Camden town, AR
+East Wenatchee city, WA
+Ector County, TX
+Eddy County, ND
+Eden Prairie city, MN
+Edgar County, IL
+Edgewood town, IN
+Edinburg city, TX
+Edwards County, IL
+Egypt town, AR
+El Paso city, TX
+Elkins city, AR
+Elwood city, IN
+Emerado city, ND
+Emerson town, AR
+England city, AR
+Enola town, AR
+Erwin town, NC
+Escambia County, FL
+Essex County, MA
+Etowah town, AR
+Eureka Springs city, AR
+Evening Shade city, AR
+Everton town, AR
+Fairfax city, VA
+Fairfield Bay city, AR
+Fairfield County, OH
+Fairmount city, ND
+Fairmount village, IL
+Farmington city, MN
+Faulkner County, AR
+Fayette County, OH
+Fayetteville city, AR
+Fingal city, ND
+Finley city, ND
+Fisher city, AR
+Fithian village, IL
+Flasher city, ND
+Fleming County, KY
+Floyd County, IN
+Fontana city, CA
+Ford County, IL
+Forrest City city, AR
+Fort Bend County, TX
+Fort Lauderdale city, FL
+Fort Myers city, FL
+Fort Smith city, AR
+Fort Walton Beach city, FL
+Fort Wayne city, IN
+Fort Worth city, TX
+Foster County, ND
+Fouke city, AR
+Fountain Lake town, AR
+Fourche town, AR
+Franklin County, OH
+Franklin County, TX
+Franklin town, AR
+Frankton town, IN
+Fredonia (Biscoe) town, AR
+Fredonia city, ND
+Fremont County, IA
+Frisco city, TX
+Frontier city, ND
+Fulton town, AR
+Gackle city, ND
+Gainesville city, FL
+Gaithersburg city, MD
+Galesburg city, ND
+Gallatin County, IL
+Gallatin County, KY
+Galveston County, TX
+Gardena city, CA
+Gardner city, ND
+Garland County, AR
+Garland town, AR
+Garner town, AR
+Garner town, NC
+Garrison city, ND
+Gassville city, AR
+Geauga County, OH
+Georgetown city, IL
+Georgetown town, AR
+Gilby city, ND
+Gillett city, AR
+Gladstone city, ND
+Glen Ullin city, ND
+Glendale city, CA
+Glenfield city, ND
+Golden Valley County, ND
+Gosnell city, AR
+Gould city, AR
+Grace City city, ND
+Grady city, AR
+Grand Forks city, ND
+Grand Forks County, ND
+Grand Rapids city, MI
+Grandin city, ND
+Grannis city, AR
+Grant County, AR
+Grant County, ND
+Grant Parish, LA
+Great Bend city, ND
+Green Forest city, AR
+Greenbrier city, AR
+Greene County, IL
+Greenland city, AR
+Greenville city, NC
+Greenway city, AR
+Greenwood city, AR
+Greers Ferry city, AR
+Griffithville town, AR
+Griggs County, ND
+Grubbs city, AR
+Grundy County, IA
+Grundy County, IL
+Gulf Shores city, AL
+Gum Springs town, AR
+Guy city, AR
+Hackett city, AR
+Halliday city, ND
+Hamburg city, AR
+Hamilton County, IA
+Hamilton County, TN
+Hampton city, GA
+Hankinson city, ND
+Hannaford city, ND
+Hansford County, TX
+Hardin County, OH
+Hardy city, AR
+Harris County, TX
+Harrisburg city, AR
+Harrison County, IA
+Harrison County, OH
+Hartford city, AR
+Harwood city, ND
+Haskell city, AR
+Hatfield town, AR
+Hatton city, ND
+Hawaii County, HI
+Hayden town, CO
+Haynes city, ND
+Haynesville town, LA
+Heber Springs city, AR
+Hebron city, ND
+Hector town, AR
+Heflin village, LA
+Hemphill County, TX
+Henderson County, KY
+Henning village, IL
+Henry County, IL
+Hernando city, MS
+Herndon town, VA
+Hettinger city, ND
+Hettinger County, ND
+Hiawatha city, IA
+Hidalgo County, TX
+Higginson town, AR
+High Point city, NC
+Highland city, AR
+Highland County, OH
+Hillsboro city, ND
+Hillsborough County, FL
+Hocking County, OH
+Holiday Island city, AR
+Holland city, AR
+Holmes County, OH
+Homer town, LA
+Honolulu County, HI
+Hoopeston city, IL
+Hope city, AR
+Hope city, ND
+Hopkins County, TX
+Horace city, ND
+Horatio city, AR
+Horseshoe Bend city, AR
+Hot Springs city, AR
+Houston city, TX
+Houston County, GA
+Houston County, TX
+Hoxie city, AR
+Hughes city, AR
+Humboldt County, IA
+Humnoke city, AR
+Humphrey city, AR
+Hunter city, ND
+Hunter town, AR
+Huntersville town, NC
+Huntertown town, IN
+Huntington city, AR
+Hurst city, TX
+Iberville Parish, LA
+Ida County, IA
+Imboden town, AR
+Independence County, AR
+Indian River County, FL
+Indianola village, IL
+Ingalls town, IN
+Inkster city, ND
+Irving city, TX
+Izard County, AR
+Jackson County, MO
+Jacksonport town, AR
+Jacksonville city, AR
+Jamestown city, ND
+Jasper County, IA
+Jefferson County, AR
+Jefferson County, KY
+Jefferson Parish, LA
+Jersey County, IL
+Johnson city, AR
+Johnson County, IA
+Johnson County, IL
+Joiner city, AR
+Jonesboro city, AR
+Judsonia city, AR
+Junction City village, LA
+Kathryn city, ND
+Keller city, TX
+Kensal city, ND
+Kensett city, AR
+Keo town, AR
+Kern County, CA
+Keystone Heights city, FL
+Kibler city, AR
+Kidder County, ND
+Killdeer city, ND
+Kindred city, ND
+Kissimmee city, FL
+Klamath Falls city, OR
+Knobel city, AR
+Knox County, IL
+Knoxville city, TN
+La Puente city, CA
+La Quinta city, CA
+Lafayette city, LA
+Lafayette Parish, LA
+Lafourche Parish, LA
+Lake Charles city, LA
+Lake City city, AR
+Lake County, OH
+Lakeview city, AR
+Lakewood city, OH
+LaMoure County, ND
+Lancaster city, CA
+Lapel town, IN
+Largo city, FL
+Larimore city, ND
+Larkspur city, CA
+Las Vegas city, NV
+LaSalle County, IL
+LaSalle Parish, LA
+Latah County, ID
+Lavaca city, AR
+Lawrence city, MA
+Lawrence County, IL
+Lead Hill town, AR
+Leal city, ND
+Leander city, TX
+Lee County, TX
+Leesburg town, VA
+Leon County, TX
+Leon Valley city, TX
+Leonard city, ND
+Lepanto city, AR
+Letona town, AR
+Lewiston city, ID
+Lewisville city, AR
+Lidgerwood city, ND
+Lilburn city, GA
+Limestone County, AL
+Lincoln city, AR
+Lincoln city, CA
+Lincoln city, ND
+Lincoln city, NE
+Linn County, IA
+Lisbon village, LA
+Litchville city, ND
+Little Rock city, AR
+Livermore city, CA
+Livingston County, IL
+Livingston Parish, LA
+Logan County, IL
+Logan County, ND
+Logan County, OH
+London city, AR
+Longmont city, CO
+Lonoke city, AR
+Lonoke County, AR
+Lonsdale town, AR
+Los Angeles city, CA
+Los Angeles County, CA
+Louann town, AR
+Loudoun County, VA
+Louisville city, KY
+Lufkin city, TX
+Luverne city, ND
+Lynn town, AR
+Mableton city, GA
+Madison city, AR
+Madison city, WI
+Madison County, IA
+Madison County, OH
+Madison Parish, LA
+Magazine city, AR
+Magness town, AR
+Magnolia city, AR
+Mahaska County, IA
+Maitland city, FL
+Malibu city, CA
+Manassas city, VA
+Mandan city, ND
+Mandeville city, LA
+Mansfield city, AR
+Mantador city, ND
+Manteca city, CA
+Manvel city, ND
+Mapleton city, ND
+Marble Falls city, TX
+Marco Island city, FL
+Marion County, FL
+Marion County, IN
+Marked Tree city, AR
+Markleville town, IN
+Marmaduke city, AR
+Maryland Heights city, MO
+Mason County, IL
+Massac County, IL
+Matagorda County, TX
+Matthews town, NC
+Maumelle city, AR
+Max city, ND
+Mayflower city, AR
+Mayville city, ND
+McAllen city, TX
+McCaskill town, AR
+McDonough County, IL
+McDougal town, AR
+McHenry city, ND
+McHenry County, IL
+McIntosh County, ND
+McLean County, IL
+McNab town, AR
+McNeil city, AR
+McRae city, AR
+Mecklenburg County, NC
+Medford city, MA
+Medina city, ND
+Memphis city, TN
+Mena city, AR
+Menard County, IL
+Menifee town, AR
+Mercer city, ND
+Mercer County, IL
+Mesa city, AZ
+Miami Beach city, FL
+Miami-Dade County, FL
+Middletown city, OH
+Midland town, AR
+Milam County, TX
+Milton city, FL
+Milwaukee city, WI
+Minden city, LA
+Mineral Springs city, AR
+Minturn town, AR
+Mobile city, AL
+Modesto city, CA
+Monette city, AR
+Monona County, IA
+Montpelier city, ND
+Moore County, TX
+Moorefield town, AR
+Mooreton city, ND
+Moreno Valley city, CA
+Morgan Hill city, CA
+Morrilton city, AR
+Morrison Bluff town, AR
+Morrow County, OH
+Mount Vernon town, AR
+Mountain Home city, AR
+Mountain Pine city, AR
+Mountainburg city, AR
+Mountlake Terrace city, WA
+Mountrail County, ND
+Mulberry city, AR
+Multnomah County, OR
+Muncie village, IL
+Napoleon city, ND
+Nashville city, AR
+Navarro County, TX
+Nelson County, ND
+New Haven city, IN
+New Port Richey city, FL
+New Salem city, ND
+New Smyrna Beach city, FL
+Newark city, AR
+Newnan city, GA
+Newport city, AR
+Newport News city, VA
+Newton city, NC
+Niagara city, ND
+Nimmons town, AR
+Noble County, OH
+Nolan County, TX
+Nome city, ND
+Norfolk County, MA
+Norfork city, AR
+Normal town, IL
+North Little Rock city, AR
+North River city, ND
+Northwood city, ND
+Northwood city, OH
+O'Brien County, IA
+Oak Grove Heights town, AR
+Oak Grove town, AR
+Oakhaven town, AR
+Oakwood village, IL
+Ocala city, FL
+Ochiltree County, TX
+Odessa city, TX
+Ogle County, IL
+Ohio County, WV
+Oil Trough town, AR
+Okaloosa County, FL
+Okanogan County, WA
+Okolona town, AR
+Omaha city, NE
+Omaha town, AR
+Ontario city, CA
+Oppelo city, AR
+Orange County, FL
+Orestes town, IN
+Oriska city, ND
+Osceola city, AR
+Osceola County, FL
+Oshkosh city, WI
+Ottawa County, OH
+Oxbow city, ND
+Oxford city, AR
+Oxnard city, CA
+Ozan town, AR
+Ozark city, AR
+Page city, ND
+Palestine city, AR
+Palo Alto County, IA
+Pangburn city, AR
+Parkdale city, AR
+Parker town, CO
+Patmos town, AR
+Paulding County, OH
+Peach Orchard city, AR
+Pend Oreille County, WA
+Pendleton town, IN
+Pensacola city, FL
+Perry city, GA
+Perry County, AR
+Perry town, AR
+Perrytown town, AR
+Perryville city, AR
+Philadelphia city, PA
+Phillips County, AR
+Phoenix city, AZ
+Piggott city, AR
+Pillsbury city, ND
+Pinellas Park city, FL
+Pingree city, ND
+Placer County, CA
+Plano city, TX
+Pleasant Plains town, AR
+Plumerville city, AR
+Plymouth County, IA
+Polk County, FL
+Pollard city, AR
+Pope County, AR
+Portage village, OH
+Portia town, AR
+Portland city, AR
+Portland city, ND
+Portland city, OR
+Potomac village, IL
+Potter County, TX
+Pottsville city, AR
+Powell city, OH
+Powhatan town, AR
+Prairie Grove city, AR
+Prairie Rose city, ND
+Preble County, OH
+Prince William County, VA
+Pulaski County, AR
+Pulaski County, IL
+Punta Gorda city, FL
+Putnam County, OH
+Puyallup city, WA
+Raleigh city, NC
+Ramsey County, ND
+Rancho Cucamonga city, CA
+Randolph County, IN
+Rankin village, IL
+Ravenden town, AR
+Rector city, AR
+Redmond city, OR
+Reeder city, ND
+Regan city, ND
+Reile's Acres city, ND
+Reno city, NV
+Renville County, ND
+Reynolds city, ND
+Rhea County, TN
+Richardton city, ND
+Richmond city, KY
+Richmond city, VA
+Ridge Farm village, IL
+Ridgefield city, WA
+River Forest town, IN
+Riverdale city, ND
+Robertson County, TX
+Rochester city, MN
+Rock Island County, IL
+Rockingham County, NH
+Rocklin city, CA
+Rockville city, MD
+Rogers city, ND
+Rose Bud town, AR
+Rosemount city, MN
+Rosenberg city, TX
+Rossville village, IL
+Roxboro city, NC
+Rudy town, AR
+Ruso city, ND
+Russell town, AR
+Russellville city, AR
+Ruston city, LA
+Sac County, IA
+Sacramento city, CA
+Safety Harbor city, FL
+Sahuarita town, AZ
+Salesville city, AR
+Saline County, AR
+Saline County, IL
+Salisbury city, NC
+Salt Lake County, UT
+San Antonio city, TX
+San Diego city, CA
+San Diego County, CA
+San Jose city, CA
+San Leandro city, CA
+San Marcos city, TX
+San Mateo County, CA
+San Rafael city, CA
+Sanborn city, ND
+Sangamon County, IL
+Santa Ana city, CA
+Santa Fe city, TX
+Santa Monica city, CA
+Sarasota city, FL
+Sarasota County, FL
+Sarepta town, LA
+Savannah city, GA
+Schuyler County, IL
+Scott County, AR
+Searcy city, AR
+Seattle city, WA
+Sebastian County, AR
+Sedgwick town, AR
+Sellersburg town, IN
+Sevier County, AR
+Shannon Hills city, AR
+Sharon city, ND
+Sherrill town, AR
+Sherwood city, AR
+Shongaloo village, LA
+Shreveport city, LA
+Sibley city, ND
+Sibley town, LA
+Sidell village, IL
+Sidney town, AR
+Sioux County, IA
+Sioux County, ND
+Sisters city, OR
+Slope County, ND
+Smithville town, AR
+Snohomish County, WA
+Somervell County, TX
+Somerville city, MA
+Sonoma city, CA
+South Heart city, ND
+South Lead Hill town, AR
+Southside city, AR
+Sparks city, NV
+Spartanburg city, SC
+Spencer County, KY
+Spiritwood Lake city, ND
+Spokane city, WA
+Springdale city, AR
+Springhill city, LA
+St. Charles town, AR
+St. Francis city, AR
+St. Landry Parish, LA
+St. Martin Parish, LA
+Stafford city, TX
+Stamps city, AR
+Star City city, AR
+Stark County, IL
+Stark County, ND
+Steele County, ND
+Stockton city, CA
+Strawberry town, AR
+Streeter city, ND
+Stutsman County, ND
+Stuttgart city, AR
+Success town, AR
+Suffolk County, MA
+Sulphur Rock town, AR
+Summit city, AR
+Summitville town, IN
+Swifton city, AR
+Switzerland County, IN
+Tacoma city, WA
+Tampa city, FL
+Taylor city, AR
+Taylor city, ND
+Taylor County, IA
+Taylor County, TX
+Taylorsville town, NC
+Tazewell County, IL
+Tensas Parish, LA
+Texarkana city, AR
+Thompson city, ND
+Thousand Oaks city, CA
+Thurston County, WA
+Tilton village, IL
+Tishomingo County, MS
+Tollette town, AR
+Tom Green County, TX
+Torrance city, CA
+Tower City city, ND
+Towner County, ND
+Tracy city, CA
+Traskwood city, AR
+Trumann city, AR
+Tuckerman city, AR
+Tupelo town, AR
+Turtle Lake city, ND
+Twin Groves town, AR
+Tyronza city, AR
+Ulm town, AR
+Underwood city, ND
+Union County, AR
+Union County, IL
+Union Parish, LA
+Urbana city, IL
+Vacaville city, CA
+Valley City city, ND
+Valley Park city, MO
+Valley Springs town, AR
+Van Buren city, AR
+Van Wert County, OH
+Vandervoort town, AR
+Vermilion County, IL
+Vermilion Parish, LA
+Vero Beach city, FL
+Vienna town, VA
+Vilonia city, AR
+Virginia Beach city, VA
+Wabash County, IL
+Waco city, TX
+Wahpeton city, ND
+Walcott city, ND
+Waldenburg town, AR
+Waldo city, AR
+Waldron city, AR
+Walnut Creek city, CA
+Walnut Ridge city, AR
+Ward city, AR
+Ward County, ND
+Warren County, OH
+Washburn city, ND
+Washington city, AR
+Washington County, IA
+Washington County, IL
+Washington County, KY
+Washington County, OH
+Washoe County, NV
+Waukesha County, WI
+Wayne County, IL
+Webster County, IA
+Weiner city, AR
+Weldon town, AR
+Wellford city, SC
+Wells County, ND
+West Fargo city, ND
+West Feliciana Parish, LA
+West Point town, AR
+West Sacramento city, CA
+Westville village, IL
+Wharton County, TX
+Whatcom County, WA
+Wheatley city, AR
+White County, AR
+White County, IL
+White Pine County, NV
+Whitman County, WA
+Whittier city, CA
+Wichita Falls city, TX
+Wickes town, AR
+Widener town, AR
+Wiederkehr Village city, AR
+Will County, IL
+Williamsburg city, VA
+Williamson County, TX
+Williford town, AR
+Willoughby city, OH
+Wilmington city, NC
+Wilson city, NC
+Wilton city, ND
+Wimbledon city, ND
+Winchester city, VA
+Wing city, ND
+Winslow city, AR
+Winthrop city, AR
+Woodford County, IL
+Woodlawn Heights town, IN
+Woodway city, TX
+Woodworth city, ND
+Wooster town, AR
+Wrightsville city, AR
+Wyandot County, OH
+Wyndmere city, ND
+Wynne city, AR
+Yakima city, WA
+Yakima County, WA
+Yellville city, AR
+Zinc town, AR

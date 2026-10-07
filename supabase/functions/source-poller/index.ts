@@ -28,7 +28,14 @@ import {
 import { jsonFetchUrl, parseJsonSource } from "./poller-json.ts";
 import { extractIndexItems, type IndexPollConfig } from "./poller-index.ts";
 import { isDue, isRelevant } from "./poller-relevance.ts";
+import { localAttribution, localJurisdictionFromEntity } from "./local-query.ts";
 
+// NOTE (FDY-88): CRAWLER_ID is deliberately NOT bumped here. Production
+// artifacts already carry source-poller ids up to v1.8 (measured read-only
+// 2026-10-07: v1.3 257,173 · v1.4 30,541 · v1.5 158,817 · v1.6 236 · v1.8
+// 57,943), so the deployed function is ahead of this file and any id this
+// branch picked would collide with existing provenance. The attribution
+// version is carried per item instead, as crawl_metadata.attribution_rev.
 const CRAWLER_ID = "source-poller_v1.3"; // v1.2 index-poll · v1.3 cadence-aware + relevance gate
 const AUTO_ID = "AUTO-199";
 const UA = "FaradayIntelligenceBot/1.0 (+https://faraday-intelligence.ai; data-source poller)";
@@ -263,6 +270,13 @@ async function pollOne(src: SourceRow): Promise<{ found: number; inserted: numbe
   }
   const rows = [];
   let gated = 0;
+  // FDY-88: local-gov watch sources carry a named jurisdiction. Flag each item
+  // 'named' or 'unmatched' so a diluted feed is measurable. Nothing is dropped
+  // and no already-stored artifact is touched.
+  const locJur =
+    src.fetch_config?.segment === "local_gov"
+      ? localJurisdictionFromEntity(String(src.fetch_config?.entity ?? ""))
+      : null;
   for (const it of items) {
     const idKey = `${src.source_key}|${it.link ?? it.title}`;
     const contentHash = await sha256hex(idKey);
@@ -289,7 +303,18 @@ async function pollOne(src: SourceRow): Promise<{ found: number; inserted: numbe
         license_status: src.license_status,
         confidence_cap: "SRC",
       },
-      crawl_metadata: { feed_url: src.feed_url, mode: "poller", fetched_at: nowIso },
+      crawl_metadata: {
+        feed_url: src.feed_url,
+        mode: "poller",
+        fetched_at: nowIso,
+        ...(locJur
+          ? {
+              attribution: localAttribution(it, locJur),
+              attribution_entity: locJur.entity,
+              attribution_rev: 1,
+            }
+          : {}),
+      },
     });
   }
   let inserted = 0;
