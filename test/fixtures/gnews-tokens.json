@@ -1,0 +1,438 @@
+{
+  "_README": "Captured read-only from Faraday production (ycadmmngkdhvpcsrcuaq) public.artifacts for FDY-90. Tokens are real local-watch Google News RSS item ids; batchexecute_response bodies are verbatim Google responses. No secrets.",
+  "captured_at": "2026-10-07T19:56:08.116Z",
+  "source_query": "artifacts joined to source_registry on crawl_metadata->>'feed_url' where source_key like 'gsearch:loc-%' and raw_content ~* 'data ?cent' and published_at >= '2026-07-01'; 50 distinct tokens, restriction keywords first",
+  "interstitial_html": "<!doctype html><html lang=\"en-US\"><head><base href=\"https://news.google.com/\"></head><body><div jscontroller=\"aLI87\" jsaction=\"rcuQ6b:npT2md\" data-n-a-id=\"CBMi0wFBVV95cUxNWGVkVHhlY3ZVSWtmN054NHNrM0Nhdk5qV1ZnVkRDTzJDLVJ1Wi1QcEZiZFUxT3RhWHVhM2ViZ1V4TUtLdVVUQmNoT2xpRnFfSmIwWEJQRnpLMVBGa1ZVR3NwVDJKSEUweFJtUVJuX1QtcGNGNm5TZXhNbDMtbVc1bkZIbjB2T2xoemNHa2RJanFMVENtMFZLeE9jTU1PYWVjZFEzYUs3UFlZNVRPYm5xY2JKbEpCTUdObGVuc2RKcGZnMVVVblRObWJoNDg2eWVEU2d3\" data-n-a-ts=\"1791402919\" data-n-a-sg=\"AbIaSL91hFhsnVycBwSrALVBDecV\" data-n-dnlg=\"false\"></body></html>",
+  "verbatim_captures": [
+    {
+      "token": "CBMi0wFBVV95cUxNWGVkVHhlY3ZVSWtmN054NHNrM0Nhdk5qV1ZnVkRDTzJDLVJ1Wi1QcEZiZFUxT3RhWHVhM2ViZ1V4TUtLdVVUQmNoT2xpRnFfSmIwWEJQRnpLMVBGa1ZVR3NwVDJKSEUweFJtUVJuX1QtcGNGNm5TZXhNbDMtbVc1bkZIbjB2T2xoemNHa2RJanFMVENtMFZLeE9jTU1PYWVjZFEzYUs3UFlZNVRPYm5xY2JKbEpCTUdObGVuc2RKcGZnMVVVblRObWJoNDg2eWVEU2d3",
+      "batchexecute_response": ")]}'\n\n[[\"wrb.fr\",\"Fbv4je\",\"[\\\"garturlres\\\",\\\"https://www.cincinnati.com/story/news/politics/2026/09/04/trenton-data-center-ban-amendment-council-november-3-election-vote/91603307007/\\\",1]\",null,null,null,\"generic\"],[\"di\",19],[\"af.httprm\",19,\"-3242244762421421808\",35]]",
+      "expected_publisher_url": "https://www.cincinnati.com/story/news/politics/2026/09/04/trenton-data-center-ban-amendment-council-november-3-election-vote/91603307007/"
+    },
+    {
+      "token": "CBMiswFBVV95cUxQbkc5UWw5RDJFR19BVUZkZW9SVDk4RmZFX2xmXzdQUEFHUGF0RUNBanVSbFBmUEJnREtIWVlmVlBjRVM2OC1CX2E0NzNxTHpFSURXZXFQcVVORHU3VXdhSDc0NDdJbEFwampZQ1c0cm95R0hLUTJWOUhXbjhpaGlqYURlNHVrSk9ZOEZiOXpTYUlua1Vwc0FiZVFzVU5KbFVCeDZPTW9OYnhUSDRBc2FBSkJCQdIBxwFBVV95cUxQbzA1enRkRWd3eTZQcmV5OFoxQ0RiNkphdENiT045NkR1ZUJzaW1qaDlMVXB0M1c3YmFCRHh1X0ZyXzNhcmlCc1dLMUtDbVQtV2JEQ01oem1mbmJfZG1JQWFBREx4dGJOMVA5LTFVY1M5dE9CLXVyRGZlTEY0T1RhZ1hRY3N5NEp6Nzc5Vy1fU3JLVVFvSUVabDVSODZSdEt3UGJWSVJaZDNZY2NlMFQ5Ym1xQ25hYVYyN1ZRVjdtTzB2ekNaZ2c0",
+      "batchexecute_response": ")]}'\n\n[[\"wrb.fr\",\"Fbv4je\",\"[\\\"garturlres\\\",\\\"https://www.valleynewslive.com/2026/09/02/north-dakota-committee-reviews-data-center-impacts-zoning-state-policy/\\\",1,\\\"https://www.valleynewslive.com/2026/09/02/north-dakota-committee-reviews-data-center-impacts-zoning-state-policy/?outputType\\\\u003damp\\\"]\",null,null,null,\"generic\"],[\"di\",21],[\"af.httprm\",21,\"3638199009006302167\",35]]",
+      "expected_publisher_url": "https://www.valleynewslive.com/2026/09/02/north-dakota-committee-reviews-data-center-impacts-zoning-state-policy/"
+    },
+    {
+      "token": "CBMiekFVX3lxTE9GbGtxOExGODkzNGt3T0ItSHpYTnRia0VFVUFFME5NTDZDRnlzNUJaaE5aYVpZZFJ2N0loNEtwNVV6VVd5Vm9XRmtrVzljR3lfRjJVc2laT2hHem9mQjVNWDBOVE9LZ1g0RXJ0dEpORHN6TWZvRjRaVHFR",
+      "batchexecute_response": ")]}'\n\n[[\"wrb.fr\",\"Fbv4je\",\"[\\\"garturlres\\\",\\\"https://www.pressreader.com/usa/calhoun-times/20260902/281526527922229\\\",1]\",null,null,null,\"generic\"],[\"di\",24],[\"af.httprm\",23,\"-8232074473860519829\",34]]",
+      "expected_publisher_url": "https://www.pressreader.com/usa/calhoun-times/20260902/281526527922229"
+    },
+    {
+      "token": "CBMi_wFBVV95cUxNNkxodlJ0QmJZQTB1M3JkeEtvdTM5RzkzbWp6cVVYd2xrTmhTTkU3RUxlbk8yYlh4cmdkNzBLVGNzdHh2bWtFaUo4cEdPWWxZX1pFbXZtaFZFNU04Uy1YV1ZRRnpyZnlweF9ibm1lSE9NNlJndWQ4eEFQRkZ3cmVNYjZDY09KOHVLNEMtaldHQm5PNUhQc2lMQXZYTS1vXzBFbk1qMnpENjE4Y2NkM1Z0WnF0Q2xETHFRME9GT1U2dWo3UUVTZzhZbTVaWTZUZVdhUnpMTHpvbFZ3MmxmSTZoaWZwWEJJcHkwM1lZZ21XLWJRb1JRVmhSek5LLWVybkU",
+      "batchexecute_response": ")]}'\n\n[[\"wrb.fr\",\"Fbv4je\",\"[\\\"garturlres\\\",\\\"https://www.hudsonstarobserver.com/news/st-croix-county-board-of-supervisors-approves-data-center-moratorium-unanimously/article_ffb0d3f1-77a5-43c7-8ba5-e9fd44b1aa32.html\\\",1]\",null,null,null,\"generic\"],[\"di\",23],[\"af.httprm\",22,\"-2873630032484679021\",35]]",
+      "expected_publisher_url": "https://www.hudsonstarobserver.com/news/st-croix-county-board-of-supervisors-approves-data-center-moratorium-unanimously/article_ffb0d3f1-77a5-43c7-8ba5-e9fd44b1aa32.html"
+    },
+    {
+      "token": "CBMiY0FVX3lxTE1NYzVwclVpdXVKR1o3SnB3ZEVHWnRLZFZZcXlFeVgxSlQwLWlyUVloZ242TXJoZldkckloOXgyb29XcnRDQ2h3WnA5cE9ybVZHS0tidkNNc1hwYnBTVmplQWpCYw",
+      "batchexecute_response": ")]}'\n\n[[\"wrb.fr\",\"Fbv4je\",\"[\\\"garturlres\\\",\\\"https://pirg.org/articles/data-center-moratorium-now/\\\",1]\",null,null,null,\"generic\"],[\"di\",24],[\"af.httprm\",23,\"3136327648911576608\",35]]",
+      "expected_publisher_url": "https://pirg.org/articles/data-center-moratorium-now/"
+    },
+    {
+      "token": "CBMiY0FVX3lxTE9GcDBHS3ZZWWN1ZWVmbTRwam1vVjdmYWRUam9KUUVDaUhKbWc4a21meFVCQWRFekFtV1dwQWQwSFhHeTVHRFJVTUw2X0FDTUFSNXBzWmxOWi13NGxsS0dybFJxSQ",
+      "batchexecute_response": ")]}'\n\n[[\"wrb.fr\",\"Fbv4je\",\"[\\\"garturlres\\\",\\\"https://www.lowellma.gov/m/NewsFlash/Home/Detail/1062\\\",1]\",null,null,null,\"generic\"],[\"di\",21],[\"af.httprm\",21,\"-2101305444519755381\",35]]",
+      "expected_publisher_url": "https://www.lowellma.gov/m/NewsFlash/Home/Detail/1062"
+    },
+    {
+      "token": "CBMinAFBVV95cUxOODZqeVh6N1BMa1FaWUthM1R4QnZocGZSNUNwMFBHUl9idHdmX1h3SzF3cUh0THJ2cWxXM01BZHpIeFRmYVpRaUZZU2EzbjBGNHRrMmZBb1FMZFZUV3A4dnZVUHhyWXVDS1pYYWs2RXJqWllVQUo5bXpjZXRBYlN5NE94TDZrRTZBWG9OaHlteFZJMHJ5bWF2eGNOTWs",
+      "batchexecute_response": ")]}'\n\n[[\"wrb.fr\",\"Fbv4je\",\"[\\\"garturlres\\\",\\\"https://www.azfamily.com/2026/08/31/ag-mayes-calls-statewide-pause-new-data-center-construction/\\\",1]\",null,null,null,\"generic\"],[\"di\",23],[\"af.httprm\",23,\"-7679149091278006633\",34]]",
+      "expected_publisher_url": "https://www.azfamily.com/2026/08/31/ag-mayes-calls-statewide-pause-new-data-center-construction/"
+    },
+    {
+      "token": "CBMiggJBVV95cUxNVTN3RHROMmlKOTJHcUZ2dlVnNXY0Mm1PUFRTcEdxZW1MdDdIQUxmdjlZUjVaWXNqRGxvOWloMUdRYTBZTzVpSnlURG9PQzhNQ1N5eElxWkV1SzRaekVTWkljYjFMLVNPMHdtTnVwSGRQWHVfcGFaYkhMc3JmNnFscHA5YnJrdW9zNDlpM2MyTXlzVTM1b1FyMV81amRBazBBdEQ4MFFNVnVNdXRzVUFMNkFsa1VsSl9XemVUaV9LOFdhTzJUVFhhcC1OeV9lcVQyMlpwQXI0VlhGY2VVM2FkcWQxSDByZU05b2VEbldzQkZpckhIRXdDeFZEcnc2bHpaMWfSAYICQVVfeXFMTVUzd0R0TjJpSjkyR3FGdnZVZzV2NDJtT1BUU3BHcWVtTHQ3SEFMZnY5WVI1WllzakRsbzlpaDFHUWEwWU81aUp5VERvT0M4TUNTeXhJcVpFdUs0WnpFU1pJY2IxTC1TTzB3bU51cEhkUFh1X3BhWmJITHNyZjZxbHBwOWJya3VvczQ5aTNjMk15c1UzNW9RcjFfNWpkQWswQXREODBRTVZ1TXV0c1VBTDZBbGtVbEpfV3plVGlfSzhXYU8yVFRYYXAtTnlfZXFUMjJacEFyNFZYRmNlVTNhZHFkMUgwcmVNOW9lRG5Xc0JGaXJISEV3Q3hWRHJ3Nmx6WjFn",
+      "batchexecute_response": ")]}'\n\n[[\"wrb.fr\",\"Fbv4je\",\"[\\\"garturlres\\\",\\\"https://www.miamitimesonline.com/business/byron-donalds-promises-to-respect-local-data-center-bans-if-elected-governor/article_d14e37bc-d0d7-4c30-843a-d9cc082fcfef.amp.html\\\",1,\\\"https://www.miamitimesonline.com/business/byron-donalds-promises-to-respect-local-data-center-bans-if-elected-governor/article_d14e37bc-d0d7-4c30-843a-d9cc082fcfef.amp.html\\\"]\",null,null,null,\"generic\"],[\"di\",19],[\"af.httprm\",19,\"158145303618013762\",35]]",
+      "expected_publisher_url": "https://www.miamitimesonline.com/business/byron-donalds-promises-to-respect-local-data-center-bans-if-elected-governor/article_d14e37bc-d0d7-4c30-843a-d9cc082fcfef.amp.html"
+    },
+    {
+      "token": "CBMi3gFBVV95cUxQaGtnUFBfTEZJaDBFdmJZR1ZTUTV5X0ptWXBQZTkxcnRURkxmSktxc182VjBRUnRMV0daN1J3VFBhRmpWRFBydDdCWVdLQ3ZDZTlJeG10NV95NHo3RmtsczdUc0hLZk1jY0dvazNFTEh1NVY4eFhTckdlb0hscHpseVBVSEk2ZXNjb2RDVHJHTWhNYnZIZmVNanNzZ2JkdkZpdzlmaGY1VWVZbTlMdjA5eml5bFlmNlc2NUhpaHFzVmNfS2VOa3VHZzEwel9FSVFISmFuZXpOcnd0MUZWYlE",
+      "batchexecute_response": ")]}'\n\n[[\"wrb.fr\",\"Fbv4je\",\"[\\\"garturlres\\\",\\\"https://www.weareiowa.com/article/news/community/marshalltown-temporary-pause-data-center-considerations/524-6b375bbf-ab71-4209-8142-11baa067fb48\\\",1]\",null,null,null,\"generic\"],[\"di\",19],[\"af.httprm\",19,\"-3423128135708594710\",34]]",
+      "expected_publisher_url": "https://www.weareiowa.com/article/news/community/marshalltown-temporary-pause-data-center-considerations/524-6b375bbf-ab71-4209-8142-11baa067fb48"
+    },
+    {
+      "token": "CBMiekFVX3lxTE1SVEJwSUVsVmlXMVdNQVdBZ2RPazJJSXcxRTM4aGZoOWFFVDFPZHNkZC1jLXAtVWN1REt2X1RSTlBZR3JNS1RwOHJQVzFPMHE2Si1scGlIV2J6dG1ReU5yOXd4akpWLVVLWmJyaEVpdk53T0ZxZWs1S1Bn",
+      "batchexecute_response": ")]}'\n\n[[\"wrb.fr\",\"Fbv4je\",\"[\\\"garturlres\\\",\\\"https://floridapolitics.com/archives/817601-byron-donalds-data-center/\\\",1]\",null,null,null,\"generic\"],[\"di\",19],[\"af.httprm\",19,\"-937292045125659104\",34]]",
+      "expected_publisher_url": "https://floridapolitics.com/archives/817601-byron-donalds-data-center/"
+    },
+    {
+      "token": "CBMikgFBVV95cUxPZDFxR2FrNHFfWXBTOXJQbXh2TGVrcGRMUEIxZzVjR0J0V3dMdmkwU0gtMHlhYjg3aXdiRnlMRDdrNmVfLUJ5MnFNalgyUUxyclAtM1J6OUE5bEJjVkdoVXBiRy1uQU5vN2V4Skl4bjE0ZTZ2UmFIYm93cHNNcW5JZ2NibFVvWkhRRFhRUnJqa1hQUQ",
+      "batchexecute_response": ")]}'\n\n[[\"wrb.fr\",\"Fbv4je\",\"[\\\"garturlres\\\",\\\"https://bismarcktribune.com/news/local/article_d14774aa-eff9-43b1-b76a-cb929fcf1621.html\\\",1]\",null,null,null,\"generic\"],[\"di\",23],[\"af.httprm\",22,\"-8120259912277731361\",34]]",
+      "expected_publisher_url": "https://bismarcktribune.com/news/local/article_d14774aa-eff9-43b1-b76a-cb929fcf1621.html"
+    },
+    {
+      "token": "CBMiiwJBVV95cUxPblVDY3l6YlhrY1hCZ3ZSNHdDUk1jX28tUkJkU2dqcFRneGNWTWMydDFaWFhFQ2QwdVlhNUxkMzFsa1REWFJKVE83eVVvWjdlMFRoOUhIU1BITVBRT2JiV1BLUk9QbndydGkzbXVLdDVYYmVUQzNLVVcwRnBEZXh3NUI2UHlzWTNvemtvNW8zV2VJTmY1VjZQZ2tIZlRHdU5IeVp2ak11MEhmZUFOMThsQ0otUWpCQldROXNGWlVkcWRlTnhxZGxrbjh5ZGQ4ZjM1QzQzY0ZKVE1kX2VmMjdZd1FRSzFscXU0YlNyN3VhbzZqZkRzbG1kYTBqd3BKaklYTjFJQm9Zb1VQM00",
+      "batchexecute_response": ")]}'\n\n[[\"wrb.fr\",\"Fbv4je\",\"[\\\"garturlres\\\",\\\"https://wsbt.com/news/local/elkhart-city-council-unanimously-passes-data-center-moratorium-research-study-vote-battery-energy-storage-facility-compute-development-pause-investment\\\",1]\",null,null,null,\"generic\"],[\"di\",23],[\"af.httprm\",23,\"4318372485617298375\",35]]",
+      "expected_publisher_url": "https://wsbt.com/news/local/elkhart-city-council-unanimously-passes-data-center-moratorium-research-study-vote-battery-energy-storage-facility-compute-development-pause-investment"
+    }
+  ],
+  "legacy_token": {
+    "token": "CBMiTmh0dHBzOi8vd3d3LmV4YW1wbGVwdWJsaXNoZXIuY29tL25ld3MvMjAyNi8wOS9kYXRhLWNlbnRlci1tb3JhdG9yaXVtLXZvdGUuaHRtbA",
+    "expected_publisher_url": "https://www.examplepublisher.com/news/2026/09/data-center-moratorium-vote.html"
+  },
+  "legacy_token_google_host": {
+    "token": "CBMiG2h0dHBzOi8vbmV3cy5nb29nbGUuY29tL2Zvbw",
+    "expected": null
+  },
+  "live_measurement": {
+    "measured_at": "2026-10-07T20:05:00Z",
+    "note": "resolveGnewsUrl() run live against news.google.com at 1 request/second",
+    "tokens": 50,
+    "resolved": 50,
+    "by_method": {
+      "batchexecute": 50
+    },
+    "offline_decodable": 0,
+    "rows": [
+      {
+        "token": "CBMi0wFBVV95cUxNWGVkVHhlY3ZVSWtmN054NHNrM0Nhdk5qV1ZnVkRDTzJDLVJ1Wi1QcEZiZFUxT3RhWHVhM2ViZ1V4TUtLdVVUQmNoT2xpRnFfSmIwWEJQRnpLMVBGa1ZVR3NwVDJKSEUweFJtUVJuX1QtcGNGNm5TZXhNbDMtbVc1bkZIbjB2T2xoemNHa2RJanFMVENtMFZLeE9jTU1PYWVjZFEzYUs3UFlZNVRPYm5xY2JKbEpCTUdObGVuc2RKcGZnMVVVblRObWJoNDg2eWVEU2d3",
+        "publisher_url": "https://www.cincinnati.com/story/news/politics/2026/09/04/trenton-data-center-ban-amendment-council-november-3-election-vote/91603307007/",
+        "publisher_domain": "cincinnati.com",
+        "resolve_method": "batchexecute",
+        "error": null
+      },
+      {
+        "token": "CBMizgFBVV95cUxPMGFfVEFZOExQc3BrN0M2SlVwdVF2cG9MRktZbjVRZkd1VFJEcmRGMmRqeklIVzF0bDczV0RhNEdiSFdPQUJEWjBBM2t6Q0poTlhKSldvSW4yQS1kaDlHdEJZN1FvTmxlSlE4LURmeUZpQ3JnNmhiYklDam5iS0Q1S1hMM3dsM21wMUl3U3NTc2pPUlpWeHJoaTdYM1ZBWHU4M21RY1E3dloxNVIzX05wX09oM3R6QUtRTDdOZVhMamt4eHhHa1BZa0xTaHVZdw",
+        "publisher_url": "https://www.gspublishing.net/gspublishing/stories/city-of-mandan-planning-and-zoning-commission-advances-data-center-ordinance,67501?",
+        "publisher_domain": "gspublishing.net",
+        "resolve_method": "batchexecute",
+        "error": null
+      },
+      {
+        "token": "CBMi4gFBVV95cUxOa1FYRVA1MkNQRFVnQUpuYjNvYUxGNm5KeDRiVnFkX0FIMmFwaXEyalJKOXQ4RGlIREhjbm1qLWIxWmR6RVEzdmh3MV9tbTcyZHNlWm5PTVlnb3pSZVlQU1lCM1BHUzZ4ZGNWUTNWV2lVQUJMSl8yV0JWVzlUdjBLbzZ2Q3ZZTmRGNGp3UjF2WEhnc3oxM1N5bDhJWmtmZWlTbDdqVnBobnNrclpzSWpiM3A3SWhDM2lJam9lbEEyR3ZCb0Z2aVRvNGxkZ3JsdXJVYmhqR0xYSVFCdEZtQy1PTUN3",
+        "publisher_url": "https://www.oregonlive.com/washingtoncounty/2026/09/oregon-governments-are-rushing-for-data-center-moratoriums-washington-county-wont-join-them.html",
+        "publisher_domain": "oregonlive.com",
+        "resolve_method": "batchexecute",
+        "error": null
+      },
+      {
+        "token": "CBMiqgFBVV95cUxOSzlhd1FQTUJJb2dkY3gxR3JMdjZjVG40a2YycG82RkxGVjNWdjliQXV6WkwwWUR1TjljOV8ydFg3RDZSOTU5Z2hGWHJSYklOdGliVndyaFRYcGFDQk1aaDJBM1drOVNKb2xmWXlLenVpLXJTN1NVZHA3TUZ2ZnVGTlNKTWI5MVhQVmFoTmR3ZDRYYk1pUzRNc19rbGN0NTlwb1cySDY1b0EyZw",
+        "publisher_url": "https://katu.com/news/local/portland-councilors-explain-why-city-isnt-starting-with-data-center-moratorium",
+        "publisher_domain": "katu.com",
+        "resolve_method": "batchexecute",
+        "error": null
+      },
+      {
+        "token": "CBMipAFBVV95cUxPc3N6Y2R0ZWhiT1NkQ3VpZnhuWlBQSVpfSy1fdy1aWXMzcklKRjhPQnhxM3RqQkR0SXYxaExVWGNsU2x3LVVtUU1OZ1FZUzFkU04takhnTjZlYVp2MXhmY2ZzNkFZUVFNcjN6b0h4b0FkcDg5bExDQUpySi1DU0dOUlFCQWF6ZmdPaVJIT05LdEc0b3FfUlhRTTRqVWQxQWZVeHZPdw",
+        "publisher_url": "https://calexicochronicle.com/2026/09/02/op-ed-the-unsurprising-failure-of-the-data-center-moratorium/",
+        "publisher_domain": "calexicochronicle.com",
+        "resolve_method": "batchexecute",
+        "error": null
+      },
+      {
+        "token": "CBMi9gFBVV95cUxObE5zOWt3Tm9ESG1zTjF3YzRKYnMycG1DQXd2SjBNUGU1NnZyakRtdEFJM2JIc2FtTVZMZ0dTSVU1YktZdlMtVmZlMGhIczR3dE96WUFFNm9RYUpoNUktVGtGWnFWMExRQjFJeWswSTMxcnJHbXozWVhwaG92Y25JX2ZOdWE2T3JDU2hodFVaRVNLWThKMFRuR0txQXB4blZIRC1hUm5tdU0zZFVTVkNmSERMOXQ4M0h0ZVpKNU5jbGxkWnIyZjlqOXp3cUhnMnBIX0NvdDIxdUt1a2pQQ1RyZjFKUXR5a2tTbnR5UklBaHM4QWRsWGc",
+        "publisher_url": "https://www.commercialappeal.com/picture-gallery/news/politics/2026/09/02/community-members-voice-support-for-a-data-center-moratorium-to-city-council/91570856007/",
+        "publisher_domain": "commercialappeal.com",
+        "resolve_method": "batchexecute",
+        "error": null
+      },
+      {
+        "token": "CBMiqgFBVV95cUxPMjdyaWpWREc5TWwzRTlNUkFRNEtYMW5kWVE5SmJpTmlZZF9zVlZiMmhraFVGTTFVUG5QWW5UNVp3X2FDYnUzZTIycW5ZdnJNQzQ2ZG5tblAzVm4yVTl6TUFuNzBfWmNEbkFHSVNPbElJeUZpZ2NYa0ktelgyc1RxNTd5bThHNmVBcEZQRVp6TU9IeFgwOTRHWElsT1ByYUdZSFZJcFViRDVDUQ",
+        "publisher_url": "https://www.ksn.com/news/local/sedgwick-county-commissioners-to-consider-data-center-moratorium-extension/",
+        "publisher_domain": "ksn.com",
+        "resolve_method": "batchexecute",
+        "error": null
+      },
+      {
+        "token": "CBMirwFBVV95cUxNZXdCemtvdmdwMkxSZWpfOGNTS2RMZ0tEellhLUdseDNJMW1ZbVVJVHVuWGxaajVWSWpGYmpVMGJFVG5abEY5S1dDMW1aQ1VOS1hyNHVyeUtkMHFha3RHMzVCYU94U0YyazBnNThOOGd6S2hqMi1TOXpqcy1rLUNaZ1NnWndlUkdCLUlwWmNiUnFpYmNQbFdZTkdydDliZXNSbEc2QUlUZ0M3ajBXWXJR",
+        "publisher_url": "https://www.ksn.com/video/sedgwick-county-commissioners-to-consider-data-center-moratorium-extension/12129709/",
+        "publisher_domain": "ksn.com",
+        "resolve_method": "batchexecute",
+        "error": null
+      },
+      {
+        "token": "CBMimwFBVV95cUxNLWZkeDQycEdTMzBmYnh3T21PWHdUTEJBdTFkWHBGdm4ta2RyTnR5T0R5cnZFeFdVSGI4Zk9GTGJJbXJqaXItVDZYdGFYdDRlUC1DTG4yTGE0TFNfZVpmRTY3d2VLSFpWRVUyelk2Nlk0ejlXQTBHSk5yb0RnYTJNYXhTaHl1ZFFEbjhHMTNRb3p1bFBubmxLOXJrYw",
+        "publisher_url": "https://www.mcall.com/2026/09/02/opinion-pennsylvania-needs-a-mandatory-data-center-moratorium/",
+        "publisher_domain": "mcall.com",
+        "resolve_method": "batchexecute",
+        "error": null
+      },
+      {
+        "token": "CBMiswFBVV95cUxQbkc5UWw5RDJFR19BVUZkZW9SVDk4RmZFX2xmXzdQUEFHUGF0RUNBanVSbFBmUEJnREtIWVlmVlBjRVM2OC1CX2E0NzNxTHpFSURXZXFQcVVORHU3VXdhSDc0NDdJbEFwampZQ1c0cm95R0hLUTJWOUhXbjhpaGlqYURlNHVrSk9ZOEZiOXpTYUlua1Vwc0FiZVFzVU5KbFVCeDZPTW9OYnhUSDRBc2FBSkJCQdIBxwFBVV95cUxQbzA1enRkRWd3eTZQcmV5OFoxQ0RiNkphdENiT045NkR1ZUJzaW1qaDlMVXB0M1c3YmFCRHh1X0ZyXzNhcmlCc1dLMUtDbVQtV2JEQ01oem1mbmJfZG1JQWFBREx4dGJOMVA5LTFVY1M5dE9CLXVyRGZlTEY0T1RhZ1hRY3N5NEp6Nzc5Vy1fU3JLVVFvSUVabDVSODZSdEt3UGJWSVJaZDNZY2NlMFQ5Ym1xQ25hYVYyN1ZRVjdtTzB2ekNaZ2c0",
+        "publisher_url": "https://www.valleynewslive.com/2026/09/02/north-dakota-committee-reviews-data-center-impacts-zoning-state-policy/",
+        "publisher_domain": "valleynewslive.com",
+        "resolve_method": "batchexecute",
+        "error": null
+      },
+      {
+        "token": "CBMizAFBVV95cUxQSjFpSURob1dreHJKU2pXdEVQTFBENjVUTGxtdjE5N2pSeTNKcVBxS2RIQmR4OHZ2TkU4ZExmWEtmR1VzWXJPaFpTSUxNMjBFOEktSjc3c2pjTUNJZ3hrb0JtdzRZaTlUMk80SmlFVnlYaGpMYW9MaEw5OXZndExjMTUyRUpST1F1RTkyOUFjOFVHNW84RVlGaFdDcXVBN0JJeTZhTUdMLXlTcTVxQ0FJdVljeUVic2x1MVJhNG43clBDZnJuUjNlSm5vOXY",
+        "publisher_url": "https://www.postandcourier.com/charleston_sc/mount-pleasant-data-center-moratorium/article_a78ff324-4877-4f8d-9278-edaae8a9562b.html",
+        "publisher_domain": "postandcourier.com",
+        "resolve_method": "batchexecute",
+        "error": null
+      },
+      {
+        "token": "CBMiekFVX3lxTE9GbGtxOExGODkzNGt3T0ItSHpYTnRia0VFVUFFME5NTDZDRnlzNUJaaE5aYVpZZFJ2N0loNEtwNVV6VVd5Vm9XRmtrVzljR3lfRjJVc2laT2hHem9mQjVNWDBOVE9LZ1g0RXJ0dEpORHN6TWZvRjRaVHFR",
+        "publisher_url": "https://www.pressreader.com/usa/calhoun-times/20260902/281526527922229",
+        "publisher_domain": "pressreader.com",
+        "resolve_method": "batchexecute",
+        "error": null
+      },
+      {
+        "token": "CBMi_wFBVV95cUxNNkxodlJ0QmJZQTB1M3JkeEtvdTM5RzkzbWp6cVVYd2xrTmhTTkU3RUxlbk8yYlh4cmdkNzBLVGNzdHh2bWtFaUo4cEdPWWxZX1pFbXZtaFZFNU04Uy1YV1ZRRnpyZnlweF9ibm1lSE9NNlJndWQ4eEFQRkZ3cmVNYjZDY09KOHVLNEMtaldHQm5PNUhQc2lMQXZYTS1vXzBFbk1qMnpENjE4Y2NkM1Z0WnF0Q2xETHFRME9GT1U2dWo3UUVTZzhZbTVaWTZUZVdhUnpMTHpvbFZ3MmxmSTZoaWZwWEJJcHkwM1lZZ21XLWJRb1JRVmhSek5LLWVybkU",
+        "publisher_url": "https://www.hudsonstarobserver.com/news/st-croix-county-board-of-supervisors-approves-data-center-moratorium-unanimously/article_ffb0d3f1-77a5-43c7-8ba5-e9fd44b1aa32.html",
+        "publisher_domain": "hudsonstarobserver.com",
+        "resolve_method": "batchexecute",
+        "error": null
+      },
+      {
+        "token": "CBMimAFBVV95cUxQVDFZVV9ZRGEydzhfNEhlaWF4a2lhd0lLMGlERWNEZ0lGSzI5Zkg3SUhBLWM0MXU5LXVlb3VJeUVNN2xsdVhoWVJrakVLTF82eXFsdEFmNDdPNWJwZ1ZFRU5aX1pZeW8wSy0yR0RwZTU3Ti11LTdWeEw4Qm1HaGdMOENJb2RkS3VCQV9JRkJvOHRiNzFLSzFIUQ",
+        "publisher_url": "https://fox56news.com/video/winchester-approves-one-year-moratorium-on-data-centers/12128612/",
+        "publisher_domain": "fox56news.com",
+        "resolve_method": "batchexecute",
+        "error": null
+      },
+      {
+        "token": "CBMirgJBVV95cUxQNnFvNDJOejVoOTNYQ1Qzb0R2bzd1aTQwcFJBVkpNdFhkakZCaVFCaUc0NTFMeGNJbGlLVlhhWmsyQ0kzVTVkR0tmZ1FWMVM3UFY3ZWZ4TkFLZnNOTnk5bUdrVHBhckZlcG94UmRPWFF1R2FmekthRHQxMEQxYzdjTWFBUTlOdzMwUWRjRVRoYnZQRHpvTXhiLUlsbncwdFctSnktaDdFYmNHd01oUlBXV2JhelJ1V25XbHpFNU0xQmllSkUxY1dtWWRKcEpJRXRiQmNlOVM5Zl8yeGJlOTdnOHlWcW5COGNxdkw0QWNqYV9aNFNWWm01MHNhZlZyX2ktRU85Rl85ZTIwd2I4ZW5XZ0w1YWNrUzBxZVM3LU1ZbmVVMmpqSFJxb0R4cGd0QQ",
+        "publisher_url": "https://wsbt.com/news/local/michigan-city-council-to-consider-data-center-moratorium-vote-brakes-future-porposed-google-million-dollar-city-residents-members-city-hall-impact-ban-vote-michigan-city-indiana",
+        "publisher_domain": "wsbt.com",
+        "resolve_method": "batchexecute",
+        "error": null
+      },
+      {
+        "token": "CBMiiwJBVV95cUxQeW9waWpHbjZaRml4cUppYVJkaUkzc2VXdmtiMm80X0xqc1otU3FLS2NvZTh0azRYM3Z3LWpMQzdTUkhaWDNaUU8wZUF2QUNtOVU5VFNFU0Q1djI5SnNtTUViOENsc0IySlJLVmtMWWQxVzAxT1JSOUR3OTlLX0ctYzA5Q2lPUlUxWW5LLVo3MlBTdVVFYXpLeUJNU214TmF3WG1IOTBmb0ZhR2hFcmpZcTBtdC1GSndhRUNmMGlWNFBjcjNocWFkYzdBY21RZUxiajczZTVrT0lfaExHODJ3XzdsZy0zSlRzZWJUWDZPVFZZMGV5MVhzcEw3Y2k0ZHRpZV9tUGZxYXlCOXc",
+        "publisher_url": "https://www.wfaa.com/article/news/local/collin-county/prosper-planning-zoning-commission-denies-controversial-data-center-rezoning-request/287-e449e7f8-4e36-4cf2-b478-9ae99ceda139",
+        "publisher_domain": "wfaa.com",
+        "resolve_method": "batchexecute",
+        "error": null
+      },
+      {
+        "token": "CBMiwwFBVV95cUxNUlZ3cmtndVd0d181YlI2aFhQR202YnZ2bW4xZDNUazhvRDhHdjFhNDdSOGhJNnA5aTdxMWNJdVZkQ0hEZ2VONl9Wa1Z4TnpHSnFQV2tmNVVZSGY4Q2dTYW5kdFF2ZDFEVUJzX3hyRHNqbVg0NEo1eHlsQkRUVEJEZWVtRndyeEFaeU9ZNHRSUkhqejZ0ZGN6QXM2WmI4NFZ1MUdCR3AwR3F1Zm5lSms4cnYwNlhnb2RFd29Wbnh2aVhNT28",
+        "publisher_url": "https://www.wypr.org/wypr-news/2026-09-01/extending-baltimore-countys-data-center-moratorium-needed-time-or-political-theater",
+        "publisher_domain": "wypr.org",
+        "resolve_method": "batchexecute",
+        "error": null
+      },
+      {
+        "token": "CBMi-gFBVV95cUxQUFlyZXRGZXAxYV9BZFplTUQyRkdUbmQwemd4RV9ieTdOLUFBMTFWTm1jSTU3bWRON1pfbnpIU0N3QnJIMkRuZ0tybW9LbUdrUTA2ejg4UFpSNFpDLXdMUHVoRE5rWUtGMXE3aG1ZamJVZ2pjckF1bW5CcDFhRDJCb1RCRzE1Y1JNSFVCYXN2a081U2N0RHZsaER5WVk5R0s1TUtKSlVvalJUWFhXcHdFamFtZDh1S09JNDlpak9ZTEU4a0pUZWJoYnhjRWtYQm9GRUUzSkJrOE5wM2pVWEpGVC1CLVlqOG92T0JYdlJ6V2EtX1RrY011T0VB",
+        "publisher_url": "https://www.commercialappeal.com/story/money/business/development/2026/09/01/memphis-city-council-continues-weighing-options-on-data-center-limits-sept-1/91546651007/",
+        "publisher_domain": "commercialappeal.com",
+        "resolve_method": "batchexecute",
+        "error": null
+      },
+      {
+        "token": "CBMinwFBVV95cUxNYk9ZNWUzS3djYmJhYUNwcUJZd0VVdGNzQVhJTlNTRjRNMXBXRF9wOVBxRDBhSEE2T1dIM0VmLVlyLVo4dFVaTVFWMHZYY3dYQnN3Rm9vM3k3T0FxZzVGb2p6NXpWRnliTHRBSk9XakVXdXFZMXp2bDQzbVdnYzk2Vk01VkJoZVhob2UzSmVidTZ6Si1jNENIZmFKcFRUOGs",
+        "publisher_url": "https://morganhilltimes.com/morgan-hill-declares-moratorium-on-data-centers-battery-storage-sites/",
+        "publisher_domain": "morganhilltimes.com",
+        "resolve_method": "batchexecute",
+        "error": null
+      },
+      {
+        "token": "CBMivAFBVV95cUxPaVJqRFI1aEdReDVUZjgzRlgtQWdZVnM1UnhDZkJIODd4ZnpwWG03MTd3UENQSGNlUGVwVkR1bHBZaF9MRnloRE5aM2RJMkhyS3RNRURCZU9CMV9RSWhWSW00R0tGT1ZyLVYtNTR0Yk1PNW1ydmNWSHd4cGdBalNySGpha2EyM3VBWnZYanhiN3NweE5wNWlLVlpna3YzRUlYeno2MDYxZ2NjZHNNeWlpeDhyZTF6el95M3JmRg",
+        "publisher_url": "https://southdakotasearchlight.com/2026/09/01/south-dakota-utility-regulator-candidates-clash-over-ai-data-center-pause/",
+        "publisher_domain": "southdakotasearchlight.com",
+        "resolve_method": "batchexecute",
+        "error": null
+      },
+      {
+        "token": "CBMi2AFBVV95cUxQYTJqT3djbFlkcXZSb3Zhcm90ZGNLZXZMVTVuY1VGWWNNWWh3YmI4ODZsZ0NISzlWa1FhdXJkSUF3enJhSU1ZTWJiVnkzRi1SUFhuYjlFMDdVNFlSSHFmcFpGV1lzWGNTMVI2cVc3VGtub25wV0FiRjRUVmxZak1KUUFJTXNaa0NMbzU2ODVBTktZakJJbS1LYlFJNWNJdEZ5OWJUN3ZfQWdHN1JxZmtzaklxRGlaVk9Ub1ZHWUtKYXpOdHp6YlkxUXJEY283TldXYV9aQ2tlU2E",
+        "publisher_url": "https://www.statenews.org/government-politics/2026-09-01/data-center-ban-in-southwest-ohio-city-must-go-before-voters-says-ohio-supreme-court",
+        "publisher_domain": "statenews.org",
+        "resolve_method": "batchexecute",
+        "error": null
+      },
+      {
+        "token": "CBMiqAFBVV95cUxNTmdXMFA3QV9iZ0R0dUxGbGhYaWRrU0tvTGdka1FrZ09IZk5hTTBmbll5SFYyVHJzd0NFUHJ1bE9fdEdESE8yTk1QNXRidm9FWWRadUp0NEZlZDYtb0p5Mk5nOE02SDhoUFFKaWNZbVZUbm1xU3lFY042eXlmTjgtdGhyalZvSkpHSl8zWl82V2V2ZUNQQXRYanRsOUp2NVc4TGhZdzN1MEE",
+        "publisher_url": "https://www.wcpo.com/news/local-news/trenton-to-vote-on-data-center-ban-after-ohio-supreme-court-decision",
+        "publisher_domain": "wcpo.com",
+        "resolve_method": "batchexecute",
+        "error": null
+      },
+      {
+        "token": "CBMiY0FVX3lxTE1NYzVwclVpdXVKR1o3SnB3ZEVHWnRLZFZZcXlFeVgxSlQwLWlyUVloZ242TXJoZldkckloOXgyb29XcnRDQ2h3WnA5cE9ybVZHS0tidkNNc1hwYnBTVmplQWpCYw",
+        "publisher_url": "https://pirg.org/articles/data-center-moratorium-now/",
+        "publisher_domain": "pirg.org",
+        "resolve_method": "batchexecute",
+        "error": null
+      },
+      {
+        "token": "CBMiY0FVX3lxTE9GcDBHS3ZZWWN1ZWVmbTRwam1vVjdmYWRUam9KUUVDaUhKbWc4a21meFVCQWRFekFtV1dwQWQwSFhHeTVHRFJVTUw2X0FDTUFSNXBzWmxOWi13NGxsS0dybFJxSQ",
+        "publisher_url": "https://www.lowellma.gov/m/NewsFlash/Home/Detail/1062",
+        "publisher_domain": "lowellma.gov",
+        "resolve_method": "batchexecute",
+        "error": null
+      },
+      {
+        "token": "CBMiqAFBVV95cUxOVUpZU0lQM1B2cjF1Z1FUTDB5V1Nvd1llMXNtRl9wcEdpV3UxT3gzdE01RG1odVkweHZfTzBqUkpFUWh3MG1MTUQtc2p6VXp4NmpXUlJkajlGaHMtWnh5elV3eFpOUFlaQzU4RkpoTHRtM2RycWhrVVgtOFdrMzk3VFB0cWt3UWR6bTR5bjZBTHNCOU1tWkxLaVNuSC1nMjVGaFpmVWpLTm0",
+        "publisher_url": "https://352today.com/news/257752-marion-county-planning-board-recommends-12-month-data-center-moratorium/",
+        "publisher_domain": "352today.com",
+        "resolve_method": "batchexecute",
+        "error": null
+      },
+      {
+        "token": "CBMilgFBVV95cUxQTmlvT1VEbDh0bjB4VEJ5X2hRbS1vT2pBQ25pTVB4QWdzZ19nemdEaFF6aHg2SEJ3alFBWEgwcVlFT1ZEakdHQ3JJcUpJdllFcDk1U3RfVXg5Q3FrVjViMDNZR2pkbG1mcFhYMjRaSEtQSGZEa2hoX3p1ZzZXdXlUR2oyWGdYcGFTaHRrNzIwZTdmWHpFX0E",
+        "publisher_url": "https://universitystar.com/36137/news/state-senator-sees-likely-dispute-to-data-center-ban/",
+        "publisher_domain": "universitystar.com",
+        "resolve_method": "batchexecute",
+        "error": null
+      },
+      {
+        "token": "CBMirgFBVV95cUxOQlJzNHF2Tm1yVEVueE1JdTl5MFJlUTItay1VNHpnTGk1dnpmb2Q2UGhpMEtZSVJUQ09WdUtyZVNsTFhuamNKTVY4WkFqcDQ1eHNzbnFUazQ2OFZYNjhWVlVmSXFQUFg3SUVGVURaakVfcUU4eUVhaUZfbWZWbzVnY01GbTBZX3NSQ3pMcUtJamN1UGswcmU3UUVEcW1SSVV4bVhOQUZqZzVoY1Z6b2c",
+        "publisher_url": "https://urbanmilwaukee.com/2026/08/31/in-wisconsin-rapids-data-center-objections-include-russian-connections/",
+        "publisher_domain": "urbanmilwaukee.com",
+        "resolve_method": "batchexecute",
+        "error": null
+      },
+      {
+        "token": "CBMijwFBVV95cUxNRS1qMzczSVBibHZMZnRKemY2azdyLWV1Q3ZpQkNXcjdtekZ2bXZPTUtwQ19GZnJYWVlRQTJCOC1JNGNsY1g3dFFSdEdrYkl2d2dGbjJ4NGlVbDVpVDNNZnhsSG15U0cxdTUwTWRSdjFjSTZiam9PNllld00yZ2FzUXpVQUlUZG5hSnM1NV9tMA",
+        "publisher_url": "https://www.live5news.com/2026/08/31/mount-pleasant-considers-moratorium-data-centers/",
+        "publisher_domain": "live5news.com",
+        "resolve_method": "batchexecute",
+        "error": null
+      },
+      {
+        "token": "CBMiqAFBVV95cUxNT1dvdmE2OUlqTklkdW5Hdk9YNDk1U1QzTVRSTFRhNmphMUNVMWxBNVdxN1ZEYk9acjJ1RVIzTWxKeDVQNnhOcWdzMzFKYlNoMGhUZHNjWHo4c0IzQTZqY0xzVWZJTWoyTFhyVnp1ejhqbVc4RWFuTWFLa2RDVmRGbnhQUDlwektEY3ZrNklqLTBDRVAtTW84SGJwbFF6emdmLUkyUVJYWGo",
+        "publisher_url": "https://mynbc15.com/news/local/prichard-questions-validity-of-permit-issued-before-data-center-moratorium",
+        "publisher_domain": "mynbc15.com",
+        "resolve_method": "batchexecute",
+        "error": null
+      },
+      {
+        "token": "CBMiigFBVV95cUxNYWFKUHJxOW12VGhCMm9FeV9OdVNZZWRuU2hjcUVmMDU0amVfX2Y4aGM0QjFOajBuVFdTYldOUDRDSmNNNFlBZkFJbWtyTGFIWnZHUXROX0lqZHo4LXJIVnNlNnlxTHBXRkNzVlVzZTJ0Ym9IVS1wX3hWNXVnQ2FwbkJmYmF1blZpOGc",
+        "publisher_url": "https://www.wkyt.com/2026/08/31/winchester-consider-1-year-data-center-moratorium/",
+        "publisher_domain": "wkyt.com",
+        "resolve_method": "batchexecute",
+        "error": null
+      },
+      {
+        "token": "CBMiqgFBVV95cUxQWVNtOGZMdHh6Z1VCaHdYSWNWU0hHMnJCQzhpeWtjRngwd01RQ0lGMW9PTDdfU2N4V1NLd1ZYY3EyUTZEYXp4N2tHYWZCNDVjZWN1U2xMS3JhM3VVWWRTcDQzR1V2NUJyQjRjUE5Kbjk1Wldydm1yeFpUR3lRRFJrazJ0Q0oxZkVhWDZVdXQxd2lYVFh5cVM5emJKbVlXUEw2SWp1cV9DV3NSZw",
+        "publisher_url": "https://www.kaxe.org/local-news/2026-08-31/bemidji-data-center-moratorium-gains-support-citizen-commission",
+        "publisher_domain": "kaxe.org",
+        "resolve_method": "batchexecute",
+        "error": null
+      },
+      {
+        "token": "CBMiogFBVV95cUxQQ2VhdVdKWE1DX25MaXR3em1va05NRVZUNDhzRWE3X3VCbUJpa253MEFCVzF2VXlMVGRRUExBN0hyMUVyaDkwT2pianA5Z0NKYmFKSU9yYzhkZGlreDM5SkxMdVBWQVFNdFoySUZHalM5SVd2Q202VnQ4ckZRMDdCRE5TRTlZamZ4dmhkeE55OGJENnBJVG9JUTVTUms3OXQzLVE",
+        "publisher_url": "https://www.mcall.com/2026/08/31/zoning-meeting-on-emmaus-avenue-data-center-in-allentown-postponed/",
+        "publisher_domain": "mcall.com",
+        "resolve_method": "batchexecute",
+        "error": null
+      },
+      {
+        "token": "CBMiuAFBVV95cUxOM3BQamJIMzU4N1c2NHdRMWZTblNhaTF6cHBVVmJvTG84djEwZDBvY0JtWHNlemliZHhqTUNSbEZkSWRNT1R4MGcyMkR1blp4T0w2djczRVJTZ18xcnpOR29yemNzSk9vTkktbXc2UTV4cEdHa25Md0RVY0M2aTVrVklnbURjellLS1BSWUFrUzFreWJMYUxYVTVHTWtSWlMwaEk3MGhtUGlGV2ctYi1yemlHWFJmdHhP",
+        "publisher_url": "https://www.republicanherald.com/2026/08/31/for-now-new-castle-twp-ordinance-has-kept-data-center-development-at-bay/",
+        "publisher_domain": "republicanherald.com",
+        "resolve_method": "batchexecute",
+        "error": null
+      },
+      {
+        "token": "CBMinAFBVV95cUxOODZqeVh6N1BMa1FaWUthM1R4QnZocGZSNUNwMFBHUl9idHdmX1h3SzF3cUh0THJ2cWxXM01BZHpIeFRmYVpRaUZZU2EzbjBGNHRrMmZBb1FMZFZUV3A4dnZVUHhyWXVDS1pYYWs2RXJqWllVQUo5bXpjZXRBYlN5NE94TDZrRTZBWG9OaHlteFZJMHJ5bWF2eGNOTWs",
+        "publisher_url": "https://www.azfamily.com/2026/08/31/ag-mayes-calls-statewide-pause-new-data-center-construction/",
+        "publisher_domain": "azfamily.com",
+        "resolve_method": "batchexecute",
+        "error": null
+      },
+      {
+        "token": "CBMiggJBVV95cUxNVTN3RHROMmlKOTJHcUZ2dlVnNXY0Mm1PUFRTcEdxZW1MdDdIQUxmdjlZUjVaWXNqRGxvOWloMUdRYTBZTzVpSnlURG9PQzhNQ1N5eElxWkV1SzRaekVTWkljYjFMLVNPMHdtTnVwSGRQWHVfcGFaYkhMc3JmNnFscHA5YnJrdW9zNDlpM2MyTXlzVTM1b1FyMV81amRBazBBdEQ4MFFNVnVNdXRzVUFMNkFsa1VsSl9XemVUaV9LOFdhTzJUVFhhcC1OeV9lcVQyMlpwQXI0VlhGY2VVM2FkcWQxSDByZU05b2VEbldzQkZpckhIRXdDeFZEcnc2bHpaMWfSAYICQVVfeXFMTVUzd0R0TjJpSjkyR3FGdnZVZzV2NDJtT1BUU3BHcWVtTHQ3SEFMZnY5WVI1WllzakRsbzlpaDFHUWEwWU81aUp5VERvT0M4TUNTeXhJcVpFdUs0WnpFU1pJY2IxTC1TTzB3bU51cEhkUFh1X3BhWmJITHNyZjZxbHBwOWJya3VvczQ5aTNjMk15c1UzNW9RcjFfNWpkQWswQXREODBRTVZ1TXV0c1VBTDZBbGtVbEpfV3plVGlfSzhXYU8yVFRYYXAtTnlfZXFUMjJacEFyNFZYRmNlVTNhZHFkMUgwcmVNOW9lRG5Xc0JGaXJISEV3Q3hWRHJ3Nmx6WjFn",
+        "publisher_url": "https://www.miamitimesonline.com/business/byron-donalds-promises-to-respect-local-data-center-bans-if-elected-governor/article_d14e37bc-d0d7-4c30-843a-d9cc082fcfef.amp.html",
+        "publisher_domain": "miamitimesonline.com",
+        "resolve_method": "batchexecute",
+        "error": null
+      },
+      {
+        "token": "CBMisgFBVV95cUxQSURhMm9GeDFVcE91Ul9YSUhPRXI4Y3BXdTVhcnhGc2lLbkx2Y0toaUlCNm1TbmFVRThaZWlncGRyUXp3Rm1BS0o0Ql9ESzUxOE1mYzI4SmdLM2NvRkYzZDlCRXFyZ09lem9nb081R1I2VVMwUHUtMVpVYjhCamIwVkUwcFdPWXd0ajRETU02MjRfLTlJaGU3NTRhME5KNFQ4VGt1Z3dLLTV1RE5ZX0Vfbmx3",
+        "publisher_url": "https://mainstreetmediatn.com/articles/chronicleofmtjuliet/data-center-committee-receives-first-ordinance-draft/",
+        "publisher_domain": "mainstreetmediatn.com",
+        "resolve_method": "batchexecute",
+        "error": null
+      },
+      {
+        "token": "CBMijAFBVV95cUxQX1NYQXVjdGFieThWSWh0R0ZiQ042S0FLSHV2ZzQ3eWhxS1VhSF80aXVkOVZ3SUthclQwZ0xFODZGcVpDM0dfVjN1QlRIREg4MU9XbzFZT3p4MlFaWldSaU5tSXpiYWF0aXU3MnVEVXJKTElRS2V6SG1zdEtnNUY4dU5hNlVWRlpVZGhkWg",
+        "publisher_url": "https://www.bizjournals.com/dallas/news/2026/08/31/data-center-prosper-tomahawk.html",
+        "publisher_domain": "bizjournals.com",
+        "resolve_method": "batchexecute",
+        "error": null
+      },
+      {
+        "token": "CBMi2wFBVV95cUxNOUttX0psek1TOE1sU3pDcXBRY3pDRWE0MXZJVlFHZUF5aGxTZEd6V1U5ZHdQSmxNTHBnTnRhQ0NWTTlTUGYzNUkyWGNMUjFpUVhvdm80UDlSWTZTRDlLXzYwVG9KTWFLY09wWGxMSWJVVXJfajgtUEtvVWRINndheW8yeE1yVmdoRUJxMGU4Mk5tQ1ZvVEd5OEh4ckxpZ3RCZDYzeS1tenRnQVllaWxIMEZocm1fRE1tTHl3M3pxR2EwRmxtRllMdDdXdHZvdTlyS1ZmamRDNEFheUU",
+        "publisher_url": "https://www.wtsp.com/video/news/city-of-northport-to-discuss-a-data-center-moratorium-on-monday-evening/67-3c57136a-1c4d-4c69-a687-bc3de7fa5940",
+        "publisher_domain": "wtsp.com",
+        "resolve_method": "batchexecute",
+        "error": null
+      },
+      {
+        "token": "CBMiwwFBVV95cUxPekhVa0lnbngyS0huUUtKUC1sbW5yZkdydGdJR1VIMGVhQ1g4Y0tiTXo2NkY5V1RFbldyZl8wNXhTR1NSOWhSRHVlcGRpZzdWMTE0OTZTY3lDaE0wSGxMQTRZT3U2OGtQQkVHMnBqS0U4TnA2aDlOVnRtSm0tYWZLNWpxMFpFQWU3WmJVcmJtc0RUeF9Xd0FCdS01V3NJeGRTNUxhd01pXzJONXRhMi10RXFOLTFTR3cwTTRSQkVPWXdfd1U",
+        "publisher_url": "https://baynews9.com/fl/tampa/news/2026/08/31/north-port-commissioners-to-consider-retroactive-1-month-data-center-moratorium",
+        "publisher_domain": "baynews9.com",
+        "resolve_method": "batchexecute",
+        "error": null
+      },
+      {
+        "token": "CBMimgFBVV95cUxPZ1JnTXJ3Tm43bnluLUVyTnVpTHpKWTZieXV3bW1sNng0a1kyVG5OeXd4Qkd5TWp2Ulp4LVdOclFnS0NlTWhGWm9HREg5VG1GTFJNX2g4ZnA1VnlzY0I5UDBzaUUtaEtvbC1XQzN4WEFfMXJsSnVfXzZPVUFLaEN5TU95ZzlHY2kyNzF2bFJ2V29SRUxYeGFZLVZB",
+        "publisher_url": "https://startupfortune.com/austin-council-votes-to-ban-hyperscale-ai-data-centers-by-year-end/",
+        "publisher_domain": "startupfortune.com",
+        "resolve_method": "batchexecute",
+        "error": null
+      },
+      {
+        "token": "CBMi3gFBVV95cUxQaGtnUFBfTEZJaDBFdmJZR1ZTUTV5X0ptWXBQZTkxcnRURkxmSktxc182VjBRUnRMV0daN1J3VFBhRmpWRFBydDdCWVdLQ3ZDZTlJeG10NV95NHo3RmtsczdUc0hLZk1jY0dvazNFTEh1NVY4eFhTckdlb0hscHpseVBVSEk2ZXNjb2RDVHJHTWhNYnZIZmVNanNzZ2JkdkZpdzlmaGY1VWVZbTlMdjA5eml5bFlmNlc2NUhpaHFzVmNfS2VOa3VHZzEwel9FSVFISmFuZXpOcnd0MUZWYlE",
+        "publisher_url": "https://www.weareiowa.com/article/news/community/marshalltown-temporary-pause-data-center-considerations/524-6b375bbf-ab71-4209-8142-11baa067fb48",
+        "publisher_domain": "weareiowa.com",
+        "resolve_method": "batchexecute",
+        "error": null
+      },
+      {
+        "token": "CBMiekFVX3lxTE1SVEJwSUVsVmlXMVdNQVdBZ2RPazJJSXcxRTM4aGZoOWFFVDFPZHNkZC1jLXAtVWN1REt2X1RSTlBZR3JNS1RwOHJQVzFPMHE2Si1scGlIV2J6dG1ReU5yOXd4akpWLVVLWmJyaEVpdk53T0ZxZWs1S1Bn",
+        "publisher_url": "https://floridapolitics.com/archives/817601-byron-donalds-data-center/",
+        "publisher_domain": "floridapolitics.com",
+        "resolve_method": "batchexecute",
+        "error": null
+      },
+      {
+        "token": "CBMixgFBVV95cUxOM1NvYm0tc1R4eU5UcWwxRW96UWYxN1Q1WFFLVjdWWVh6Vm1VcVFFbjVHYWRmWEVSd3FDd0EwVzhhWE1maVlFQ0lhRzRhV1d5V25waUlzQUFBLUs1eXZVemh6WEZISXJ2Y2t3NWtRbTd3cUlrRk5ZX2hFam1qaVIteERobEk0UGx2bkpCeWZTMjV2TDU5ZVl6R2VqQW55MnVqcTdQdkV2LWtES3JXR0ZqWVNEZ010d2E0VGNBRHZpOTZETWkwaGfSAdoBQVVfeXFMUHhWQUZpRFgtd0JkTG9zcGRIbzEzczFXVDE0VTI3Z1VMWW4xQnZmemRXdzV1b3JDNjdidHhzUzN4c1I4cHNqRnJtZ1JzMHpOWUNxejJlRFJRTnhSOElxaElpQl84eUREMkh2a0NRbThCN1Eya1c2eFVBWWNoendGdkdIM3IyMVZIQXJKbkdaYjNyOVBGc09xUXRVRUpDbnZBM1JQbXhFWDBZTFBGWFhhSC10NmxpZHRUc3BSa0o1OC1yOUpuOFJiWjdwbnFyMW15cTRiODdQWENNN3c",
+        "publisher_url": "https://www.mysuncoast.com/2026/08/29/north-port-releases-new-information-proposed-data-center-commission-considers-moratorium/",
+        "publisher_domain": "mysuncoast.com",
+        "resolve_method": "batchexecute",
+        "error": null
+      },
+      {
+        "token": "CBMiiAFBVV95cUxNYU5JNGl4YTFhWlpYd045c29hazM5bXNJc094S0JnRE9hVWNIZFFad0hPT0ZKLXlzZktkUG9aSndnalBubk51SlN3azd2ZmNGNXhFYUh3Uzl4aVI1QnQxME5sRFlxeDV3MVloZXRxYVJhZzFEZW9GX2N2dHdmQnhyQnZ0U2VEOW5w",
+        "publisher_url": "https://kiowacountypress.net/content/aurora-decides-regulate-not-ban-data-centers",
+        "publisher_domain": "kiowacountypress.net",
+        "resolve_method": "batchexecute",
+        "error": null
+      },
+      {
+        "token": "CBMiwAFBVV95cUxQdGlCal9pcmRWd2U3LU16a251ZS0zcUJDcFZ2RG5IakRxd1Z3eThBdER3MEtQRmc3c1ZmQnAtRFp0ZFRWYm1ITVBvZmhNRlg3OW84bVFXT1puejhzVEM4d0pYZE9TTGx6UXdWZ2xON2VMTTh2MXFZOUZKMk0tbnc1T1VSTXJyeTk4d3hnT3dRS2ZaLTFxWW9PSk04RHZISnh2ZExLOGZ3cVVJN1VaLXRqUFlXa3dxWHJvZjNGSkZQcjQ",
+        "publisher_url": "https://www.knopnews2.com/video/2026/08/28/lincoln-county-commissioners-debate-data-center-zoning-amendment/?outputType=amp",
+        "publisher_domain": "knopnews2.com",
+        "resolve_method": "batchexecute",
+        "error": null
+      },
+      {
+        "token": "CBMinwFBVV95cUxOd0VUY0JxcWR5MXloZklNa3MzSmk1UDZ0NDlZU0p0cVVnc1dmazdXT2o5OVM5S3NMZVA3QkI0SjlLRm8zdmlzVFp6NFFURTM1WEg4bWxCZ0JfM2F4X2NkdEhMOFJVRU9jajFzbGlXYlhuQXdwS2M4VzNKMWNocm1oX2tYamlKQzFYbXdsbWtMcXd6aXZCeWxLQkZfNnRRTDQ",
+        "publisher_url": "https://therealdeal.com/texas/2026/08/28/despite-moratorium-calls-fort-worth-oks-data-center-plan/",
+        "publisher_domain": "therealdeal.com",
+        "resolve_method": "batchexecute",
+        "error": null
+      },
+      {
+        "token": "CBMikgFBVV95cUxPZDFxR2FrNHFfWXBTOXJQbXh2TGVrcGRMUEIxZzVjR0J0V3dMdmkwU0gtMHlhYjg3aXdiRnlMRDdrNmVfLUJ5MnFNalgyUUxyclAtM1J6OUE5bEJjVkdoVXBiRy1uQU5vN2V4Skl4bjE0ZTZ2UmFIYm93cHNNcW5JZ2NibFVvWkhRRFhRUnJqa1hQUQ",
+        "publisher_url": "https://bismarcktribune.com/news/local/article_d14774aa-eff9-43b1-b76a-cb929fcf1621.html",
+        "publisher_domain": "bismarcktribune.com",
+        "resolve_method": "batchexecute",
+        "error": null
+      },
+      {
+        "token": "CBMioAFBVV95cUxOUmFNbHpYdXVZRExaYkdlN19GLVBoT0xIMEFaeEhFOWh4QmRXMEE5QkFkLUtrdE90TUttMGUySjhxN2R1bXAyQmRCc2FjclFkRnkwYVdIemppQ0xpaEo1RXl0aUo4Q0hWNDlITTFrbFdSSlBJTUd4UnJ6V1NIUHpHalRzam91YnpBS2ZGREt6ZDdIQjZhWW13QUFCSkxqckhy0gGmAUFVX3lxTE15VE42MlpacWppN2FZM2s2dFB0MGo2T3pRd3FHeGhrR0dOTExYOXZrQVdzV0RkejU4S2wwNnR3T0VfWWJiWEpPbjNDdG9HZGR6ajRoeFI3MFdJYUlsR3FUUFdzLTE3S1l5RVBQRmxWV0dXcHQzczNRckRHLXdYNDdFNXVfeU9BTFdVcHJLM1hOUGYxQUpjLXV5dVd5OFVBU0dKZUhsNkE",
+        "publisher_url": "https://www.wsav.com/news/local-news/savannah/savannah-approves-155-day-moratorium-on-data-centers/",
+        "publisher_domain": "wsav.com",
+        "resolve_method": "batchexecute",
+        "error": null
+      },
+      {
+        "token": "CBMi3wFBVV95cUxOS3ZCMUoyTjlpOEtQRTVYNFBCV194RGVOME1YcmV5aGdHVzVkNEJ3cjY3UzVGNlpQZXJiT1E1Zmk4R0duRkxMdjdZS3E3anoyYkZqVG9ETWxRektRa01Rd1dEaTFvRmZ2c2VCNUJhZlpLREl2RVZJdWtkaWxsMUNRaUhNYkJXM21wWGxkMTJHSWxBOHV1WnFMeTYtR2ZhUzFTM2JnaVZZNnBWYXRhaXBDdVV6ZDEzTkNBYTlCbEZkNXJFdHJwdDFqT3h6bmVOcF9Lc1ZJWnF5V1dCaHczNDA0",
+        "publisher_url": "https://www.tcpalm.com/story/news/local/martin-county/2026/08/27/florida-town-council-requests-data-center-moratorium-special-meeting/91475947007/",
+        "publisher_domain": "tcpalm.com",
+        "resolve_method": "batchexecute",
+        "error": null
+      },
+      {
+        "token": "CBMiiwJBVV95cUxPblVDY3l6YlhrY1hCZ3ZSNHdDUk1jX28tUkJkU2dqcFRneGNWTWMydDFaWFhFQ2QwdVlhNUxkMzFsa1REWFJKVE83eVVvWjdlMFRoOUhIU1BITVBRT2JiV1BLUk9QbndydGkzbXVLdDVYYmVUQzNLVVcwRnBEZXh3NUI2UHlzWTNvemtvNW8zV2VJTmY1VjZQZ2tIZlRHdU5IeVp2ak11MEhmZUFOMThsQ0otUWpCQldROXNGWlVkcWRlTnhxZGxrbjh5ZGQ4ZjM1QzQzY0ZKVE1kX2VmMjdZd1FRSzFscXU0YlNyN3VhbzZqZkRzbG1kYTBqd3BKaklYTjFJQm9Zb1VQM00",
+        "publisher_url": "https://wsbt.com/news/local/elkhart-city-council-unanimously-passes-data-center-moratorium-research-study-vote-battery-energy-storage-facility-compute-development-pause-investment",
+        "publisher_domain": "wsbt.com",
+        "resolve_method": "batchexecute",
+        "error": null
+      }
+    ]
+  }
+}
