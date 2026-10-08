@@ -45,6 +45,55 @@ from here (Ask Faraday, waitlist/subscribe, lexicon).
   v1.7/v1.8 transient-failure guards existed only in production. All are now in the repo, so a
   deploy from `main` no longer regresses them. v1.6's priority-cadence concatenation was
   deliberately NOT carried over — it is the starvation this change removes.
+### CC-GNEWS-RESOLVE 1.0 — 2026-10-07 (FDY-90: the local-watch corpus gets publisher URLs)
+- **New function `supabase/functions/gnews-resolve/`** turns a
+  `news.google.com/rss/articles/<token>` redirect into the publisher's article URL, then
+  fetches that article's body. Modes: `{mode:"resolve"}`, `{mode:"fetch"}`, `{mode:"status"}`.
+  Migration **`20261009220000_gnews_resolve_schedule.sql` is UN-APPLIED**.
+- **⚠️ Every token in production is the opaque `AU_yqL…` form — strategy (a) never fires.**
+  Measured read-only 2026-10-07: **0 of 54,211** local-watch tokens are offline-decodable.
+  The legacy base64-protobuf-containing-the-URL token is extinct in this corpus. The offline
+  decoder ships anyway (it is free and is the only network-less path) but the only strategy
+  that works today is **(c) batchexecute**: GET the interstitial for its `data-n-a-sg` /
+  `data-n-a-ts` attributes, POST them back to `/_/DotsSplashUi/data/batchexecute` as
+  `Fbv4je`/`garturlreq`. A 50-token production sample resolved **50/50 (100%)**.
+- **⚠️ `news.google.com/robots.txt` does NOT allow `/rss/articles/`.** For `User-agent: *` it
+  is `Disallow: /` with an Allow list covering only `/`, `/home`, `/nwshp`, `/topics/`,
+  `/publications/`, `/stories/`, `/swg/`, `/about`. The resolve step therefore sits behind a
+  **second gate, `artifact_body_fetch_lanes.aggregator_robots_ack`, which ships `false`**;
+  `mode:"resolve"` returns immediately while it is false. Enabling is a deliberate human
+  UPDATE, not a decision taken in code. (The pre-existing `source-poller` already fetches
+  `/rss/search` to obtain these feeds; out of FDY-90's scope, unchanged.) The **body** fetch
+  hits publisher hosts and honours their robots.txt unconditionally via `robotsAllows()`.
+- **⚠️ Six `crawl_metadata` keys, and `source_url` is never written.** `publisher_url`,
+  `publisher_domain`, `resolve_method`, `resolved_at`, `resolve_attempts`, `resolve_error`.
+  `gnews_resolve_record(p_source_url, p_delta)` **rejects any other key by name** and raises
+  rather than store a `google.*` host as `publisher_url`. One resolution **fans out to every
+  row sharing the token** (6,157 rows → 3,714 resolutions).
+- **⚠️ `= ANY (array(select …))`, not `EXISTS` and not a CTE join.** Measured on production:
+  the correlated `EXISTS` form of the local-watch predicate takes **9,644 ms** (36.0M rows
+  discarded by a nested loop) and a MATERIALIZED-CTE join **11,697 ms**; the array form takes
+  **926 ms**. The planner underestimates the `artifacts` side ~700x, so it keeps picking a
+  nested loop. The subquery is written out at all three call sites on purpose — the InitPlan
+  *is* the optimisation, and wrapping it in a function would reintroduce a per-row call.
+- **⚠️ `DISTINCT ON` cannot carry the priority ordering.** It forces its own expression to
+  lead the `ORDER BY`, so restriction-keyword-first ranking only works *within* a token.
+  `gnews_resolve_claim` is two-stage: dedupe by token inside, rank and `LIMIT` outside. Caught
+  by `scripts/gnews-resolve-local-verify.mjs`, not by reading the code.
+- **Reuses the lane machinery rather than widening it.** `artifact_body_lane(source_type,
+  source_url)` is immutable and two-argument, so a Google News row's fetch URL (which lives in
+  `crawl_metadata`) is unreachable from it; widening it would change lane membership for rows
+  in flight on two live lanes. The new function owns its own claim RPCs and reuses the
+  `gnews_local` lane row, its lease/backoff/block-streak/failure-rate stop,
+  `artifact_body_fetch_release`, `artifact_body_lane_stop`, `artifact_body_fetch_runs`
+  (`mode` now also accepts `'resolve'`) and every extractor in `body-pure.ts`.
+- **Body text stays inside Faraday.** It exists for matching and extraction. Boundstone stores
+  headline + publisher URL + date only; no article body is ever forwarded.
+- Tests: `test/gnews-resolve.test.mjs` (27, hermetic — the only network bytes are fixtures
+  captured from production and from Google, in `test/fixtures/gnews-tokens.json`).
+  Storage path: `scripts/gnews-resolve-local-verify.mjs` runs the migration's SQL on PGlite
+  and proves with a before/after column snapshot that nothing outside `crawl_metadata` and
+  `body_*` changes. PGlite is deliberately **not** a `package.json` dependency.
 
 ### CC-BOUNDSTONE-INGEST — 2026-10-06 (FDY-62: the Boundstone write contract is an RPC, not a table)
 - **`boundstone-candidates` now writes Boundstone through functions only.** Boundstone shipped
