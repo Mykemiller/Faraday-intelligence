@@ -47,10 +47,33 @@ export const CADENCE_MINUTES: Record<string, number> = {
   hourly: 50,
   daily: 20 * 60,
   weekly: 6.5 * 24 * 60, // 9360
+  biweekly: 13 * 24 * 60, // 18720 — exactly 2x weekly (added by FDY-93)
+  monthly: 28 * 24 * 60, // 40320 (added by FDY-93)
   event_driven: 20 * 60,
   archival_refresh: 27 * 24 * 60,
   one_time: 365 * 24 * 60,
 };
+
+// WHY `biweekly` AND `monthly` WERE ADDED HERE BY FDY-93
+// ------------------------------------------------------------------
+// FDY-93's tiered-cadence spec asks for `monthly` legacy rows and a demotion
+// ladder of "T3 -> biweekly, then T2 -> biweekly". Neither string existed in
+// this table, and an unknown cadence falls through to the `daily` default (20h)
+// by design — see DEFAULT_CADENCE below. Writing cadence='monthly' on 569 rows
+// without defining it would therefore have made them poll every 20 HOURS
+// instead of every 28 days: 569/0.8333 = 683 fetches/day where 20 was intended,
+// a 34x over-subscription, and an exact re-run of the starvation FDY-89 had
+// just finished fixing.
+//
+// `biweekly` is 13 days: exactly 2x `weekly`, so it keeps weekly's 6.5/7 slack
+// ratio and the demotion ladder is a clean halving of demand.
+// `monthly` is 28 days, deliberately distinct from `archival_refresh` (27 days)
+// — that cadence means "re-walk an archive", not "watch a small town rarely",
+// and conflating the two makes v_poller_lag_by_segment unreadable per segment.
+//
+// public.poller_cadence_interval() in migration 20261009210000 carries the same
+// two arms; the drift guard in test/source-poller-schedule.test.mjs asserts the
+// SQL table and this constant are identical, so they cannot come apart.
 
 /** Fallback for a cadence we do not know — treat it as daily, never as "skip". */
 export const DEFAULT_CADENCE = "daily";

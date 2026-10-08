@@ -283,6 +283,42 @@ export function buildLocalQuery(j: LocalJurisdiction): string {
   return parts.join(" ");
 }
 
+/** Every kind buildLocalQuery() knows how to shape. Ordered so generated SQL
+ * CASE arms are stable. Exported for FDY-93's migration generator. */
+export const LOCAL_KINDS: LocalKind[] = [
+  "city",
+  "town",
+  "village",
+  "borough",
+  "cdp",
+  "municipality",
+  "county",
+  "parish",
+  "municipio",
+  "borough_county",
+  "township",
+  "other",
+];
+
+/** The kinds treated as incorporated places (British spelling in the topic
+ * group, a governing-body prefix in the name group). */
+export const LOCAL_PLACE_KINDS: LocalKind[] = [...PLACE_KINDS];
+
+/** kind -> governing prefix used in the name group ("City of Acworth"). */
+export const LOCAL_GOV_PREFIX: Partial<Record<LocalKind, string>> = { ...GOV_PREFIX };
+
+/** The topic group buildLocalQuery() uses for `kind`. Thin export of the
+ * private helper so FDY-93's generator emits the SQL mirror from these exact
+ * strings instead of re-typing them. */
+export function localTopicGroup(kind: LocalKind): string {
+  return topicGroup(kind);
+}
+
+/** The action group buildLocalQuery() uses for `kind`. See localTopicGroup. */
+export function localActionGroup(kind: LocalKind): string {
+  return actionGroup(kind);
+}
+
 /** True when the query contains a bare `OR` at parenthesis depth 0 outside a
  * quoted phrase — the v1 defect this whole module exists to prevent. */
 export function hasTopLevelBareOr(query: string): boolean {
