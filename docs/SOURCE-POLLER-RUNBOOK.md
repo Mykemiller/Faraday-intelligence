@@ -121,3 +121,44 @@ Unschedule jobids 133/134; delete `source_registry` rows where
 `subsystem='poller'` (Wave-1 seed only — Phase-0 backfill rows have other
 subsystems); delete `artifacts` where `crawler_id='source-poller_v1.0'`;
 drop the edge function. No scoring impact.
+
+## Local gov watch — query scoping and attribution (FDY-88)
+
+The `gsearch:loc-%` lane (1,000 rows, `segment='local_gov'`, weekly,
+`scope='query_feed'`, never countable) asks Google News one question per
+jurisdiction. v1 built the query as
+`'"' || name || '" ' || state_abbr || ' data center OR rezoning OR …'`, which had
+three defects: a top-level bare alternation, the state abbreviation being parsed
+as the `OR` operator (Oregon, and latently Indiana), and the Census LSAD suffix
+("Acworth city") not being news language.
+
+v2 (`supabase/functions/source-poller/local-query.ts` · migration
+`20261009200000_local_watch_query_scoping.sql`) is four fully parenthesised or
+quoted parts — name group, data-centre group, action group, quoted full state
+name — and never a bare `OR` at depth 0.
+
+Operating notes:
+
+- The previous query is kept at `fetch_config.query_v1`; `fetch_config.query_rev`
+  is `2` after the rewrite. `docs/far-88/rollback.sql` restores v1 exactly.
+- Regenerate the migration after a roster change:
+  `node scripts/gen-local-watch-query-migration.mjs` (refresh
+  `docs/far-88/loc-watch-entities.txt` first — the command is in the script
+  header). `--check` fails if the committed migration is stale.
+- Each polled item from a `local_gov` source carries
+  `crawl_metadata.attribution` = `'named'` or `'unmatched'` (plus
+  `attribution_entity`, `attribution_rev`). Nothing is dropped; the flag exists
+  so dilution is measurable:
+
+  ```sql
+  -- attribution split over the trailing 7 days
+  select crawl_metadata ->> 'attribution' att, count(*)
+  from artifacts
+  where crawl_metadata ? 'attribution' and discovered_at > now() - interval '7 days'
+  group by 1;
+  ```
+
+- A v2 feed that returns zero items is a legitimate empty result set for a small
+  jurisdiction, not a broken source — poller v1.6 already treats an empty
+  query-lane feed as valid.
+- Precision, old vs new, measured live 2026-10-07: `docs/far-88/precision-report.md`.

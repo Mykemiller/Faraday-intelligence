@@ -1,0 +1,734 @@
+{
+  "summary": {
+    "mode": "fixtures",
+    "measured_at": "2026-10-07T19:58:52.402Z",
+    "jurisdictions": 20,
+    "old": {
+      "items": 1104,
+      "named": 363,
+      "pct": 32.9,
+      "title_named": 363,
+      "title_pct": 32.9,
+      "feeds_at_the_100_item_cap": 7,
+      "empty_feeds": 1
+    },
+    "new": {
+      "items": 698,
+      "named": 300,
+      "pct": 43,
+      "title_named": 300,
+      "title_pct": 43,
+      "feeds_at_the_100_item_cap": 2,
+      "empty_feeds": 1
+    }
+  },
+  "results": [
+    {
+      "entity": "Redmond city, OR",
+      "query_v1": "\"Redmond city\" OR data center OR rezoning OR zoning OR moratorium",
+      "query_v2": "(\"Redmond\" OR \"City of Redmond\") (\"data center\" OR \"data centers\" OR \"data centre\") (moratorium OR rezoning OR zoning OR ordinance OR \"planning commission\" OR \"city council\") \"Oregon\"",
+      "old": {
+        "items": 100,
+        "named": 0,
+        "pct": 0,
+        "title_named": 0,
+        "title_pct": 0,
+        "sample_named": [],
+        "sample_unmatched": [
+          "Data center moratorium approved by Oakland - The Oaklandside",
+          "Google ordered to halt work on two data centers in ‘Texas of Europe’ - CNBC",
+          "Memphis City Council devolves into chaos after data center moratorium vote postponed - Fox News"
+        ]
+      },
+      "new": {
+        "items": 38,
+        "named": 10,
+        "pct": 26.3,
+        "title_named": 10,
+        "title_pct": 26.3,
+        "sample_named": [
+          "Redmond Council and Mayor Candidates Weigh in on Growth, Data Centers, Water at Forum - The Source - Bend, Oregon",
+          "Nine months in, Kotek’s Data Center Advisory Committee shares many questions, few answers - Redmond Spokesman"
+        ],
+        "sample_unmatched": [
+          "Protests erupt at Memphis City Council meeting on data centers - Central Oregon Daily",
+          "YH-R Opinion: Yakima County needs a data center moratorium — fast - Yakima Herald-Republic",
+          "City manager calls special council meeting Monday to consider moratorium on data centers - Salem Reporter"
+        ]
+      }
+    },
+    {
+      "entity": "Klamath Falls city, OR",
+      "query_v1": "\"Klamath Falls city\" OR data center OR rezoning OR zoning OR moratorium",
+      "query_v2": "(\"Klamath Falls\" OR \"City of Klamath Falls\") (\"data center\" OR \"data centers\" OR \"data centre\") (moratorium OR rezoning OR zoning OR ordinance OR \"planning commission\" OR \"city council\") \"Oregon\"",
+      "old": {
+        "items": 100,
+        "named": 0,
+        "pct": 0,
+        "title_named": 0,
+        "title_pct": 0,
+        "sample_named": [],
+        "sample_unmatched": [
+          "Google ordered to halt work on two data centers in ‘Texas of Europe’ - CNBC",
+          "Memphis City Council devolves into chaos after data center moratorium vote postponed - Fox News",
+          "Controversial Brighton data center application pulled, council votes for 1-year data center moratorium - 9News"
+        ]
+      },
+      "new": {
+        "items": 11,
+        "named": 2,
+        "pct": 18.2,
+        "title_named": 2,
+        "title_pct": 18.2,
+        "sample_named": [
+          "City of Klamath Falls Implements New Short Term Rental Permits - KOBI-TV NBC5 / KOTI-TV NBC2",
+          "Man shot, killed in Veteran's Park in Klamath Falls - KATU"
+        ],
+        "sample_unmatched": [
+          "City manager calls special council meeting Monday to consider moratorium on data centers - Salem Reporter",
+          "Commentary: Will data centers be Oregon’s big political issue this fall? - Herald and News",
+          "Drazan and Kotek Lob Data Center Attacks at Each Other - Willamette Week"
+        ]
+      }
+    },
+    {
+      "entity": "Acworth city, GA",
+      "query_v1": "\"Acworth city\" GA data center OR rezoning OR zoning OR moratorium",
+      "query_v2": "(\"Acworth\" OR \"City of Acworth\") (\"data center\" OR \"data centers\" OR \"data centre\") (moratorium OR rezoning OR zoning OR ordinance OR \"planning commission\" OR \"city council\") \"Georgia\"",
+      "old": {
+        "items": 6,
+        "named": 3,
+        "pct": 50,
+        "title_named": 3,
+        "title_pct": 50,
+        "sample_named": [
+          "Acworth Retains and Expands Caldwell Companies in Major Headquarters Consolidation Project - Cobb Courier",
+          "Acworth native to run new Chick-fil-A in city - The Rome News-Tribune"
+        ],
+        "sample_unmatched": [
+          "Congressman Clay Fuller’s Office Brings County Connections Program to Walker County - Walker County, GA (.gov)",
+          "14th District congressman launching county-by-county constituent services tour - 11Alive.com",
+          "Man accused of trying to kidnap toddler from Walmart sues city after charges dropped - KBTX News 3"
+        ]
+      },
+      "new": {
+        "items": 11,
+        "named": 1,
+        "pct": 9.1,
+        "title_named": 1,
+        "title_pct": 9.1,
+        "sample_named": [
+          "Developer Plans 600-Unit Mixed-Use Project Near Acworth - Bisnow"
+        ],
+        "sample_unmatched": [
+          "Debate over data center growth in Georgia heats up race for governor - Cobb Courier",
+          "Commissioner extends data center ban - The Daily Tribune News",
+          "New Georgia program aims to bring more data centers to local communities - 95.5 WSB"
+        ]
+      }
+    },
+    {
+      "entity": "Normal town, IL",
+      "query_v1": "\"Normal town\" IL data center OR rezoning OR zoning OR moratorium",
+      "query_v2": "(\"Normal\" OR \"Town of Normal\") (\"data center\" OR \"data centers\" OR \"data centre\") (moratorium OR rezoning OR zoning OR ordinance OR \"planning commission\" OR \"city council\" OR \"town council\") \"Illinois\"",
+      "old": {
+        "items": 35,
+        "named": 22,
+        "pct": 62.9,
+        "title_named": 22,
+        "title_pct": 62.9,
+        "sample_named": [
+          "Normal Town Council OKs 6-month data center moratorium; Bloomington poised to do the same - WGLT",
+          "Normal Council to vote on data center moratorium extension - CIProud.com"
+        ],
+        "sample_unmatched": [
+          "Public hears pros, cons, uncertainties of data centers at BCPA event - The Pantagraph",
+          "Bloomington imposes six-month moratorium on large-scale data centers - The Pantagraph",
+          "In data center hubs Aurora and DeKalb, two different approaches to setting restrictions - WGLT"
+        ]
+      },
+      "new": {
+        "items": 76,
+        "named": 24,
+        "pct": 31.6,
+        "title_named": 24,
+        "title_pct": 31.6,
+        "sample_named": [
+          "Normal Town Council hears financial trends, approves data center moratorium extension - WGLT",
+          "Normal Town Council extends data center moratorium, approves museum expansion - WEEK | 25 News Now"
+        ],
+        "sample_unmatched": [
+          "Bloomington approves 6-month moratorium on data centers - WGLT",
+          "City of Bloomington lays out general timeline for data center moratorium - WGLT",
+          "Bloomington to consider temporary moratorium on data centers - WGLT"
+        ]
+      }
+    },
+    {
+      "entity": "Archbold village, OH",
+      "query_v1": "\"Archbold village\" OH data center OR rezoning OR zoning OR moratorium",
+      "query_v2": "(\"Archbold\" OR \"Village of Archbold\") (\"data center\" OR \"data centers\" OR \"data centre\") (moratorium OR rezoning OR zoning OR ordinance OR \"planning commission\" OR \"city council\" OR \"village board\") \"Ohio\"",
+      "old": {
+        "items": 9,
+        "named": 6,
+        "pct": 66.7,
+        "title_named": 6,
+        "title_pct": 66.7,
+        "sample_named": [
+          "Village of Archbold holds off on data center moratorium, shifts focus to zoning - WTOL",
+          "'We are drinking from a fire hose': Archbold tables moratorium vote on data centers - Toledo Blade"
+        ],
+        "sample_unmatched": [
+          "Data center talk brings large crowd to German Township trustees meeting - The Crescent-News",
+          "German Township looks at Zoning changes, moratorium on data centers - The Crescent-News",
+          "Data centers emerge as campaign issue in races around Ohio - Toledo Blade"
+        ]
+      },
+      "new": {
+        "items": 16,
+        "named": 8,
+        "pct": 50,
+        "title_named": 8,
+        "title_pct": 50,
+        "sample_named": [
+          "ARCHBOLD VILLAGE COUNCIL: Moratorium On Data Centers Extended To April 2027 - The Village Reporter",
+          "Village of Archbold council tables data center moratorium - WTVG"
+        ],
+        "sample_unmatched": [
+          "German Township looks at Zoning changes, moratorium on data centers - The Crescent-News",
+          "Incident involving Findlay councilman investigated - Advertiser-Tribune",
+          "Data center talk brings large crowd to German Township trustees meeting - The Crescent-News"
+        ]
+      }
+    },
+    {
+      "entity": "Forrest City city, AR",
+      "query_v1": "\"Forrest City city\" AR data center OR rezoning OR zoning OR moratorium",
+      "query_v2": "(\"Forrest City\" OR \"City of Forrest City\") (\"data center\" OR \"data centers\" OR \"data centre\") (moratorium OR rezoning OR zoning OR ordinance OR \"planning commission\" OR \"city council\") \"Arkansas\"",
+      "old": {
+        "items": 0,
+        "named": 0,
+        "pct": null,
+        "title_named": 0,
+        "title_pct": null,
+        "sample_named": [],
+        "sample_unmatched": []
+      },
+      "new": {
+        "items": 4,
+        "named": 2,
+        "pct": 50,
+        "title_named": 2,
+        "title_pct": 50,
+        "sample_named": [
+          "Escapee from Forrest City detention center arrested after being found in abandoned house - KATV",
+          "T.I. ordered to report to Forrest City prison - The Arkansas Democrat-Gazette"
+        ],
+        "sample_unmatched": [
+          "Lance Alonzo White Sr. - The Arkansas Democrat-Gazette",
+          "Albert Johnson Jr. - The Arkansas Democrat-Gazette"
+        ]
+      }
+    },
+    {
+      "entity": "Mableton city, GA",
+      "query_v1": "\"Mableton city\" GA data center OR rezoning OR zoning OR moratorium",
+      "query_v2": "(\"Mableton\" OR \"City of Mableton\") (\"data center\" OR \"data centers\" OR \"data centre\") (moratorium OR rezoning OR zoning OR ordinance OR \"planning commission\" OR \"city council\") \"Georgia\"",
+      "old": {
+        "items": 9,
+        "named": 8,
+        "pct": 88.9,
+        "title_named": 8,
+        "title_pct": 88.9,
+        "sample_named": [
+          "Community Briefs: Mableton mill tax, Fulton Co. sheriff town hall - FOX 5 Atlanta",
+          "Agenda for January 6 Mableton City Council meeting - Cobb County Courier"
+        ],
+        "sample_unmatched": [
+          "Advocates question Georgia Power fuel rates amid data center boom - Cobb Courier"
+        ]
+      },
+      "new": {
+        "items": 9,
+        "named": 4,
+        "pct": 44.4,
+        "title_named": 4,
+        "title_pct": 44.4,
+        "sample_named": [
+          "Community Briefs: Mableton mill tax, Fulton Co. sheriff town hall - FOX 5 Atlanta",
+          "Agenda for January 6 Mableton City Council meeting - Cobb County Courier"
+        ],
+        "sample_unmatched": [
+          "Advocates question Georgia Power fuel rates amid data center boom - Cobb Courier",
+          "How should cities use AI? This Atlanta suburb may hold the answer. - The Atlanta Journal-Constitution",
+          "DeKalb County extends data center moratorium - Atlanta News First"
+        ]
+      }
+    },
+    {
+      "entity": "New Carlisle city, IN",
+      "query_v1": "\"New Carlisle city\" IN data center OR rezoning OR zoning OR moratorium",
+      "query_v2": "(\"New Carlisle\" OR \"City of New Carlisle\") (\"data center\" OR \"data centers\" OR \"data centre\") (moratorium OR rezoning OR zoning OR ordinance OR \"planning commission\" OR \"city council\") \"Indiana\"",
+      "old": {
+        "items": 10,
+        "named": 7,
+        "pct": 70,
+        "title_named": 7,
+        "title_pct": 70,
+        "sample_named": [
+          "New Carlisle passes moratoriums on new gas stations, repair shops, tattoo, body piercing parlors - Springfield News-Sun",
+          "New Carlisle passes moratorium on new vape shops, marijuana dispensaries - Springfield News-Sun"
+        ],
+        "sample_unmatched": [
+          "‘A lot of people are overreacting;’ City places multiple bans on new businesses - WHIO-TV",
+          "Clark Co. Commissioner McGlothin celebrates retirement, new commissioner to be sworn in Jan - Springfield News-Sun",
+          "Bean wins third term as Urbana Mayor - Springfield News-Sun"
+        ]
+      },
+      "new": {
+        "items": 46,
+        "named": 18,
+        "pct": 39.1,
+        "title_named": 18,
+        "title_pct": 39.1,
+        "sample_named": [
+          "St. Joseph County leaders push for third New Carlisle data center ahead of Tuesday vote - WNDU",
+          "County council set to vote on data center rezoning near New Carlisle - WVPE"
+        ],
+        "sample_unmatched": [
+          "Maine legislature approves first US moratorium on big data centers - Reuters",
+          "St. Joseph County Council denies land rezoning for data center - WSBT",
+          "Indiana county council candidates both call on 2-year halt for new data centers - The Cool Down"
+        ]
+      }
+    },
+    {
+      "entity": "Cedar Rapids city, IA",
+      "query_v1": "\"Cedar Rapids city\" IA data center OR rezoning OR zoning OR moratorium",
+      "query_v2": "(\"Cedar Rapids\" OR \"City of Cedar Rapids\") (\"data center\" OR \"data centers\" OR \"data centre\") (moratorium OR rezoning OR zoning OR ordinance OR \"planning commission\" OR \"city council\") \"Iowa\"",
+      "old": {
+        "items": 51,
+        "named": 41,
+        "pct": 80.4,
+        "title_named": 41,
+        "title_pct": 80.4,
+        "sample_named": [
+          "Cedar Rapids council member suggests potential moratorium on new data centers - Corridor Business Journal",
+          "Cedar Rapids data center approval sparks calls for more transparency at City Hall - KGAN"
+        ],
+        "sample_unmatched": [
+          "QTS to build temporary power plant near Eastern Iowa Airport - The Gazette",
+          "Palo City Council to vote on data center regulation tonight - The Gazette",
+          "Plans for combination Dunkin’ and Baskin-Robbins fall through - The Gazette"
+        ]
+      },
+      "new": {
+        "items": 51,
+        "named": 20,
+        "pct": 39.2,
+        "title_named": 20,
+        "title_pct": 39.2,
+        "sample_named": [
+          "Cedar Rapids council member suggests potential moratorium on new data centers - Corridor Business Journal",
+          "Cedar Rapids confirms third data center planned for southwest side - KCRG"
+        ],
+        "sample_unmatched": [
+          "Facing Its Third Data Center, an Iowa County Rolls Out Extensive Zoning Rules - Inside Climate News",
+          "Linn County passes data center moratorium - The Gazette",
+          "Despite putting ordinance in place, Linn County passes data center moratorium - KCRG"
+        ]
+      }
+    },
+    {
+      "entity": "Bend city, OR",
+      "query_v1": "\"Bend city\" OR data center OR rezoning OR zoning OR moratorium",
+      "query_v2": "(\"Bend\" OR \"City of Bend\") (\"data center\" OR \"data centers\" OR \"data centre\") (moratorium OR rezoning OR zoning OR ordinance OR \"planning commission\" OR \"city council\") \"Oregon\"",
+      "old": {
+        "items": 100,
+        "named": 0,
+        "pct": 0,
+        "title_named": 0,
+        "title_pct": 0,
+        "sample_named": [],
+        "sample_unmatched": [
+          "Data center moratorium approved by Oakland - The Oaklandside",
+          "Google ordered to halt work on two data centers in ‘Texas of Europe’ - CNBC",
+          "Memphis City Council devolves into chaos after data center moratorium vote postponed - Fox News"
+        ]
+      },
+      "new": {
+        "items": 42,
+        "named": 17,
+        "pct": 40.5,
+        "title_named": 17,
+        "title_pct": 40.5,
+        "sample_named": [
+          "La Pine Rejects Proposed Data Center Amid Public Outcry - The Source - Bend, Oregon - The Source - Bend, Oregon",
+          "Democratic lawmakers propose three-year moratorium on new large data centers in Oregon - Bend Bulletin"
+        ],
+        "sample_unmatched": [
+          "Nine months in, Kotek’s Data Center Advisory Committee shares many questions, few answers - bendbulletin.com",
+          "Commentary: Will data centers be Oregon's big political issue this fall? - Oregon Capital Chronicle",
+          "Will data centers be Oregon’s big political issue this fall? - The Washington Post"
+        ]
+      }
+    },
+    {
+      "entity": "Cobb County, GA",
+      "query_v1": "\"Cobb County\" GA data center OR rezoning OR zoning OR moratorium",
+      "query_v2": "(\"Cobb County\") (\"data center\" OR \"data centers\") (moratorium OR rezoning OR zoning OR ordinance OR commissioners OR supervisors) \"Georgia\"",
+      "old": {
+        "items": 67,
+        "named": 43,
+        "pct": 64.2,
+        "title_named": 43,
+        "title_pct": 64.2,
+        "sample_named": [
+          "Marietta City Council approves data center off Delk Road - East Cobb News",
+          "Cobb County considers changes to housing rules and data center limits - 95.5 WSB"
+        ],
+        "sample_unmatched": [
+          "Debate over data center growth in Georgia heats up race for governor - Georgia Recorder",
+          "Data centers, power bills become Ga. election flashpoint - WRDW",
+          "Marietta weighs concerns over proposed data center - FOX 5 Atlanta"
+        ]
+      },
+      "new": {
+        "items": 35,
+        "named": 18,
+        "pct": 51.4,
+        "title_named": 18,
+        "title_pct": 51.4,
+        "sample_named": [
+          "Cobb County lawmakers extend data center moratorium six more months - 11Alive.com",
+          "Cobb County commission extends data center moratorium 180 days - WSB-TV"
+        ],
+        "sample_unmatched": [
+          "Debate over data center growth in Georgia heats up race for governor - Georgia Recorder",
+          "Bottoms, Jackson trade hypocrisy claims in bitter clash over Georgia data centers - Atlanta News First",
+          "Marietta City Council tables approval of new data center - Atlanta Community Press Collective"
+        ]
+      }
+    },
+    {
+      "entity": "Loudoun County, VA",
+      "query_v1": "\"Loudoun County\" VA data center OR rezoning OR zoning OR moratorium",
+      "query_v2": "(\"Loudoun County\") (\"data center\" OR \"data centers\") (moratorium OR rezoning OR zoning OR ordinance OR commissioners OR supervisors) \"Virginia\"",
+      "old": {
+        "items": 100,
+        "named": 63,
+        "pct": 63,
+        "title_named": 63,
+        "title_pct": 63,
+        "sample_named": [
+          "Loudoun County data center rule change could carry costly legal risks - FOX 5 DC",
+          "Loudoun supervisors don't rollback data center grandfathering law, shelve $200,000 audit of grandfathered projects - WUSA9"
+        ],
+        "sample_unmatched": [
+          "'We’ve been screwed': A wealthy county is overrun with data centers - USA Today",
+          "Here’s what you need to know about the Data Center Executive Orders from Maryland and Virginia - Potomac Conservancy",
+          "Inside the neighborhood living on the edge of America’s tech frontier - Fox News"
+        ]
+      },
+      "new": {
+        "items": 100,
+        "named": 54,
+        "pct": 54,
+        "title_named": 54,
+        "title_pct": 54,
+        "sample_named": [
+          "Loudoun County data center rule change could carry costly legal risks - FOX 5 DC",
+          "County continues work on data center zoning, hosts open houses - Loudoun Times-Mirror"
+        ],
+        "sample_unmatched": [
+          "'We’ve been screwed': A wealthy county is overrun with data centers - USA Today",
+          "Virginia Data Centers’ Fast-Changing Landscape — What Developers Need to Know - McGuireWoods",
+          "South Fulton Mayor Backs Data Centers For Economic Growth - Bisnow"
+        ]
+      }
+    },
+    {
+      "entity": "Prince William County, VA",
+      "query_v1": "\"Prince William County\" VA data center OR rezoning OR zoning OR moratorium",
+      "query_v2": "(\"Prince William County\") (\"data center\" OR \"data centers\") (moratorium OR rezoning OR zoning OR ordinance OR commissioners OR supervisors) \"Virginia\"",
+      "old": {
+        "items": 100,
+        "named": 53,
+        "pct": 53,
+        "title_named": 53,
+        "title_pct": 53,
+        "sample_named": [
+          "Prince William County moves to end by-right data centers - Virginia Business",
+          "Prince William County supervisors vote to slow data center development - NBC4 Washington"
+        ],
+        "sample_unmatched": [
+          "Guest Column: Taxpayers will foot the bill for data center crackdown - InsideNoVa.com",
+          "Tuesday PWC Board of Supervisors vote could impact future data center proposals - WJLA",
+          "How the AI Boom Is Reshaping Virginia's Data Center Economy - Augusta Free Press"
+        ]
+      },
+      "new": {
+        "items": 100,
+        "named": 54,
+        "pct": 54,
+        "title_named": 54,
+        "title_pct": 54,
+        "sample_named": [
+          "Prince William County moves to end by-right data centers - Virginia Business",
+          "Prince William County supervisors vote to slow data center development - NBC4 Washington"
+        ],
+        "sample_unmatched": [
+          "Virginia Data Centers’ Fast-Changing Landscape — What Developers Need to Know - McGuireWoods",
+          "Two stunning defeats shake Virginia’s data center capital - E&E News by POLITICO",
+          "Tuesday PWC Board of Supervisors vote could impact future data center proposals - WJLA"
+        ]
+      }
+    },
+    {
+      "entity": "Assumption Parish, LA",
+      "query_v1": "\"Assumption Parish\" LA data center OR rezoning OR zoning OR moratorium",
+      "query_v2": "(\"Assumption Parish\") (\"data center\" OR \"data centers\") (moratorium OR rezoning OR zoning OR ordinance OR commissioners OR supervisors) \"Louisiana\"",
+      "old": {
+        "items": 41,
+        "named": 12,
+        "pct": 29.3,
+        "title_named": 12,
+        "title_pct": 29.3,
+        "sample_named": [
+          "Pennington Biomedical’s Study of Assumption Parish Shares Initial, Surprising Data - Louisiana State University",
+          "Assumption Parish deputies make two separate domestic-violence arrests, sheriff says - WAFB"
+        ],
+        "sample_unmatched": [
+          "Ascension Parish Council approves resolution to create regulations for potential data centers - Yahoo",
+          "How much debt does the average person in Louisiana owe? - USAFacts",
+          "Man arrested for beating 3-year-old to death over potty training, sheriff’s office says - WLBT"
+        ]
+      },
+      "new": {
+        "items": 0,
+        "named": 0,
+        "pct": null,
+        "title_named": 0,
+        "title_pct": null,
+        "sample_named": [],
+        "sample_unmatched": []
+      }
+    },
+    {
+      "entity": "Multnomah County, OR",
+      "query_v1": "\"Multnomah County\" OR data center OR rezoning OR zoning OR moratorium",
+      "query_v2": "(\"Multnomah County\") (\"data center\" OR \"data centers\") (moratorium OR rezoning OR zoning OR ordinance OR commissioners OR supervisors) \"Oregon\"",
+      "old": {
+        "items": 100,
+        "named": 0,
+        "pct": 0,
+        "title_named": 0,
+        "title_pct": 0,
+        "sample_named": [],
+        "sample_unmatched": [
+          "Data center moratorium approved by Oakland - The Oaklandside",
+          "Google ordered to halt work on two data centers in ‘Texas of Europe’ - CNBC",
+          "Memphis City Council devolves into chaos after data center moratorium vote postponed - Fox News"
+        ]
+      },
+      "new": {
+        "items": 45,
+        "named": 14,
+        "pct": 31.1,
+        "title_named": 14,
+        "title_pct": 31.1,
+        "sample_named": [
+          "Nathan Ong Norris: Multnomah County Board of Commissioners District 2 candidate - OregonLive.com",
+          "Multnomah County passes ban on mobile needle distribution near schools - KGW"
+        ],
+        "sample_unmatched": [
+          "Oregon already has 100+ data centers. Clackamas County wants to be ready if one comes next - KATU",
+          "Race for Washington County chair heats up in wake of Kathryn Harrington’s resignation - OregonLive.com",
+          "New data center in Hillsboro could be 200 feet away from high school - KATU"
+        ]
+      }
+    },
+    {
+      "entity": "Hamilton County, IN",
+      "query_v1": "\"Hamilton County\" IN data center OR rezoning OR zoning OR moratorium",
+      "query_v2": "(\"Hamilton County\") (\"data center\" OR \"data centers\") (moratorium OR rezoning OR zoning OR ordinance OR commissioners OR supervisors) \"Indiana\"",
+      "old": {
+        "items": 70,
+        "named": 45,
+        "pct": 64.3,
+        "title_named": 45,
+        "title_pct": 64.3,
+        "sample_named": [
+          "UPDATE: Hamilton County approves one-year moratorium on new data centers in unincorporated areas - Local 3 News",
+          "Hamilton County Commission approves yearlong data center moratorium - Chattanooga Times Free Press"
+        ],
+        "sample_unmatched": [
+          "How Greater Cincinnati is preparing for Ohio's data center boom - WLWT",
+          "UPDATE: Walker Co. data center study group suggests limiting development to industrial parks - Local3News.com",
+          "Community Voice: A data center moratorium that only pauses what’s convenient - Chattanooga Times Free Press"
+        ]
+      },
+      "new": {
+        "items": 21,
+        "named": 5,
+        "pct": 23.8,
+        "title_named": 5,
+        "title_pct": 23.8,
+        "sample_named": [
+          "New law incentivizes data center deals for local communities, bans Hamilton County rental caps - IndyStar",
+          "Data centers connect to Hamilton County - The Hamilton County Reporter"
+        ],
+        "sample_unmatched": [
+          "More Tennessee, Georgia towns hit pause on rural data centers as power, water worries grow - WTVC",
+          "Dearborn County commissioners approve moratorium on solar farms, data center projects - 91.7 WVXU",
+          "Boone County considering moratorium on data center development - Indianapolis Business Journal"
+        ]
+      }
+    },
+    {
+      "entity": "Allendale charter township, MI",
+      "query_v1": "\"Allendale charter township\" MI data center OR rezoning OR zoning OR moratorium",
+      "query_v2": "(\"Allendale Township\" OR \"Allendale Charter Township\") (\"data center\" OR \"data centers\") (moratorium OR rezoning OR zoning OR ordinance OR \"township board\") \"Michigan\"",
+      "old": {
+        "items": 5,
+        "named": 1,
+        "pct": 20,
+        "title_named": 1,
+        "title_pct": 20,
+        "sample_named": [
+          "10295 48th Ave, Allendale, MI 49401 - Realtor.com"
+        ],
+        "sample_unmatched": [
+          "What urban revival? In Michigan, residents still flock to suburbs - Bridge Michigan",
+          "Here's everyone running for office in Ottawa County in 2026 - Ottawa News Network",
+          "Instacart enters West Michigan market - Crain's Grand Rapids Business"
+        ]
+      },
+      "new": {
+        "items": 5,
+        "named": 1,
+        "pct": 20,
+        "title_named": 1,
+        "title_pct": 20,
+        "sample_named": [
+          "Allendale adopts data center moratorium, joins growing list of communities grappling with issue - Ottawa News Network"
+        ],
+        "sample_unmatched": [
+          "West Michigan township weighs one-year moratorium on data centers, solar farms - MLive.com",
+          "Ottawa County community passes 1-year moratorium on data centers - MLive.com",
+          "Michigan Data Centers: The Weekly Download - Michigan Advance"
+        ]
+      }
+    },
+    {
+      "entity": "Bloomfield township, MI",
+      "query_v1": "\"Bloomfield township\" MI data center OR rezoning OR zoning OR moratorium",
+      "query_v2": "(\"Bloomfield Township\" OR \"Bloomfield Charter Township\") (\"data center\" OR \"data centers\") (moratorium OR rezoning OR zoning OR ordinance OR \"township board\") \"Michigan\"",
+      "old": {
+        "items": 53,
+        "named": 4,
+        "pct": 7.5,
+        "title_named": 4,
+        "title_pct": 7.5,
+        "sample_named": [
+          "1 shot at youth football game; Bloomfield Township officials discuss deer population; other stories - CBS News",
+          "Bloomfield Township residents push back against proposed event center - CBS News"
+        ],
+        "sample_unmatched": [
+          "State senator warns communities about data centers - C&G Newspapers",
+          "Republican U.S. Senate candidate backs one-year data center moratorium - The Detroit News",
+          "Whitmer rolls out data center plan, calls on lawmakers to pass laws protecting energy customers - The Oakland Press"
+        ]
+      },
+      "new": {
+        "items": 10,
+        "named": 1,
+        "pct": 10,
+        "title_named": 1,
+        "title_pct": 10,
+        "sample_named": [
+          "Bloomfield Township residents push back against proposed event center - CBS News"
+        ],
+        "sample_unmatched": [
+          "Data center moratorium bills reflect public sentiment, says Michigan lawmaker - Planet Detroit",
+          "Pontiac's data center moratorium expires in January, and the city is racing to set rules - WXYZ 7 News Detroit",
+          "State senator warns communities about data centers - C&G Newspapers"
+        ]
+      }
+    },
+    {
+      "entity": "Saline township, MI",
+      "query_v1": "\"Saline township\" MI data center OR rezoning OR zoning OR moratorium",
+      "query_v2": "(\"Saline Township\" OR \"Saline Charter Township\") (\"data center\" OR \"data centers\") (moratorium OR rezoning OR zoning OR ordinance OR \"township board\") \"Michigan\"",
+      "old": {
+        "items": 100,
+        "named": 36,
+        "pct": 36,
+        "title_named": 36,
+        "title_pct": 36,
+        "sample_named": [
+          "Fact check: Jocelyn Benson’s family ties to Saline data center - Bridge Michigan",
+          "Michigan’s largest data center project near Saline is taking shape - MLive.com"
+        ],
+        "sample_unmatched": [
+          "Benson-James governor debate takeaways: Data center feud gets personal - The Detroit News",
+          "DTE hints at new data center development, stirs fight on energy sources - The Detroit News",
+          "Michigan regulators OK DTE contracts for Google data center - Planet Detroit"
+        ]
+      },
+      "new": {
+        "items": 69,
+        "named": 41,
+        "pct": 59.4,
+        "title_named": 41,
+        "title_pct": 59.4,
+        "sample_named": [
+          "Governor’s race hits Saline Township, site of massive data center project - Michigan Public",
+          "In bid to stop Saline Data Center tax break, an attorney argues the township skipped crucial steps - Michigan Advance"
+        ],
+        "sample_unmatched": [
+          "As voters sour on data centers, governor candidates embrace moratorium - Detroit Free Press",
+          "Americans are angry about data centers. Politicians are feeling the pressure - Reuters",
+          "Township changes course, nixing cap on tax break for $43B Oracle, OpenAI data center near Ann Arbor - MLive.com"
+        ]
+      }
+    },
+    {
+      "entity": "Howell township, NJ",
+      "query_v1": "\"Howell township\" NJ data center OR rezoning OR zoning OR moratorium",
+      "query_v2": "(\"Howell Township\" OR \"Howell Charter Township\") (\"data center\" OR \"data centers\") (moratorium OR rezoning OR zoning OR ordinance OR \"township board\") \"New Jersey\"",
+      "old": {
+        "items": 48,
+        "named": 19,
+        "pct": 39.6,
+        "title_named": 19,
+        "title_pct": 39.6,
+        "sample_named": [
+          "\"Ten times worse than any warehouse\" — why Howell said no to data centers - New Jersey 101.5",
+          "Data Center Ban In Howell Reconfirmed In New Ordinance - Patch"
+        ],
+        "sample_unmatched": [
+          "NJ nears 40 local data center bans, with Jackson and East Brunswick among latest votes - New Jersey 101.5",
+          "'Just Ban Them': Manchester Residents Demand Council Block AI Data Centers - Patch",
+          "These Rural Americans Are Trying to Hold Back the Tide of AI - WSJ"
+        ]
+      },
+      "new": {
+        "items": 9,
+        "named": 6,
+        "pct": 66.7,
+        "title_named": 6,
+        "title_pct": 66.7,
+        "sample_named": [
+          "\"Ten times worse than any warehouse\" — why Howell said no to data centers - New Jersey 101.5",
+          "Data Center Ban In Howell Reconfirmed In New Ordinance - Patch"
+        ],
+        "sample_unmatched": [
+          "These Rural Americans Are Trying to Hold Back the Tide of AI - WSJ",
+          "'Just Ban Them': Manchester Residents Demand Council Block AI Data Centers - Patch",
+          "Township To Enforce Smoking Ban In Public Places - Jersey Shore Online"
+        ]
+      }
+    }
+  ]
+}
