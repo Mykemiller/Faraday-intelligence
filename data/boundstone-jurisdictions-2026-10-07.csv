@@ -1,0 +1,450 @@
+state,state_name,jurisdiction,jtype
+AL,Alabama,Birmingham,City
+AL,Alabama,Cullman,City
+AL,Alabama,Fairfield,City
+AL,Alabama,Fort Payne,City
+AL,Alabama,Homewood,City
+AL,Alabama,Hueytown,City
+AL,Alabama,Leeds,City
+AL,Alabama,Morgan County,County
+AL,Alabama,Prichard,City
+AL,Alabama,Somerville,Town
+AR,Arkansas,Carroll County,County
+AR,Arkansas,Harrison,City
+AR,Arkansas,Russellville,City
+AR,Arkansas,Union County,County
+CA,California,Calipatria,City
+CA,California,Coachella,City
+CA,California,Desert Hot Springs,City
+CA,California,El Monte,City
+CA,California,Imperial,City
+CA,California,Imperial County,County
+CA,California,Indio,City
+CA,California,Irwindale,City
+CA,California,Montebello,City
+CA,California,Monterey Park,City
+CA,California,Oakley,City
+CO,Colorado,Archuleta County,County
+CO,Colorado,Boulder County,County
+CO,Colorado,Broomfield,City
+CO,Colorado,Buena Vista,Town
+CO,Colorado,Delta County,County
+CO,Colorado,Denver,City
+CO,Colorado,Hudson,Town
+CO,Colorado,Jefferson County,County
+CO,Colorado,Larimer County,County
+CO,Colorado,Logan County,County
+CO,Colorado,Monument,Town
+CO,Colorado,South Fork,Town
+CO,Colorado,Woodland Park,City
+CT,Connecticut,Groton,Town
+CT,Connecticut,Morris,Town
+CT,Connecticut,New Haven,City
+CT,Connecticut,West Haven,City
+FL,Florida,Citrus County,County
+FL,Florida,Clay County,County
+FL,Florida,Hernando County,County
+FL,Florida,Lakeland,City
+FL,Florida,Lynn Haven,City
+FL,Florida,Madison County,County
+FL,Florida,Nassau County,County
+FL,Florida,Palm Beach County,County
+FL,Florida,Pasco County,County
+FL,Florida,Pensacola,City
+FL,Florida,Pinellas Park,City
+FL,Florida,Santa Rosa County,County
+FL,Florida,Sarasota County,County
+FL,Florida,Zephyrhills,City
+GA,Georgia,Adel (Cook County),City
+GA,Georgia,Albany,City
+GA,Georgia,Augusta-Richmond County,County
+GA,Georgia,Brooks County,County
+GA,Georgia,Bulloch County,County
+GA,Georgia,Calhoun (Gordon County),City
+GA,Georgia,Camden County,County
+GA,Georgia,Carroll County,County
+GA,Georgia,Cedartown,City
+GA,Georgia,Cherokee County,County
+GA,Georgia,Clayton County,County
+GA,Georgia,Cobb County,County
+GA,Georgia,Covington,City
+GA,Georgia,Coweta County,County
+GA,Georgia,DeKalb County,County
+GA,Georgia,Decatur County,County
+GA,Georgia,Dougherty County,County
+GA,Georgia,Douglas County,County
+GA,Georgia,East Point (Fulton County),City
+GA,Georgia,Floyd County,County
+GA,Georgia,Garden City (Chatham County),City
+GA,Georgia,Gordon County,County
+GA,Georgia,Griffin,City
+GA,Georgia,Hall County,County
+GA,Georgia,Hart County,County
+GA,Georgia,Jones County,County
+GA,Georgia,Kingsland (Camden County),City
+GA,Georgia,LaGrange,City
+GA,Georgia,Lamar County,County
+GA,Georgia,Lee County,County
+GA,Georgia,Marietta,City
+GA,Georgia,Milton (Fulton County),City
+GA,Georgia,Monroe County,County
+GA,Georgia,Paulding County,County
+GA,Georgia,Pike County,County
+GA,Georgia,Polk County,County
+GA,Georgia,Rockdale County,County
+GA,Georgia,Roswell,City
+GA,Georgia,Social Circle,City
+GA,Georgia,South Fulton,City
+GA,Georgia,Stephens County,County
+GA,Georgia,Thomas County,County
+GA,Georgia,Troup County,County
+GA,Georgia,Walker County,County
+IA,Iowa,Adair County,County
+IA,Iowa,Audubon County,County
+IA,Iowa,Cedar County,County
+IA,Iowa,City of Peosta,City
+IA,Iowa,Clarke County,County
+IA,Iowa,Des Moines County,County
+IA,Iowa,Dickinson County,County
+IA,Iowa,Dubuque County,County
+IA,Iowa,Franklin County,County
+IA,Iowa,Ida County,County
+IA,Iowa,Jackson County,County
+IA,Iowa,Johnson County,County
+IA,Iowa,Lee County,County
+IA,Iowa,Linn County,County
+IA,Iowa,Madison County,County
+IA,Iowa,Mitchell County,County
+IA,Iowa,Palo Alto County,County
+IA,Iowa,Plymouth County,County
+IA,Iowa,Shelby County,County
+IA,Iowa,Sioux County,County
+IA,Iowa,Story County,County
+IA,Iowa,Tama County,County
+IA,Iowa,Taylor County,County
+IA,Iowa,Union County,County
+IA,Iowa,Woodbury County,County
+ID,Idaho,Kootenai County,County
+IL,Illinois,Champaign County,County
+IL,Illinois,City of Bloomington,City
+IL,Illinois,City of Carbondale,City
+IL,Illinois,City of Collinsville,City
+IL,Illinois,City of Effingham,City
+IL,Illinois,City of Troy,City
+IL,Illinois,City of West Chicago,City
+IL,Illinois,La Salle County,County
+IL,Illinois,Morgan County,County
+IL,Illinois,Town of Normal,Town
+IN,Indiana,Boone County,County
+IN,Indiana,Fayette County,County
+IN,Indiana,Franklin County,County
+IN,Indiana,Indianapolis (Marion County),City
+IN,Indiana,Madison County,County
+IN,Indiana,Merrillville (Lake County),Town
+IN,Indiana,Miami County,County
+IN,Indiana,New Albany (Floyd County),City
+IN,Indiana,Valparaiso (Porter County),City
+IN,Indiana,Warrick County,County
+KS,Kansas,Geary County,County
+KS,Kansas,Lyon County,County
+KS,Kansas,Marion County,County
+KS,Kansas,McPherson County,County
+KS,Kansas,Riley County,County
+KS,Kansas,Saline County,County
+KS,Kansas,Sedgwick County,County
+KY,Kentucky,Ashland,City
+KY,Kentucky,Bell County,County
+KY,Kentucky,Boyle County,County
+KY,Kentucky,Bullitt County,County
+KY,Kentucky,Cave City,City
+KY,Kentucky,City of La Grange,City
+KY,Kentucky,Daviess County,County
+KY,Kentucky,Edmonson County,County
+KY,Kentucky,Lexington-Fayette,Other
+KY,Kentucky,Mercer County Fiscal Court,County
+KY,Kentucky,Nelson County,County
+KY,Kentucky,Oldham County Fiscal Court,County
+KY,Kentucky,Versailles,City
+LA,Louisiana,New Orleans,City
+LA,Louisiana,St. Charles Parish,Parish
+MA,Massachusetts,"Everett (restriction proposal, not moratorium)",City
+MA,Massachusetts,Lowell,City
+MA,Massachusetts,Malden,City
+MA,Massachusetts,Shutesbury,Town
+MA,Massachusetts,Westfield,City
+MD,Maryland,Baltimore City,City
+MD,Maryland,Frederick County,County
+MD,Maryland,Howard County,County
+MD,Maryland,Montgomery County,County
+MD,Maryland,Prince George's County,County
+MD,Maryland,Washington County,County
+MD,Maryland,Worcester County,County
+ME,Maine,Bangor,City
+ME,Maine,Brunswick,Town
+ME,Maine,Gorham,Town
+ME,Maine,Sanford,City
+ME,Maine,Scarborough,Town
+ME,Maine,Westbrook,City
+MI,Michigan,Allendale Township,Township
+MI,Michigan,Armada Township,Township
+MI,Michigan,Bruce Township,Township
+MI,Michigan,Caledonia Township,Township
+MI,Michigan,Chesaning Township,Township
+MI,Michigan,City of Flint,City
+MI,Michigan,Delta County,County
+MI,Michigan,Detroit (requested),City
+MI,Michigan,Dundee Township,Township
+MI,Michigan,Fenton Township,Township
+MI,Michigan,Filer Township,Township
+MI,Michigan,Forsyth Township,Township
+MI,Michigan,Grand Blanc Township,Township
+MI,Michigan,Green Charter Township,Township
+MI,Michigan,Hagar Township,Township
+MI,Michigan,Haring Township,Township
+MI,Michigan,Hart,City
+MI,Michigan,Houghton,City
+MI,Michigan,Howell Township,Township
+MI,Michigan,Huron County,County
+MI,Michigan,Lake Township,Township
+MI,Michigan,Lansing,City
+MI,Michigan,Lenox Township,Township
+MI,Michigan,Lincoln Township,Township
+MI,Michigan,Lowell Township (proposed),Township
+MI,Michigan,Lyndon Township,Township
+MI,Michigan,Lyon Charter Township (Oakland County),Township
+MI,Michigan,Lyon Township,Township
+MI,Michigan,Manchester Township,Township
+MI,Michigan,Mason,City
+MI,Michigan,Mason Township,Township
+MI,Michigan,Meridian Township,Township
+MI,Michigan,Orion Township,Township
+MI,Michigan,Park Township,Township
+MI,Michigan,Pine Grove Township,Township
+MI,Michigan,Pittsfield Township,Township
+MI,Michigan,Porter Township,Township
+MI,Michigan,Saginaw,City
+MI,Michigan,Saline Township,Township
+MI,Michigan,Saugatuck Township,Township
+MI,Michigan,Sault Ste. Marie Tribe of Chippewa Indians,Tribal
+MI,Michigan,Sherman Township,Township
+MI,Michigan,South Lyon,City
+MI,Michigan,Springfield Township,Township
+MI,Michigan,Sylvan Township,Township
+MI,Michigan,Taylor,City
+MI,Michigan,Texas Township,Township
+MI,Michigan,Tyrone Township,Township
+MI,Michigan,Village of Romeo,Village
+MI,Michigan,Washington Township,Township
+MI,Michigan,Watertown Township,Township
+MI,Michigan,York Township,Township
+MI,Michigan,Ypsilanti Community Utilities Authority,Utility-authority
+MN,Minnesota,City of Apple Valley,City
+MN,Minnesota,City of Elko New Market,City
+MN,Minnesota,Eagan,City
+MN,Minnesota,Inver Grove Heights,City
+MN,Minnesota,Le Sueur County,County
+MN,Minnesota,Mankato,City
+MN,Minnesota,Minneapolis,City
+MN,Minnesota,Otsego,City
+MN,Minnesota,Rosemount,City
+MN,Minnesota,Waite Park,City
+MN,Minnesota,Wright County,County
+MO,Missouri,City of Camdenton,City
+MO,Missouri,City of Columbia,City
+MO,Missouri,City of Independence,City
+MO,Missouri,City of Neosho,City
+MO,Missouri,City of Peculiar,City
+MO,Missouri,City of Springfield,City
+MO,Missouri,City of St. Charles,City
+MO,Missouri,City of St. Joseph,City
+MO,Missouri,City of St. Peters,City
+MO,Missouri,Jackson County,County
+MO,Missouri,Marion County,County
+MO,Missouri,Nodaway County,County
+MO,Missouri,St. Charles County,County
+MO,Missouri,Webster County,County
+MS,Mississippi,City of Jackson,City
+MT,Montana,Missoula County,County
+NC,North Carolina,Charlotte,City
+NC,North Carolina,Chatham County,County
+NC,North Carolina,City of Asheville,City
+NC,North Carolina,City of Boiling Spring Lakes,City
+NC,North Carolina,City of Brevard,City
+NC,North Carolina,City of Hendersonville,City
+NC,North Carolina,City of Mount Airy,City
+NC,North Carolina,City of Wilson,City
+NC,North Carolina,Clay County (permanent restriction after earlier crypto moratorium),County
+NC,North Carolina,Cumberland County,County
+NC,North Carolina,Davie County,County
+NC,North Carolina,Durham,City
+NC,North Carolina,Durham County,County
+NC,North Carolina,Eastern Band of Cherokee Indians (tribal and trust lands),Tribal
+NC,North Carolina,Gates County,County
+NC,North Carolina,Harnett County,County
+NC,North Carolina,McDowell County (cryptocurrency mining; data-center-adjacent),County
+NC,North Carolina,Northampton County,County
+NC,North Carolina,Pasquotank County,County
+NC,North Carolina,Surry County,County
+NC,North Carolina,Town of Bailey,Town
+NC,North Carolina,Town of Franklin,Town
+NC,North Carolina,Town of Hillsborough,Town
+NC,North Carolina,Town of Holly Springs,Town
+NC,North Carolina,Town of Spring Hope,Town
+NC,North Carolina,Town of Woodfin,Town
+NC,North Carolina,Watauga County,County
+ND,North Dakota,Barnes County,County
+ND,North Dakota,Dunn County,County
+ND,North Dakota,Oliver County (Phase 1),County
+ND,North Dakota,Oliver County (Phase 2),County
+ND,North Dakota,Oliver County (Phase 3),County
+ND,North Dakota,Williams County,County
+NE,Nebraska,Cherry County,County
+NE,Nebraska,Hitchcock County,County
+NE,Nebraska,Logan County,County
+NE,Nebraska,Otoe County,County
+NE,Nebraska,Red Willow County,County
+NE,Nebraska,Seward County,County
+NH,New Hampshire,Town of Nottingham,Town
+NJ,New Jersey,Galloway Township,Township
+NJ,New Jersey,Sayreville,Town
+NM,New Mexico,Santa Fe County,County
+NM,New Mexico,Sierra County,County
+NM,New Mexico,Socorro County,County
+NV,Nevada,Humboldt County,County
+NV,Nevada,Nye County,County
+NV,Nevada,Reno,City
+NY,New York,Manlius,Town
+NY,New York,"State of New York (Executive Order, not a local-government action)",State
+NY,New York,Town of Brookhaven,Town
+NY,New York,Town of Clifton Park,Town
+NY,New York,Town of Dryden (Tompkins County),Town
+NY,New York,Town of East Fishkill,Town
+NY,New York,Town of Highland,Town
+NY,New York,"Town of Lansing (Tompkins County) - proposed, not enacted",Town
+NY,New York,"Town of Lewiston (Niagara County) - proposed, public hearing held",Town
+NY,New York,Town of Lysander (Onondaga County) - drafting authorized,Town
+NY,New York,"Town of Oneonta (Otsego County) - proposed, pending",Town
+NY,New York,Town of Salina,Town
+NY,New York,Town of Southeast,Town
+NY,New York,Town of Thurston,Town
+NY,New York,Town of Van Buren,Town
+OH,Ohio,Alliance,City
+OH,Ohio,Archbold,Village
+OH,Ohio,Avon,City
+OH,Ohio,Berea,City
+OH,Ohio,Blanchester,Village
+OH,Ohio,Braceville Township,Township
+OH,Ohio,Butler County,County
+OH,Ohio,Canton Township,Township
+OH,Ohio,Cincinnati,City
+OH,Ohio,City of Hubbard,City
+OH,Ohio,City of Norton,City
+OH,Ohio,City of Waterville,City
+OH,Ohio,Cleveland,City
+OH,Ohio,Cortland,City
+OH,Ohio,Defiance,City
+OH,Ohio,Findlay,City
+OH,Ohio,Girard,City
+OH,Ohio,Grafton,Village
+OH,Ohio,Grove City,City
+OH,Ohio,Howland Township,Township
+OH,Ohio,Jackson Township (Franklin County),Township
+OH,Ohio,Jerome Township,Township
+OH,Ohio,Lake Township,Township
+OH,Ohio,Maumee,City
+OH,Ohio,Monclova Township,Township
+OH,Ohio,Montgomery Township,Township
+OH,Ohio,Plain City,Village
+OH,Ohio,Richfield Township,Township
+OH,Ohio,South Bloomfield,Village
+OH,Ohio,Spencer Township,Township
+OH,Ohio,Springfield,City
+OH,Ohio,St. Marys,City
+OH,Ohio,Tallmadge,City
+OH,Ohio,Village of Ashville,Village
+OH,Ohio,Village of Lordstown,Village
+OH,Ohio,Washington Township,Township
+OH,Ohio,Waterville Township,Township
+OH,Ohio,Williamsburg,Village
+OH,Ohio,Yellow Springs,Village
+OK,Oklahoma,Broken Arrow,City
+OK,Oklahoma,Edmond,City
+OK,Oklahoma,Luther,Town
+OK,Oklahoma,Norman,City
+OK,Oklahoma,Oklahoma City,City
+OK,Oklahoma,Seminole Nation of Oklahoma,Tribal
+OK,Oklahoma,Tulsa,City
+OR,Oregon,City of Hillsboro,City
+PA,Pennsylvania,Bensalem Township,Township
+PA,Pennsylvania,Brookville Borough,Other
+PA,Pennsylvania,Butler Township,Township
+PA,Pennsylvania,Center Township,Township
+PA,Pennsylvania,Hazle Township,Township
+PA,Pennsylvania,Lycoming County,County
+PA,Pennsylvania,Montour County,County
+PA,Pennsylvania,Muncy Township,Township
+PA,Pennsylvania,Warrington Township,Township
+SC,South Carolina,Chester County,County
+SC,South Carolina,Chesterfield County,County
+SC,South Carolina,Colleton County,County
+SC,South Carolina,Greenwood County,County
+SC,South Carolina,Newberry County,County
+SC,South Carolina,York County,County
+SD,South Dakota,Yankton County,County
+TN,Tennessee,Anderson County,County
+TN,Tennessee,Bristol,City
+TN,Tennessee,Cedar Hill,Town
+TN,Tennessee,Clinton,City
+TN,Tennessee,Coffee County,County
+TN,Tennessee,Crossville,City
+TN,Tennessee,Cumberland County,County
+TN,Tennessee,Grundy County,County
+TN,Tennessee,Jonesborough,Town
+TN,Tennessee,Knox County,County
+TN,Tennessee,Knoxville,City
+TN,Tennessee,Loudon County,County
+TN,Tennessee,McMinnville,City
+TN,Tennessee,Morgan County,County
+TN,Tennessee,Nashville-Davidson County,City
+TN,Tennessee,Shelbyville,City
+TN,Tennessee,Smithville,City
+TN,Tennessee,Sullivan County,County
+TN,Tennessee,Unincorporated Hamilton County,County
+TN,Tennessee,Warren County,County
+TN,Tennessee,White County,County
+TX,Texas,Austin County,County
+TX,Texas,Harlingen,City
+TX,Texas,Hill County,County
+UT,Utah,Box Elder County,County
+UT,Utah,Cache County,County
+UT,Utah,Grand County,County
+UT,Utah,Iron County,County
+UT,Utah,Logan,City
+UT,Utah,Wayne County,County
+VA,Virginia,City of Chesapeake,City
+WA,Washington,Burien,City
+WA,Washington,City of Ephrata,City
+WA,Washington,City of Seattle,City
+WA,Washington,Federal Way,City
+WA,Washington,Marysville,City
+WA,Washington,Pasco,City
+WA,Washington,Seattle,City
+WA,Washington,Skagit County,County
+WA,Washington,Snohomish County,County
+WA,Washington,Spokane,City
+WA,Washington,Town of Waterville,Town
+WI,Wisconsin,City of Sheboygan,City
+WI,Wisconsin,City of Superior,City
+WI,Wisconsin,Dane County,County
+WI,Wisconsin,Door County,County
+WI,Wisconsin,Grant County,County
+WI,Wisconsin,Green County,County
+WI,Wisconsin,La Crosse County,County
+WI,Wisconsin,Manitowoc County,County
+WI,Wisconsin,Monroe County,County
+WI,Wisconsin,Shawano County,County
+WI,Wisconsin,Town of New Denmark,Town
+WI,Wisconsin,Village of Ashwaubenon,Village
+WI,Wisconsin,Village of Cottage Grove,Village
+WI,Wisconsin,Village of Hobart,Village
+WI,Wisconsin,Village of Wrightstown,Village

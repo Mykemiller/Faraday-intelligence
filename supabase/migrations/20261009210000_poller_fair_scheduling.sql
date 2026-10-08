@@ -40,6 +40,13 @@ begin;
 -- ---------------------------------------------------------------------------
 -- 1. cadence -> interval. Mirrors CADENCE_MINUTES in poller-schedule.ts.
 --    Unknown/NULL cadence is treated as daily, never as "skip".
+--
+--    FDY-93 added the 'biweekly' (13d) and 'monthly' (28d) arms. They live here
+--    rather than in FDY-93's own migration so that this function stays the one
+--    canonical cadence table and the drift guard in
+--    test/source-poller-schedule.test.mjs keeps comparing a single file against
+--    a single constant. Without them, cadence='monthly' would have fallen
+--    through to the daily default and polled 569 legacy rows every 20 hours.
 -- ---------------------------------------------------------------------------
 create or replace function public.poller_cadence_interval(p_cadence text)
 returns interval
@@ -52,6 +59,8 @@ as $$
     when 'hourly'           then interval '50 minutes'      -- 50
     when 'daily'            then interval '1200 minutes'    -- 1200
     when 'weekly'           then interval '9360 minutes'    -- 9360 (6.5 days)
+    when 'biweekly'         then interval '18720 minutes'   -- 18720 (13 days)  [FDY-93]
+    when 'monthly'          then interval '40320 minutes'   -- 40320 (28 days)  [FDY-93]
     when 'event_driven'     then interval '1200 minutes'    -- 1200
     when 'archival_refresh' then interval '38880 minutes'   -- 38880 (27 days)
     when 'one_time'         then interval '525600 minutes'  -- 525600 (365 days)
