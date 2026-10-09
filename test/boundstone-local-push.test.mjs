@@ -644,16 +644,67 @@ test("§7 both migrations say UN-APPLIED on line 1", () => {
   }
 });
 
-test("§7 the versions sort above every migration already in the tree", () => {
+/**
+ * ⚠️ AMENDED on the second rebase, 2026-10-08. This test used to assert
+ * "20261009230001 is the newest prefix in the tree". That was true when it was
+ * written and is now false: FDY-88/89/93 merged to main between this branch's
+ * two rebases, bringing 20261009200000, 20261009210000 and — the one that
+ * breaks the old claim — 20261010100000 (local_watch_county_complete).
+ *
+ * Re-numbering upwards to restore the assertion would be chasing the assertion
+ * instead of the invariant, and would do it every time a sibling lands. The two
+ * things that were ever actually being protected are asserted instead:
+ *
+ *   (i)  both files sort AFTER 20261009220000 (FDY-90), which they depend on and
+ *        whose absence §0 refuses over, and the schedule sorts after the ledger
+ *        it schedules. That is the ordering that would really break.
+ *   (ii) nothing that sorts after them is named in either $ordering$ block. This
+ *        file sorting before FDY-93's 20261010100000 is harmless precisely
+ *        because neither calls the other — checked here rather than assumed.
+ *
+ *   (iii) no two files in the tree share a prefix, which is the collision this
+ *         numbering convention exists to prevent and the one real hazard a
+ *         sibling branch can create.
+ */
+test("§7 (i) the versions sort after FDY-90, and the schedule after the ledger", () => {
+  assert.ok("20261009230000" > "20261009220000", "the ledger must sort after FDY-90");
+  assert.ok("20261009230001" > "20261009230000", "the schedule must sort after the ledger");
+});
+
+test("§7 (ii) nothing either file sorts before is a dependency of it", () => {
   const dir = new URL("../supabase/migrations/", import.meta.url);
-  const prefixes = readdirSync(dir)
+  const later = readdirSync(dir)
     .filter((n) => n.endsWith(".sql") && /^\d{14}_/.test(n))
     .map((n) => n.split("_")[0])
+    .filter((p) => p > "20261009230001")
     .sort();
-  assert.equal(prefixes.at(-1), "20261009230001");
-  assert.ok(prefixes.at(-2) === "20261009230000");
-  // FDY-90 must sort BEFORE both, because both depend on it.
-  assert.ok("20261009220000" < "20261009230000");
+  assert.ok(later.length > 0, "nothing sorts after these files; the test is not exercising anything");
+  for (const f of [LEDGER_MIG, SCHEDULE_MIG]) {
+    const sql = read(f);
+    const guard = /do \$ordering\$[\s\S]*?\$ordering\$;/.exec(sql);
+    assert.ok(guard, `${f} lost its ordering guard`);
+    for (const prefix of later) {
+      assert.ok(
+        !guard[0].includes(prefix),
+        `${prefix} sorts after ${f} but its $ordering$ block requires it — the guard would refuse`,
+      );
+    }
+  }
+});
+
+test("§7 (iii) no two migration files share a numeric prefix", () => {
+  const dir = new URL("../supabase/migrations/", import.meta.url);
+  const seen = new Map();
+  const collisions = [];
+  for (const name of readdirSync(dir).filter((n) => n.endsWith(".sql") && /^\d{14}_/.test(n)).sort()) {
+    const p = name.split("_")[0];
+    if (seen.has(p)) collisions.push(`${p}: ${seen.get(p)} and ${name}`);
+    else seen.set(p, name);
+  }
+  assert.deepEqual(collisions, [], `migration numbers collide:\n  ${collisions.join("\n  ")}`);
+  // And ours are both in there exactly once.
+  assert.equal(seen.get("20261009230000"), "20261009230000_boundstone_push_ledger.sql");
+  assert.equal(seen.get("20261009230001"), "20261009230001_boundstone_push_schedule.sql");
 });
 
 test("§7 the ledger migration refuses to apply before FDY-90", () => {

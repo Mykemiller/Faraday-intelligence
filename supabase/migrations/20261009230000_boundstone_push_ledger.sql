@@ -3,10 +3,27 @@
 -- 20261009230000 — FDY-91: the Faraday end of the local-gov-watch push
 -- ===========================================================================
 --
--- Version 20261009230000, above every 14-digit file in this repo
--- (20261009220000, FDY-90) and above every applied version. FDY-90's file must
--- be applied FIRST: this one's $ordering$ block refuses otherwise, because the
--- whole eligibility test reads the crawl_metadata keys FDY-90 creates.
+-- Version 20261009230000, above every applied version and above FDY-90's
+-- 20261009220000, which is the ordering that matters: FDY-90's file must be
+-- applied FIRST, and this one's $ordering$ block refuses otherwise, because the
+-- whole eligibility test reads the crawl_metadata keys that migration creates.
+--
+-- ⚠️ IT IS NOT THE NEWEST FILE IN THE REPO, and that is fine. This branch was
+-- paused and rebased twice on 2026-10-08; in between, FDY-88/89/93 merged
+-- 20261009200000, 20261009210000 and 20261010100000 to main. So this file now
+-- sorts BEFORE FDY-93's county-complete migration. Harmless, and checked rather
+-- than assumed: neither calls anything the other creates, so either apply order
+-- produces the same database. test/boundstone-local-push.test.mjs §7 pins the
+-- real invariants — after FDY-90, before nothing it depends on, and no two
+-- files in the tree sharing a prefix.
+--
+-- ⚠️ FDY-93 WILL GROW THE CORPUS, AND THE NUMBERS BELOW PREDATE IT. It makes
+-- the local gov watch county-complete, which adds `gsearch:loc-%` sources well
+-- beyond the 1,000 measured here. It is also UN-APPLIED, so every count in this
+-- file is still what production holds today. Re-run
+-- scripts/boundstone-local-push-dryrun.sql after it lands; this lane needs no
+-- change for it, because eligibility is a predicate on the artifact and not a
+-- list of feeds.
 --
 -- ---------------------------------------------------------------------------
 -- WHAT THIS ADDS
