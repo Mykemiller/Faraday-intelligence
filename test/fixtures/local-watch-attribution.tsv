@@ -1,0 +1,83 @@
+# local-watch-attribution.tsv — FDY-91.
+#
+# 41 REAL headlines, captured read-only from public.artifacts on
+# ycadmmngkdhvpcsrcuaq, 2026-10-07/08. Every row is a local-watch artifact
+# (source_registry.source_key like 'gsearch:loc-%') whose raw_content matches
+# 'data ?cent' and whose published_at >= 2026-07-01, with Google's
+# " - <publisher>" suffix stripped by headline-pure.ts extractHeadline().
+#
+# The verdict columns are NOT hand-written. They are the output of
+# scripts/boundstone-local-push-dryrun.sql, which re-implements the same three
+# attribution rules in SQL so the whole 6,157-row corpus can be measured at
+# once. test/boundstone-local-push.test.mjs runs attribution-pure.ts over these
+# rows and asserts it agrees with the SQL, row for row. That is what keeps the
+# dry-run totals in the PR body honest: if the TypeScript and the SQL ever
+# disagree, this file is the tripwire.
+#
+# Rows are grouped by what they are here to prove:
+#   1-3    the three cases the brief names by hand
+#   4-7    s3_abbr_agrees — a USPS code agreeing with a jurisdiction
+#   8-15   s2_unique_jurisdiction — a county unique to one state nationally
+#   16-25  s1_state_name — an unambiguous full state name
+#   26-31  DECLINED ambiguous_jurisdiction — the county exists in >1 state
+#   32-34  DECLINED ambiguous_state_named — two states named at once
+#   35-41  DECLINED no_honest_state — nothing in the headline establishes one
+#
+# ⚠️ ROW 1 IS THE WHOLE POINT. "Michigan City Council to consider data center
+# moratorium" is Michigan City, INDIANA. It DECLINES, because the compound-place
+# guard drops the bare "Michigan" and nothing else in the headline proves
+# Indiana. A naive full-name scan files it under MI, on a public state page.
+#
+# ⚠️ ROW 3. The brief expected "Sedgwick County KS". Production disagrees and
+# production wins: Sedgwick County exists in BOTH Kansas and Colorado, so the
+# headline alone does not establish the state and the row is declined. A smaller
+# true number beats a larger false one.
+#
+# ⚠️ ROW 4 is deliberately ugly. It is a real artifact whose first RSS line is a
+# whole paragraph, not a headline. It is kept verbatim, truncation and all,
+# because the corpus contains rows like it and a fixture of only tidy headlines
+# would not prove the code survives the real ones.
+#
+# headline<TAB>state_abbr<TAB>jurisdiction_name<TAB>state_rule<TAB>reason
+# Empty means NULL in all four verdict columns.
+Michigan City Council to consider data center moratorium				no_honest_state
+St. Croix County Board of Supervisors unanimously approves data center moratorium	WI	St. Croix County	s2_unique_jurisdiction
+Sedgwick County commissioners to consider data center moratorium extension				ambiguous_jurisdiction
+City of Brownsville, TX - Municipal Government. . The Brownsville City Commission held a workshop to review proposed regulations for future data center developments. The recommendations focus on supporting economic growth while protecting neighborho	TX	Brownsville city	s3_abbr_agrees
+Bell County TX to consider amending tax abatement policy as residents speak out against data centers	TX	Bell County	s3_abbr_agrees
+WA farmers fight Grant County PUD over data center line easements	WA	Grant County	s3_abbr_agrees
+Emmet County, IA approves one-year data center moratorium	IA	Emmet County	s3_abbr_agrees
+Carlton County passes one-year moratorium on creation of data centers	MN	Carlton County	s2_unique_jurisdiction
+Prince William County board rejects data center proposal	VA	Prince William County	s2_unique_jurisdiction
+Sarasota County bans data center applications for one year	FL	Sarasota County	s2_unique_jurisdiction
+Manatee County moves toward data center moratorium	FL	Manatee County	s2_unique_jurisdiction
+Vermillion County Commissioners speak out on data centers	IN	Vermillion County	s2_unique_jurisdiction
+Loudoun County considers pause on new data center builds	VA	Loudoun County	s2_unique_jurisdiction
+Copper wire stolen from construction site of Loudoun County data center; 3 arrested	VA	Loudoun County	s2_unique_jurisdiction
+Open house set next week with company that could bring data center to Callaway County	MO	Callaway County	s2_unique_jurisdiction
+Virginia data center planned less than 100 feet from homes sparks protest, legal push	VA		s1_state_name
+Oracle may face $7bn collateral bill for Wisconsin data center- FT	WI		s1_state_name
+'Prefer an outright ban': Small Texas town weighs data center restrictions amid industry growth	TX		s1_state_name
+Texas Data Center Moratorium: Local Regulation & State Action	TX		s1_state_name
+New York Enacts Nation’s First Statewide Moratorium on Data Centers	NY		s1_state_name
+Data centers and property rights: What Michigan residents need to know	MI		s1_state_name
+Attorney general wants to halt all data center projects across Arizona	AZ		s1_state_name
+Major data center bills advance in California despite industry pushback	CA		s1_state_name
+Texas Governor Halts Data Center Grid Connections Pending Audit	TX		s1_state_name
+Data center frustrations cause upheaval in Maryland county primaries	MD		s1_state_name
+Hillsborough County moves toward moratorium on AI data centers				ambiguous_jurisdiction
+Meta data center expansion raises road, traffic concerns in Richland Parish				ambiguous_jurisdiction
+Union County Quorum Court approves moratorium on proposed Paradox Data Center				ambiguous_jurisdiction
+Pulaski County Quorum Court advances ordinance to regulate data centers				ambiguous_jurisdiction
+Landowners and commissioners discuss data center in Mercer County				ambiguous_jurisdiction
+Tonight: Johnson County tackles data center zoning policy				ambiguous_jurisdiction
+MAP: See where data centers are planned in Kentucky and southern Indiana				ambiguous_state_named
+In the garbage wars, West Virginia gave counties a say. Data center opponents say they deserve one, too.				ambiguous_state_named
+Lowdown from Loudoun: Virginia official shares data center tips with Maryland audience				ambiguous_state_named
+Atlanta will consider data center task force				no_honest_state
+Public outcry, zoning commission vote over data centers in Fort Worth pushes City Council members to consider hitting pause				no_honest_state
+PREVIEW: Data center back on Prosper zoning agenda				no_honest_state
+Spanberger Intervenes in $67 Billion Dominion-NextEra Merger as Alexandria Fights a Data Center Substation				no_honest_state
+Specter of data centers in Modesto area gets irrigation district officials talking				no_honest_state
+No more tax breaks: El Paso City Council adopts new data center rules				no_honest_state
+Meta data center pollution permit doesn’t account for all its emissions, Sierra Club says				no_honest_state
