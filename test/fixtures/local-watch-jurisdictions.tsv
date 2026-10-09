@@ -1,0 +1,317 @@
+# local-watch-jurisdictions.tsv — FDY-91.
+#
+# A 293-row SLICE of public.jurisdictions, read-only from ycadmmngkdhvpcsrcuaq
+# 2026-10-08. The live table has 39,507 rows and 38,887 at the three matchable
+# levels; committing all of them would put a megabyte of Census reference data
+# in a test fixture to answer questions about 41 headlines.
+#
+# ⚠️ THE SLICE IS CHOSEN SO THE ANSWERS DO NOT CHANGE, and that is a real
+# constraint, not a convenience. attribution-pure.ts decides ambiguity by
+# counting how many STATES carry a name NATIONALLY, so a slice that dropped one
+# state's "Union County" would turn an honest refusal into a false attribution —
+# the exact failure the module exists to prevent. So the slice is:
+#
+#   (a) EVERY row nationally for each of the 19 phrases these 41 headlines
+#       contain ("union" is here 20 times, in 20 states, on purpose), and
+#   (b) EVERY row whose name begins with a full state name plus a space —
+#       the complete universe the compound-place guard consults, so
+#       "Michigan City" (IN and ND), "Texas City", "Kansas City", "Iowa City",
+#       "Nevada City" and "Oklahoma City" all resolve exactly as they do live.
+#
+# Regenerate with the query in scripts/boundstone-local-push-dryrun.sql's
+# comment block; never hand-edit a row.
+#
+# name<TAB>state_abbr<TAB>level
+Grant town	AL	place
+Union town	AL	place
+Grant County	AR	county
+Johnson County	AR	county
+Pulaski County	AR	county
+Union County	AR	county
+Arkansas City city	AR	place
+Emmet city	AR	place
+Johnson city	AR	place
+Sedgwick town	AR	place
+Colorado City town	AZ	place
+Bell city	CA	place
+California City city	CA	place
+Hillsborough town	CA	place
+Nevada City city	CA	place
+Sedgwick County	CO	county
+Colorado Springs city	CO	place
+Idaho Springs city	CO	place
+Sedgwick town	CO	place
+Union town	CT	cousub
+Delaware City city	DE	place
+Hillsborough County	FL	county
+Manatee County	FL	county
+Sarasota County	FL	county
+Union County	FL	county
+Bell town	FL	place
+Callaway city	FL	place
+Florida City city	FL	place
+Sarasota city	FL	place
+Virginia Gardens village	FL	place
+Johnson County	GA	county
+Pulaski County	GA	county
+Union County	GA	county
+Carlton city	GA	place
+Pulaski town	GA	place
+Richland city	GA	place
+Emmet County	IA	county
+Johnson County	IA	county
+Union County	IA	county
+Grant city	IA	place
+Iowa City city	IA	place
+Iowa Falls city	IA	place
+Missouri Valley city	IA	place
+Pulaski city	IA	place
+Richland city	IA	place
+Union city	IA	place
+Idaho City city	ID	place
+Idaho Falls city	ID	place
+Johnson County	IL	county
+Mercer County	IL	county
+Pulaski County	IL	county
+Richland County	IL	county
+Union County	IL	county
+Emmet township	IL	cousub
+Grant township	IL	cousub
+Johnson township	IL	cousub
+Mercer township	IL	cousub
+Ohio Grove township	IL	cousub
+Richland township	IL	cousub
+Union township	IL	cousub
+Vermillion township	IL	cousub
+Pulaski village	IL	place
+Union village	IL	place
+Washington Park village	IL	place
+Grant County	IN	county
+Johnson County	IN	county
+Pulaski County	IN	county
+Union County	IN	county
+Vermillion County	IN	county
+Brownsville township	IN	cousub
+Grant township	IN	cousub
+Johnson township	IN	cousub
+Richland township	IN	cousub
+Union township	IN	cousub
+Vermillion township	IN	cousub
+Michigan City city	IN	place
+Richland town	IN	place
+Grant County	KS	county
+Johnson County	KS	county
+Sedgwick County	KS	county
+Bell township	KS	cousub
+Grant township	KS	cousub
+Johnson township	KS	cousub
+Richland township	KS	cousub
+Sedgwick township	KS	cousub
+Union township	KS	cousub
+Vermillion township	KS	cousub
+Arkansas City city	KS	place
+Carlton city	KS	place
+Kansas City city	KS	place
+Sedgwick city	KS	place
+Vermillion city	KS	place
+Bell County	KY	county
+Grant County	KY	county
+Johnson County	KY	county
+Mercer County	KY	county
+Pulaski County	KY	county
+Union County	KY	county
+Brownsville city	KY	place
+Union city	KY	place
+Grant Parish	LA	county
+Richland Parish	LA	county
+Union Parish	LA	county
+Washington Grove town	MD	place
+Mercer town	ME	cousub
+Sedgwick town	ME	cousub
+Union town	ME	cousub
+Emmet County	MI	county
+Carlton township	MI	cousub
+Grant township	MI	cousub
+Pulaski township	MI	cousub
+Richland township	MI	cousub
+Texas charter township	MI	cousub
+Union township	MI	cousub
+Washington charter township	MI	cousub
+Grant city	MI	place
+Richland village	MI	place
+Carlton County	MN	county
+Grant County	MN	county
+Brownsville township	MN	cousub
+Callaway township	MN	cousub
+Emmet township	MN	cousub
+Johnson township	MN	cousub
+Maine Prairie township	MN	cousub
+Minnesota Falls township	MN	cousub
+Minnesota Lake township	MN	cousub
+Pulaski township	MN	cousub
+Richland township	MN	cousub
+Union township	MN	cousub
+Vermillion township	MN	cousub
+Washington Lake township	MN	cousub
+Brownsville city	MN	place
+Callaway city	MN	place
+Carlton city	MN	place
+Grant city	MN	place
+Johnson city	MN	place
+Minnesota City city	MN	place
+Minnesota Lake city	MN	place
+New York Mills city	MN	place
+Vermillion city	MN	place
+Callaway County	MO	county
+Johnson County	MO	county
+Mercer County	MO	county
+Pulaski County	MO	county
+Grant township	MO	cousub
+Richland township	MO	cousub
+Union township	MO	cousub
+Kansas City city	MO	place
+Maryland Heights city	MO	place
+Mercer town	MO	place
+Missouri City city	MO	place
+Richland city	MO	place
+Union city	MO	place
+Union County	MS	county
+Richland city	MS	place
+Union town	MS	place
+Richland County	MT	county
+Virginia City town	MT	place
+Union County	NC	county
+Hillsborough town	NC	place
+Washington Park town	NC	place
+Grant County	ND	county
+Mercer County	ND	county
+Richland County	ND	county
+Bell township	ND	cousub
+Grant township	ND	cousub
+Johnson township	ND	cousub
+Mercer township	ND	cousub
+Missouri Ridge township	ND	cousub
+Pulaski township	ND	cousub
+Richland township	ND	cousub
+St. Croix township	ND	cousub
+Union township	ND	cousub
+Mercer city	ND	place
+Michigan City city	ND	place
+Grant County	NE	county
+Johnson County	NE	county
+Emmet township	NE	cousub
+Grant township	NE	cousub
+Richland township	NE	cousub
+Union township	NE	cousub
+Callaway village	NE	place
+Emmet village	NE	place
+Grant city	NE	place
+Johnson village	NE	place
+Nebraska City city	NE	place
+Richland village	NE	place
+Union village	NE	place
+Hillsborough County	NH	county
+Hillsborough town	NH	cousub
+Mercer County	NJ	county
+Union County	NJ	county
+Hillsborough township	NJ	cousub
+Union township	NJ	cousub
+Grant County	NM	county
+Union County	NM	county
+Carlton town	NY	cousub
+Richland town	NY	cousub
+Union town	NY	cousub
+New York Mills village	NY	place
+Pulaski village	NY	place
+Mercer County	OH	county
+Richland County	OH	county
+Union County	OH	county
+Johnson township	OH	cousub
+Pulaski township	OH	cousub
+Richland township	OH	cousub
+Union township	OH	cousub
+Vermillion township	OH	cousub
+Ohio City village	OH	place
+Union city	OH	place
+Washington Court House city	OH	place
+Grant County	OK	county
+Johnson town	OK	place
+Oklahoma City city	OK	place
+Grant County	OR	county
+Union County	OR	county
+Brownsville city	OR	place
+Carlton city	OR	place
+Oregon City city	OR	place
+Richland city	OR	place
+Union city	OR	place
+Mercer County	PA	county
+Union County	PA	county
+Bell township	PA	cousub
+Brownsville township	PA	cousub
+Grant township	PA	cousub
+Mercer township	PA	cousub
+Pulaski township	PA	cousub
+Richland township	PA	cousub
+Union township	PA	cousub
+Brownsville borough	PA	place
+Delaware Water Gap borough	PA	place
+Mercer borough	PA	place
+Richland borough	PA	place
+Florida Municipio	PR	county
+Richland County	SC	county
+Union County	SC	county
+Union city	SC	place
+Grant County	SD	county
+Union County	SD	county
+Carlton township	SD	cousub
+Emmet township	SD	cousub
+Grant township	SD	cousub
+Richland township	SD	cousub
+Union township	SD	cousub
+Vermillion township	SD	cousub
+Vermillion city	SD	place
+Johnson County	TN	county
+Union County	TN	county
+Brownsville city	TN	place
+Pulaski city	TN	place
+Tennessee Ridge town	TN	place
+Bell County	TX	county
+Johnson County	TX	county
+Brownsville city	TX	place
+Colorado City city	TX	place
+Iowa Colony village	TX	place
+Iowa Park city	TX	place
+Missouri City city	TX	place
+Richland town	TX	place
+Texas City city	TX	place
+Washington Terrace city	UT	place
+Loudoun County	VA	county
+Prince William County	VA	county
+Pulaski County	VA	county
+Virginia Beach city	VA	county
+Pulaski town	VA	place
+Virginia Beach city	VA	place
+Johnson town	VT	cousub
+Johnson village	VT	place
+Grant County	WA	county
+Richland city	WA	place
+Grant County	WI	county
+Richland County	WI	county
+St. Croix County	WI	county
+Bell town	WI	cousub
+Carlton town	WI	cousub
+Emmet town	WI	cousub
+Grant town	WI	cousub
+Johnson town	WI	cousub
+Mercer town	WI	cousub
+Pulaski town	WI	cousub
+Richland town	WI	cousub
+Union town	WI	cousub
+Brownsville village	WI	place
+Pulaski village	WI	place
+Wisconsin Dells city	WI	place
+Wisconsin Rapids city	WI	place
+Grant County	WV	county
+Mercer County	WV	county
+Union town	WV	place
+Johnson County	WY	county
