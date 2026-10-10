@@ -71,7 +71,9 @@ import {
   FN_PRESS_PROPOSE,
   LEDGER_REASONS,
   ledgerRow,
+  LOCAL_GOVERNMENT_NOUN,
   proposePress,
+  RESTRICTION_PATTERNS,
 } from "../supabase/functions/boundstone-local-push/push-pure.ts";
 
 const read = (rel) => readFileSync(new URL(`../${rel}`, import.meta.url), "utf8");
@@ -607,4 +609,50 @@ test("§7 the window floor is the same literal in the script and in the SQL", ()
   assert.ok(mig.includes("timestamptz '2026-07-01 00:00:00+00'"));
   // p_since may narrow but never widen; the SQL applies BOTH floors.
   assert.match(mig, /and a\.published_at >= timestamptz '2026-07-01 00:00:00\+00'\s*\n\s*and a\.published_at >= coalesce\(p_since/);
+});
+
+/* =========================================================================
+   §8 the SQL mirror that produced the dry-run report
+   ========================================================================= */
+
+test("§8 the dry-run SQL's restriction test IS push-pure's, transliterated \\b -> \\y", () => {
+  // ⚠️ THE REPORT'S QUOTABILITY DEPENDS ON THIS. The PR's by-state and by-week
+  // tables were measured by scripts/boundstone-local-backfill-dryrun.sql,
+  // because the script itself could not reach production (no service-role key
+  // in this session, and its selector is un-applied). Two implementations of
+  // one rule is a real hazard, so the alternation is RECONSTRUCTED from
+  // push-pure's own patterns here rather than eyeballed.
+  const sql = read("scripts/boundstone-local-backfill-dryrun.sql");
+  const verb = `(${RESTRICTION_PATTERNS.map(([, re]) => re.source.replaceAll("\\b", "\\y")).join("|")})`;
+  assert.equal(
+    verb,
+    "(moratori|\\yban(s|ned|ning)?\\y|\\ypaus(e|es|ed|ing)\\y|ordinance|rezon|prohibit)",
+    "RESTRICTION_PATTERNS changed; the dry-run SQL and the PR's numbers must be regenerated",
+  );
+  assert.ok(sql.includes(verb), `the SQL mirror does not carry ${verb}`);
+  const noun = LOCAL_GOVERNMENT_NOUN.source.replaceAll("\\b", "\\y");
+  assert.ok(sql.includes(noun), `the SQL mirror does not carry ${noun}`);
+  // Occurs in §5's measurement as well as in the candidate test, so both halves
+  // of the report use the one rule.
+  assert.ok(sql.split(verb).length - 1 >= 2);
+});
+
+test("§8 the dry-run SQL cannot write, and shares the window predicate", () => {
+  const sql = read("scripts/boundstone-local-backfill-dryrun.sql");
+  const firstStatement = sql.replace(/--.*$/gm, "").split(";")[0].trim();
+  assert.equal(firstStatement, "set default_transaction_read_only = on");
+  const code = sql.replace(/--.*$/gm, "");
+  for (const dml of [/\binsert\s+into\b/i, /\bupdate\s+public\./i, /\bdelete\s+from\b/i, /\btruncate\b/i, /create\s+table/i]) {
+    assert.ok(!dml.test(code), `the dry-run SQL must contain no DML or DDL beyond temp views: ${dml}`);
+  }
+  for (const clause of [
+    "s.source_key like 'gsearch:loc-%'",
+    "a.raw_content ~* 'data ?cent'",
+    "timestamptz '2026-07-01 00:00:00+00'",
+  ]) {
+    assert.ok(code.includes(clause), `the dry-run SQL lost the clause: ${clause}`);
+  }
+  // It must label the publisher_url=0 condition rather than quietly reporting 0
+  // press items, which is the single most misreadable number in the report.
+  assert.match(sql, /publisher_url_today/);
 });
