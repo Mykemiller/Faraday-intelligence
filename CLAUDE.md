@@ -20,6 +20,41 @@ from here (Ask Faraday, waitlist/subscribe, lexicon).
 
 ## Changelog
 
+### CC-BOUNDSTONE-LOCAL-BACKFILL — 2026-10-09 (FDY-92: the Jul–Sep backlog, shipped as a script and never run)
+- **`scripts/boundstone-local-backfill.ts`** walks 2026-07-01 → today in **7-day slices anchored on
+  `--since`**, oldest first, and pushes through FDY-91's bridge. Dry run by default; `--apply` also
+  needs `BOUNDSTONE_BACKFILL_CONFIRM=1`. It re-decides **nothing** — `decide()`, `proposePress()`,
+  `ledgerRow()` and the gazetteer all come from `supabase/functions/boundstone-local-push/*`.
+- **Never `date_trunc('week')` for these slices.** It buckets 1–3 July into a Monday (2026-06-29)
+  that the window does not contain, so the first row of every report is a week that cannot exist.
+  Anchor on `since`; the last slice is clipped to `until` so the slices tile `[since, until)`.
+- **Migration `20261010110000` adds `public.boundstone_backfill_due(...)`** — the same eligibility
+  predicate as `boundstone_push_due(int)` plus a `[p_since, p_until)` window and a
+  `(published_at, artifact_id)` **keyset** cursor. `boundstone_push_due` caps `p_limit` at 500
+  *inside* the function, so PostgREST `offset` cannot reach row 501 and a dry run (which writes no
+  ledger row) can never advance. Gate G2 pins the two predicates clause-for-clause; G3's row-for-row
+  comparison is **vacuous in production** (both return 0) and says so in a `raise notice`.
+- **⚠️ `not_retrieved` is DEFERRED, not ledgered.** `boundstone_push_ledger`'s primary key makes a
+  row permanent, and "FDY-90 has not body-fetched this yet" is transient. Ledgering it would delete
+  the article from the hourly lane's future forever. So the backfill counts and reports those rows
+  and writes nothing — the one behavioural difference from the hourly lane, which defaults
+  `http_status` to 200 and therefore never reaches that reason.
+- **`retrieved_at` is transcribed from `artifacts.body_fetched_at`, never `now()`.** The hourly lane
+  can say `now()` because it pushes articles resolved minutes earlier; a backfill of a 12 July
+  article cannot. Hence the two extra selector columns, `body_fetch_status` and `body_fetched_at`.
+- **Re-derived FDY-91's attribution totals independently and they reproduce to the row**
+  (2026-10-09, read-only): window 6,157 · S1 1,125 · S2 377 · S3 5 · **press 1,507 across 43
+  states** · with a jurisdiction name 398 · **refused 4,650 (75.5%)**. Candidates are **231**, not
+  FDY-91's 232: that file's `\ypause` prefix matched one row that push-pure's `\ypaus(e|es|ed|ing)\y`
+  does not. `scripts/boundstone-local-backfill-dryrun.sql` is the mirror, and a test rebuilds its
+  verb alternation from `RESTRICTION_PATTERNS` so it cannot drift.
+- **⚠️ The local-watch corpus has no `published_at` after 2026-09-05 14:05+00** — zero of 54,231
+  rows — while `max(discovered_at)` is 2026-10-09 18:12+00 and 48 rows arrived since 6 September.
+  The poller is running and writing; nothing it writes claims a recent publication date. Not caused
+  or fixed here, but it is why five of the fifteen weekly slices are empty.
+- Eligible rows **today: 0**, because `crawl_metadata->>'publisher_url'` is null on every
+  local-watch artifact until FDY-90 is applied and its `gnews_local` gate opened.
+
 ### CC-LOCAL-WATCH-COUNTY-COMPLETE — 2026-10-07 (FDY-93: every county-equivalent is watched, and the row counts are now reproducible)
 - **The local gov watch went 301/3,222 county-equivalents (9.3%) to 3,222/3,222 (100%)**, Boundstone
   jurisdictions 35 to 440, townships 0 to 1,489, total `gsearch:loc-%` rows 1,000 to **9,106**
