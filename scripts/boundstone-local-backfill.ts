@@ -580,6 +580,19 @@ const WEEK_SEED = { considered: 0, press: 0, candidates: 0, declined: 0, deferre
 const STATE_SEED = { press: 0, candidates: 0, jurisdiction: 0 };
 
 /**
+ * Pre-create a row for every slice, so a week in which nothing happened prints
+ * as a line of zeroes instead of vanishing.
+ *
+ * ⚠️ A MISSING WEEK AND A ZERO WEEK LOOK THE SAME IN A SPARSE TABLE AND MEAN
+ * OPPOSITE THINGS. "The resolver has nothing from that week" is a finding; "the
+ * report skipped that week" is a bug. Seeding makes the two distinguishable
+ * without the reader counting rows against a calendar.
+ */
+export function seedWeeks(report: Report, slices: readonly Slice[]): void {
+  for (const s of slices) bump(report.by_week, s.start.slice(0, 10), WEEK_SEED);
+}
+
+/**
  * Fold one decided artifact into the report.
  *
  * `outcome` is the fate, which in a dry run is always the hypothetical one. The
@@ -990,6 +1003,7 @@ async function main(argv: string[]): Promise<number> {
   const report = newReport(args.apply ? "apply" : "dry-run", args.since, args.until, measuredAt);
   const slices = weeklySlices(args.since, args.until);
   report.slices = slices.length;
+  seedWeeks(report, slices);
 
   // ── preflight ───────────────────────────────────────────────────────────
   const selectorExists = await objectExists(env, "function", SELECTOR_FN);
