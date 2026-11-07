@@ -18,7 +18,40 @@ from here (Ask Faraday, waitlist/subscribe, lexicon).
 > crawler) and `supabase/migrations/*` (project `ycadmmngkdhvpcsrcuaq`). These are
 > active and unrelated to the retired static site.
 
+## Rule: edge functions deploy from git only (FDY-97)
+
+- **Edge functions deploy from git only**: no `deploy_edge_function` via MCP, no dashboard
+  edits. Every deploy is of a merged commit on `main`.
+- **Run `node scripts/edge-drift-check.mjs <slug>` before every deploy** (needs
+  `SUPABASE_ACCESS_TOKEN` in the environment; never printed) and stop if it exits non-zero.
+  Exit 1 means production holds code the repo does not, or the deployed marker is above the
+  repo's — deploying would roll production back. When the repo is intentionally ahead, read
+  the printed diff, confirm every `-` line is superseded, then re-run with `--allow-repo-ahead`.
+- **Migrations are filed in git before or with their apply.** `test/ledger-integrity.test.mjs`
+  fails on an applied-but-unfiled migration name (matched by name, not version);
+  `supabase/ledger-baseline.json` only shrinks.
+
 ## Changelog
+
+### CC-EDGE-DRIFT-GUARDS-1.0 — 2026-11-06 CT (FDY-97: production is ahead of git in SIX functions, not one)
+- **`source-poller` is verified closed.** Deployed v1.8 (version 35) vs repo v1.9: 3 of 5 deployed
+  files identical, `poller-relevance.ts` and `index.ts` differ only by intended FDY-88/FDY-89 work
+  plus two shortened comments. **Zero left-behind hunks.** v1.4–v1.8 each mapped to code + a test
+  (`test/source-poller-deployed-lineage.test.mjs` adds behavioural pins for v1.5's parser).
+- **⚠️ Six other functions run code that is not in git** — do NOT deploy them from this repo until
+  their deployed source is captured: `eia-retired-sync` (v0.5 vs repo v0.4; repo would restore the
+  xlsx OOM path), `faraday-daily-ops` (STALE/WARN split), `ingest-staleness-healthcheck` (FDY-16
+  owner-cron check), `jurisdiction-promote-worker` and `jurisdiction-demote-sweeper` (FDY-202/203;
+  the repo copies still WRITE/DELETE Airtable), `shovels-permit-history` (shovels_ledger rows).
+  Three of the six have equal or no markers, so **only a content diff catches drift** — which is
+  why the guard compares files, not just `CRAWLER_ID`.
+- **⚠️ 122 of 135 deployed functions have no directory in this repo at all.** Full table:
+  `docs/audits/edge-function-drift-2026-11-06.md`.
+- **⚠️ `ingest-staleness-healthcheck/index.ts` holds the cron token in plaintext** (every other
+  function holds only its SHA-256). Rotation is Myke's call.
+- **Ledger: 2,260 of 2,302 applied migration names have no file** (matched by name; MCP
+  `apply_migration` stamps its own versions). Frozen in a shrink-only baseline; a daily opt-in
+  workflow refreshes the snapshot over a read-only role (`FARADAY_LEDGER_RO_URL`).
 
 ### CC-LOCAL-WATCH-FRESHNESS-1.0 — 2026-11-06 (FDY-154: the "no date after 5 Sep" symptom is gone; a guard view so it cannot recur green)
 - **Re-measured read-only 2026-11-06 22:32 CT:** 4,786 local-watch rows discovered since
