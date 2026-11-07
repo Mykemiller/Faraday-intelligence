@@ -1,0 +1,51 @@
+# FDY-97: daily migration-ledger drift check (opt-in).
+#
+# Refreshes supabase/ledger-snapshot.json from production over a READ-ONLY role
+# and runs test/ledger-integrity.test.mjs against it. Goes red the morning after
+# a migration is applied (e.g. via the MCP apply_migration tool) without a file
+# in supabase/migrations/.
+#
+# Inert until the repository secret FARADAY_LEDGER_RO_URL exists: without it the
+# job prints a notice and exits 0. It never writes to the database and never
+# commits the refreshed snapshot.
+name: ledger-drift
+
+on:
+  schedule:
+    - cron: "17 13 * * *" # 07:17 CST / 08:17 CDT
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  ledger:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      FARADAY_LEDGER_RO_URL: ${{ secrets.FARADAY_LEDGER_RO_URL }}
+    steps:
+      - name: Skip when not provisioned
+        id: gate
+        run: |
+          if [ -z "$FARADAY_LEDGER_RO_URL" ]; then
+            echo "::notice::FARADAY_LEDGER_RO_URL secret is not set; ledger drift check skipped (opt-in, FDY-97)."
+            echo "run=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "run=true" >> "$GITHUB_OUTPUT"
+          fi
+      - uses: actions/checkout@v4
+        if: steps.gate.outputs.run == 'true'
+      - uses: actions/setup-node@v4
+        if: steps.gate.outputs.run == 'true'
+        with:
+          node-version: "22"
+      - name: Install psql
+        if: steps.gate.outputs.run == 'true'
+        run: sudo apt-get install -y --no-install-recommends postgresql-client
+      - name: Refresh snapshot (read-only)
+        if: steps.gate.outputs.run == 'true'
+        run: node scripts/refresh-ledger-snapshot.mjs
+      - name: Ledger integrity
+        if: steps.gate.outputs.run == 'true'
+        run: node --test test/ledger-integrity.test.mjs
