@@ -1,0 +1,167 @@
+--- a/supabase/functions/ingest-staleness-healthcheck/index.ts (Faraday-intelligence repo copy = deployed v12)
++++ b/index.ts (deployed v13, captured verbatim in faraday-jurisdiction-watch@ae4beaf; token redacted both sides)
+@@ -21,16 +21,23 @@
+ //   not a JWT, so verify_jwt MUST stay false (a true setting 401s the cron at the
+ //   gateway — the faraday-crawl v2 trap).
+ //
++// CC-STALENESS-WATCH-HYGIENE-1.0 (FDY-16, D3, 2026-10-04): also reports
++//   owner_cron findings from public.fn_ingest_owner_cron_check() — an enabled,
++//   non-dormant watch whose owner_cron is a wildcard ('*'/'%') or names no ACTIVE
++//   cron.job row. These are configuration findings, not staleness breaches; they
++//   are mailed alongside breaches and added to the response as ADDITIVE fields
++//   (owner_cron_findings, owner_cron_detail). Existing fields are unchanged.
++//
+ // NOTE: never writes automation_health_log. Several watches READ that table for
+ //   their poll signal; writing to it here would contaminate the signal.
+ 
+ import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+ import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+ import {
+-  breachedOnly, buildAlertHtml, buildSubject, type WatchResult,
++  breachedOnly, buildAlertHtml, buildSubject, type OwnerCronFinding, type WatchResult,
+ } from "./alert-pure.ts";
+ 
+-const CRON_TOKEN = "<redacted-token>";
++const CRON_TOKEN = "<REDACTED-FDY-204>";
+ const TO = "mykemiller@gmail.com";
+ const FROM = "Faraday Ops <ops@faraday-intelligence.ai>";
+ 
+@@ -61,18 +68,36 @@
+   const rows = (data ?? []) as WatchResult[];
+   const breaches = breachedOnly(rows);
+ 
+-  if (breaches.length === 0) {
+-    return json({ ok: true, alert: false, watches: rows.length, breaches: 0 });
++  // D3 owner_cron check. A failure here must never hide the staleness result, and
++  // must never be silent either — it is reported as a finding of its own.
++  let ownerFindings: OwnerCronFinding[] = [];
++  const oc = await sb.rpc("fn_ingest_owner_cron_check");
++  if (oc.error) {
++    ownerFindings = [{ watch_key: "(owner_cron check)", owner_cron: null,
++      finding: "owner_cron_check_failed", detail: oc.error.message }];
++  } else {
++    ownerFindings = (oc.data ?? []) as OwnerCronFinding[];
++  }
++  const ownerExtra = {
++    owner_cron_findings: ownerFindings.length,
++    owner_cron_detail: ownerFindings.map((f) => ({
++      watch_key: f.watch_key, owner_cron: f.owner_cron, finding: f.finding, detail: f.detail,
++    })),
++  };
++
++  if (breaches.length === 0 && ownerFindings.length === 0) {
++    return json({ ok: true, alert: false, watches: rows.length, breaches: 0, ...ownerExtra });
+   }
+ 
+-  const subject = buildSubject(breaches);
+-  const html = buildAlertHtml({ breaches, totalWatches: rows.length, now });
++  const subject = buildSubject(breaches, ownerFindings);
++  const html = buildAlertHtml({ breaches, totalWatches: rows.length, now, ownerFindings });
+ 
+   if (dry) {
+     return json({
+       ok: true, alert: true, sent: false, dry_run: true, watches: rows.length,
+       breaches: breaches.length, subject,
+       detail: breaches.map((b) => ({ watch_key: b.watch_key, mode: b.check_mode, detail: b.detail })),
++      ...ownerExtra,
+     });
+   }
+ 
+@@ -82,7 +107,7 @@
+     console.error("ingest-staleness-healthcheck ALERT (RESEND_API_KEY unset):", subject);
+     return json({ ok: false, alert: true, sent: false, reason: "RESEND_API_KEY not set",
+       watches: rows.length, breaches: breaches.length,
+-      detail: breaches.map((b) => b.watch_key) }, 500);
++      detail: breaches.map((b) => b.watch_key), ...ownerExtra }, 500);
+   }
+ 
+   const resendRes = await fetch("https://api.resend.com/emails", {
+@@ -93,10 +118,10 @@
+   if (!resendRes.ok) {
+     const body = (await resendRes.text()).slice(0, 500);
+     console.error("ingest-staleness-healthcheck Resend send failed:", resendRes.status, body);
+-    return json({ ok: false, alert: true, sent: false, status: resendRes.status, body }, 502);
++    return json({ ok: false, alert: true, sent: false, status: resendRes.status, body, ...ownerExtra }, 502);
+   }
+ 
+   const sent = await resendRes.json();
+   return json({ ok: true, alert: true, sent: true, id: sent?.id, subject,
+-    watches: rows.length, breaches: breaches.length });
++    watches: rows.length, breaches: breaches.length, ...ownerExtra });
+ });
+
+--- a/alert-pure.ts (v12)
++++ b/alert-pure.ts (v13)
+@@ -13,6 +13,16 @@
+   detail: string | null;
+ }
+ 
++// CC-STALENESS-WATCH-HYGIENE-1.0 (FDY-16) D3 — a configuration finding about a
++// watch's owner_cron, from public.fn_ingest_owner_cron_check(). Not a staleness
++// breach: the watch may be green while nobody can verify which job feeds it.
++export interface OwnerCronFinding {
++  watch_key: string;
++  owner_cron: string | null;
++  finding: string; // 'owner_cron_missing' | 'owner_cron_wildcard' | 'owner_cron_check_failed'
++  detail: string | null;
++}
++
+ export function breachedOnly(rows: WatchResult[]): WatchResult[] {
+   return rows.filter((r) => r.breached);
+ }
+@@ -35,18 +45,45 @@
+   return s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+ }
+ 
+-export function buildSubject(breaches: WatchResult[]): string {
++export function buildSubject(breaches: WatchResult[], ownerFindings: OwnerCronFinding[] = []): string {
+   const lanes = groupByLane(breaches).map((l) => l.lane).join(", ");
++  const oc = ownerFindings.length === 0 ? "" :
++    `${ownerFindings.length} owner_cron finding${ownerFindings.length === 1 ? "" : "s"}`;
++  if (breaches.length === 0) return `⚠️ Faraday ingest — ${oc}`;
+   return `🚨 Faraday ingest — ${breaches.length} stale/failing source${
+-    breaches.length === 1 ? "" : "s"} (${lanes})`;
++    breaches.length === 1 ? "" : "s"} (${lanes})${oc ? ` + ${oc}` : ""}`;
++}
++
++export function buildOwnerCronHtml(findings: OwnerCronFinding[]): string {
++  if (findings.length === 0) return "";
++  return `
++    <h2 style="font-size:14px;text-transform:uppercase;letter-spacing:0.08em;color:#6B6560;margin:22px 0 6px;">
++      owner_cron · ${findings.length} watch${findings.length === 1 ? "" : "es"}
++    </h2>
++    <table style="width:100%;border-collapse:collapse;font-size:12px;">
++      ${findings.map((f) => `
++        <tr>
++          <td style="padding:4px 8px 4px 0;vertical-align:top;font-family:monospace;color:#141210;white-space:nowrap;">
++            ${escapeHtml(f.watch_key)}
++          </td>
++          <td style="padding:4px 0;vertical-align:top;color:#5A4A2A;">
++            <span style="display:inline-block;padding:0 6px;border-radius:3px;background:#FBEEE0;color:#8A5A00;font-size:10px;text-transform:uppercase;">
++              ${escapeHtml(f.finding)}
++            </span>
++            ${escapeHtml(f.detail ?? f.finding)}
++          </td>
++        </tr>`).join("")}
++    </table>`;
+ }
+ 
+ export function buildAlertHtml(args: {
+   breaches: WatchResult[];
+   totalWatches: number;
+   now: string;
++  ownerFindings?: OwnerCronFinding[];
+ }): string {
+   const { breaches, totalWatches, now } = args;
++  const ownerFindings = args.ownerFindings ?? [];
+   const laneHtml = groupByLane(breaches).map((l) => `
+     <h2 style="font-size:14px;text-transform:uppercase;letter-spacing:0.08em;color:#6B6560;margin:22px 0 6px;">
+       ${escapeHtml(l.lane)} · ${l.items.length} source${l.items.length === 1 ? "" : "s"}
+@@ -79,6 +116,7 @@
+     </p>
+   </div>
+   ${laneHtml}
++  ${buildOwnerCronHtml(ownerFindings)}
+   <p style="font-size:11px;color:#9B958E;margin-top:32px;">
+     Automated by ingest-staleness-healthcheck · watches live in <code>ingest_staleness_watch</code> · ${escapeHtml(now)}
+   </p>

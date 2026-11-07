@@ -53,6 +53,22 @@ from here (Ask Faraday, waitlist/subscribe, lexicon).
   `apply_migration` stamps its own versions). Frozen in a shrink-only baseline; a daily opt-in
   workflow refreshes the snapshot over a read-only role (`FARADAY_LEDGER_RO_URL`).
 
+### CC-LOCAL-WATCH-FRESHNESS-1.0 — 2026-11-06 (FDY-154: the "no date after 5 Sep" symptom is gone; a guard view so it cannot recur green)
+- **Re-measured read-only 2026-11-06 22:32 CT:** 4,786 local-watch rows discovered since
+  2026-09-06, **0 null `published_at`**, newest published 2026-11-06 20:01 UTC. FDY-88/89/93
+  are still un-applied (`poller_select_due` absent, 1,000 loc sources), so they did not cause
+  the recovery. The discovered-week breakdown shows the real outage window: weeks of
+  2026-09-07 → 2026-10-12 discovered only 1–31 rows/week, all carrying stale dates (lag
+  9–2,313 days); recovery begins the week of 2026-10-19, with a burst of 2,836 rows since
+  2026-11-05.
+- **Migration `20261107043000` (UN-APPLIED) adds `public.v_local_watch_publication_freshness`**
+  — one row per ISO week of `discovered_at`, last 12 weeks; `flag` = `LAG` if `lag_days > 7`,
+  else `NULLS` if `null_share > 0.2`, else `ok`. `security_invoker`, revoked from
+  public/anon/authenticated, select to service_role only. **Not wired to any alert or cron.**
+- **⚠️ It reads by DISCOVERED week, so historical weeks of the Sep–Oct outage read `LAG`
+  forever** (they are within the 12-week window until ~mid-January). That is the view working,
+  not a false positive; judge current health from the latest one or two rows.
+
 ### CC-BOUNDSTONE-LOCAL-BACKFILL — 2026-10-09 (FDY-92: the Jul–Sep backlog, shipped as a script and never run)
 - **`scripts/boundstone-local-backfill.ts`** walks 2026-07-01 → today in **7-day slices anchored on
   `--since`**, oldest first, and pushes through FDY-91's bridge. Dry run by default; `--apply` also
